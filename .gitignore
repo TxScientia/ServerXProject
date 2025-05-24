@@ -1,0 +1,25 @@
+# Node modules (frontend)
+frontend/node_modules/
+
+# Build output (frontend)
+frontend/build/
+
+# Python cache and environments (backend)
+backend/__pycache__/
+backend/*.pyc
+backend/venv/
+backend/.env
+
+# Docker-related
+*.log
+docker-compose.override.yml
+
+# VSCode settings
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Environment variable files
+.env
