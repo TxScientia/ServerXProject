@@ -16,7 +16,10 @@ jobs:
         with:
           python-version: '3.11'
       - run: pip install -r requirements.txt
-      - run: pytest
+      - name: Run backend tests
+        run: pytest
+        env:
+          PYTHONPATH: ./backend
 
   frontend-tests:
     runs-on: ubuntu-latest
