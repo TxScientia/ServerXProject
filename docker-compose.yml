@@ -9,6 +9,8 @@ services:
       - /app/node_modules
     depends_on:
       - backend
+    environment:
+      - CHOKIDAR_USEPOLLING=true
 
   backend:
     build: ./backend
