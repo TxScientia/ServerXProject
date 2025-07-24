@@ -8,18 +8,31 @@ export default function Home() {
   const [password, setPassword] = useState('');
 
   const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    // Hier kommt später dein API-Login – aktuell nur Dummy-Check
-    if (username === 'test' && password === '1234') {
-      console.log('Login erfolgreich!');
+  try {
+    const response = await fetch('http://localhost:8000/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        login_name: username,
+        password: password,
+      }),
+    });
 
+    if (response.ok) {
       // ⏩ Weiterleitung zur Charakterübersicht
       navigate('/characters');
     } else {
       alert('Login fehlgeschlagen');
     }
-  };
+  } catch (error) {
+    alert('Fehler beim Login');
+    console.error(error);
+  }
+};
 
   return (
     <div className={styles.container}>
