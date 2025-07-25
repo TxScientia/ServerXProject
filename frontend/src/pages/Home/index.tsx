@@ -23,7 +23,8 @@ export default function Home() {
     });
 
     if (response.ok) {
-      // ⏩ Weiterleitung zur Charakterübersicht
+      const data = await response.json();
+      localStorage.setItem('token', data.token); // Token speichern
       navigate('/characters');
     } else {
       alert('Login fehlgeschlagen');

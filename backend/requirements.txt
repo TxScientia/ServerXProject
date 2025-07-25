@@ -1,5 +1,7 @@
 bcrypt
+datetime
 fastapi
+PyJWT
 uvicorn
 sqlalchemy
 psycopg2-binary
