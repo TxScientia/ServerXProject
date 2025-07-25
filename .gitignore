@@ -1,26 +1,44 @@
-# Node modules (frontend)
+# Node modules und Build-Ordner (Frontend)
+node_modules/
 frontend/node_modules/
-
-# Build output (frontend)
 frontend/build/
+frontend/dist/
 
-# Python cache and environments (backend)
-backend/.pytest_cache/
-backend/*.pyc
+# Python-Umgebungen und Cache (Backend)
 backend/venv/
-backend/.env
+backend/.pytest_cache/
 backend/app/__pycache__/
+backend/*.pyc
+backend/.env
 
-# Docker-related
+# Logfiles
 *.log
+
+# Docker
 docker-compose.override.yml
 
-# VSCode settings
+# VSCode
 .vscode/
 
-# OS files
+# OS-spezifisch
 .DS_Store
 Thumbs.db
 
-# Environment variable files
+# Environment-Dateien
 .env
+
+# IDE-spezifisch
+.idea/
+*.swp
+
+# Test- und Coverage-Output
+coverage/
+*.coverage
+htmlcov/
+
+# Sonstige temporäre Dateien
+*.tmp
+*.bak
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*

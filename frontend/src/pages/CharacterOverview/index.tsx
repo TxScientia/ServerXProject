@@ -15,11 +15,11 @@ const CharacterOverview = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    /*const token = localStorage.getItem('token');
+    const token = localStorage.getItem('token');
     if (!token) {
       navigate('/');
       return;
-    }*/
+    }
 
     // Beispiel-Daten – später durch echten API-Call ersetzen
     setCharacters([
