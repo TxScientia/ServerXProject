@@ -8,6 +8,7 @@ frontend/dist/
 backend/venv/
 backend/.pytest_cache/
 backend/app/__pycache__/
+backend/app/routes/__pycache__/
 backend/*.pyc
 backend/.env
 

@@ -1,9 +1,10 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from .database import engine, SessionLocal
-from .models import Base
-from .crud import create_account, get_account_by_email
+from .models import Base, Character
+from .crud import create_character, get_account_by_email, get_account_by_login_name, create_account
 from .routes.accounts import router as accounts_router
+from .routes.characters import router as characters_router
 import time
 from sqlalchemy.exc import OperationalError
 
@@ -19,6 +20,7 @@ app.add_middleware(
 )
 
 app.include_router(router=accounts_router)
+app.include_router(router=characters_router)
 
 for _ in range(10):
     try:
@@ -34,6 +36,13 @@ def init_test_user():
     db = SessionLocal()
     if not get_account_by_email(db, "test@example.com"):
         create_account(db, "test@example.com", "test", "1234")
+    user = get_account_by_login_name(db, "test")
+    if user:
+        # Charaktere anlegen, falls noch nicht vorhanden
+        if not db.query(Character).filter_by(name="Arthas", account_id=user.id).first():
+            create_character(db, user.id, "Arthas", "Mensch", "Paladin", "Männlich")
+        if not db.query(Character).filter_by(name="Sylvanas", account_id=user.id).first():
+            create_character(db, user.id, "Sylvanas", "Untote", "Jägerin", "Weiblich")
     db.close()
 
 init_test_user()
