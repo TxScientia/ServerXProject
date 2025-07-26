@@ -22,3 +22,23 @@ h1 {
 .table th {
   background-color: #f0f0f0;
 }
+
+.plusButton {
+  font-size: 2rem;
+  padding: 0.2em 0.6em;
+  cursor: pointer;
+}
+.modal {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.modalContent {
+  background: white;
+  padding: 2em;
+  border-radius: 8px;
+  min-width: 300px;
+}
