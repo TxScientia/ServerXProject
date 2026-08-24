@@ -1,7 +1,74 @@
-.container {
-  max-width: 400px;
-  margin: auto;
-  padding: 2rem;
-  border: 1px solid #ccc;
-  border-radius: 8px;
+.hero {
+  position: relative;
+  width: 100%;
+  min-height: 90vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: var(--space-5);
+  padding: var(--space-6);
+  text-align: center;
+  color: #ffffff;
+  isolation: isolate;
+}
+
+.heroBackground {
+  position: absolute;
+  inset: 0;
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  will-change: transform;
+  transform: translate3d(0, 0, 0);
+  z-index: -2;
+}
+
+.hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.18), rgba(21, 24, 24, 0.64));
+  z-index: -1;
+}
+
+.title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(2.5rem, 6vw, 5rem);
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  line-height: 1.05;
+  text-transform: lowercase;
+  text-shadow: var(--shadow-hero);
+}
+
+.nav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-4);
+}
+
+.loginContent {
+  text-align: center;
+}
+
+.heading {
+  margin: 0 0 var(--space-4);
+  font-family: var(--font-display);
+  font-size: clamp(1.6rem, 3vw, 1.9rem);
+  font-weight: 600;
+}
+
+.loginForm {
+  width: min(100%, 400px);
+  margin-inline: auto;
+}
+
+.error {
+  margin: 0;
+  color: var(--color-danger);
+  font-weight: 600;
 }

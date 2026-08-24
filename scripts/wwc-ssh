@@ -1,0 +1,83 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Guard rail for server access to wwc@wwc.dev-shit.de.
+# Default mode is read-only. Write-capable commands require an explicit override
+# after the user has approved the server change.
+
+REMOTE="wwc@wwc.dev-shit.de"
+KEY="${WWC_SSH_KEY:-./id_ed25519}"
+
+usage() {
+  cat <<'USAGE'
+Usage:
+  scripts/wwc-ssh -- <read-only command> [args...]
+  SERVER_WRITE_APPROVED=yes scripts/wwc-ssh --write-approved -- <command> [args...]
+
+Rules:
+  - Default mode allows only known read-only commands.
+  - Interactive SSH sessions are blocked.
+  - Server changes require asking the user first, then using the explicit override.
+USAGE
+}
+
+approved_write=false
+if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
+  usage
+  exit 0
+fi
+if [[ "${1:-}" == "--write-approved" ]]; then
+  approved_write=true
+  shift
+fi
+if [[ "${1:-}" == "--" ]]; then
+  shift
+fi
+
+if [[ $# -eq 0 ]]; then
+  echo "Blocked: interactive server sessions are not allowed by this guard rail." >&2
+  echo "Use a specific read-only command instead." >&2
+  exit 2
+fi
+
+if [[ "$approved_write" == true ]]; then
+  if [[ "${SERVER_WRITE_APPROVED:-}" != "yes" ]]; then
+    echo "Blocked: write override requires SERVER_WRITE_APPROVED=yes after explicit user approval." >&2
+    exit 2
+  fi
+  exec ssh -i "$KEY" -o StrictHostKeyChecking=accept-new "$REMOTE" "$@"
+fi
+
+cmd="$1"
+case "$cmd" in
+  cat|cd|date|df|du|env|file|find|grep|head|hostname|id|journalctl|ls|lsof|netstat|pgrep|ps|pwd|readlink|rg|ss|stat|systemctl|tail|test|tree|uname|wc|whoami)
+    ;;
+  docker)
+    case "${2:-}" in
+      ps|logs|inspect|images|container|compose) ;;
+      *) echo "Blocked: docker subcommand is not on the read-only allowlist." >&2; exit 2 ;;
+    esac
+    ;;
+  git)
+    case "${2:-}" in
+      status|log|show|diff|branch|remote|rev-parse|describe) ;;
+      *) echo "Blocked: git subcommand is not on the read-only allowlist." >&2; exit 2 ;;
+    esac
+    ;;
+  *)
+    echo "Blocked: '$cmd' is not on the read-only allowlist." >&2
+    echo "Ask the user before any server-changing command, then use --write-approved with SERVER_WRITE_APPROVED=yes." >&2
+    exit 2
+    ;;
+esac
+
+for arg in "$@"; do
+  case "$arg" in
+    *';'*|*'&'*|*'|'*|*'>'*|*'<'*|*'`'*|*'$('*|*$'\n'*|*$'\r'*)
+      echo "Blocked: shell metacharacters are not allowed in read-only mode." >&2
+      exit 2
+      ;;
+  esac
+done
+
+exec ssh -i "$KEY" -o StrictHostKeyChecking=accept-new "$REMOTE" "$@"

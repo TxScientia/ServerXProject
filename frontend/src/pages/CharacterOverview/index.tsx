@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './CharacterOverview.module.css';
+import { apiUrl } from '../../api';
 
 type Character = {
   name: string;
@@ -16,17 +17,13 @@ const CharacterOverview = () => {
   const [form, setForm] = useState({ name: '', race: '', spec: '', gender: 'Männlich' });
   const navigate = useNavigate();
 
-  useEffect(() => {
-    fetchCharacters();
-  }, []);
-
-  const fetchCharacters = () => {
+  const fetchCharacters = useCallback(() => {
     const token = localStorage.getItem('token');
     if (!token) {
       navigate('/');
       return;
     }
-    fetch('http://localhost:8000/characters', {
+    fetch(apiUrl('/characters'), {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => {
@@ -35,7 +32,11 @@ const CharacterOverview = () => {
       })
       .then((data) => setCharacters(data))
       .catch(() => navigate('/'));
-  };
+  }, [navigate]);
+
+  useEffect(() => {
+    fetchCharacters();
+  }, [fetchCharacters]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -43,7 +44,7 @@ const CharacterOverview = () => {
 
   const handleSave = () => {
     const token = localStorage.getItem('token');
-    fetch('http://localhost:8000/characters', {
+    fetch(apiUrl('/characters'), {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -66,8 +67,8 @@ const CharacterOverview = () => {
   return (
     <div className={styles.container}>
       <h1>Charakterübersicht</h1>
-      <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 10 }}>
-        <button onClick={() => setShowModal(true)} className={styles.plusButton}>+</button>
+      <div className={styles.actions}>
+        <button onClick={() => setShowModal(true)} className={`button ${styles.plusButton}`}>+</button>
       </div>
       <table className={styles.table}>
         <thead>
@@ -95,27 +96,27 @@ const CharacterOverview = () => {
             <h2>Neuen Charakter erstellen</h2>
             <label>
               Name:
-              <input name="name" value={form.name} onChange={handleInputChange} />
+              <input className="text-input" name="name" value={form.name} onChange={handleInputChange} />
             </label>
             <label>
               Rasse:
-              <input name="race" value={form.race} onChange={handleInputChange} />
+              <input className="text-input" name="race" value={form.race} onChange={handleInputChange} />
             </label>
             <label>
               Spezifikation:
-              <input name="spec" value={form.spec} onChange={handleInputChange} />
+              <input className="text-input" name="spec" value={form.spec} onChange={handleInputChange} />
             </label>
             <label>
               Geschlecht:
-              <select name="gender" value={form.gender} onChange={handleInputChange}>
+              <select className="select-input" name="gender" value={form.gender} onChange={handleInputChange}>
                 <option value="Männlich">Männlich</option>
                 <option value="Weiblich">Weiblich</option>
                 <option value="Divers">Divers</option>
               </select>
             </label>
-            <div style={{ marginTop: 10 }}>
-              <button onClick={handleSave}>Speichern</button>
-              <button onClick={() => setShowModal(false)} style={{ marginLeft: 10 }}>Abbrechen</button>
+            <div className={styles.modalActions}>
+              <button className="button" onClick={handleSave}>Speichern</button>
+              <button className="button button--ghost" onClick={() => setShowModal(false)}>Abbrechen</button>
             </div>
           </div>
         </div>
