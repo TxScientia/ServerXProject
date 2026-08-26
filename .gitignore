@@ -1,45 +1,104 @@
-# Node modules und Build-Ordner (Frontend)
+# Dependencies
 node_modules/
 frontend/node_modules/
+
+# Frontend build output
+build/
+dist/
 frontend/build/
 frontend/dist/
 
-# Python-Umgebungen und Cache (Backend)
+# Python virtual environments
+.venv/
+venv/
+env/
+ENV/
+backend/.venv/
 backend/venv/
+
+# Python cache/test output
+__pycache__/
+*/__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
 backend/.pytest_cache/
-backend/app/__pycache__/
-backend/app/routes/__pycache__/
-backend/*.pyc
-backend/.env
-
-# Logfiles
-*.log
-
-# Docker
-docker-compose.override.yml
-
-# VSCode
-.vscode/
-
-# OS-spezifisch
-.DS_Store
-Thumbs.db
-
-# Environment-Dateien
-.env
-
-# IDE-spezifisch
-.idea/
-*.swp
-
-# Test- und Coverage-Output
+.coverage
+.coverage.*
 coverage/
-*.coverage
 htmlcov/
+.tox/
+.mypy_cache/
+.ruff_cache/
 
-# Sonstige temporäre Dateien
-*.tmp
-*.bak
+# Environment and secrets
+.env
+.env.*
+!.env.example
+backend/.env
+backend/.env.*
+id_ed25519
+id_ed25519.pub
+*.pem
+*.key
+*.crt
+
+# Runtime/local data
+/data/
+data/
+*.sqlite
+*.sqlite3
+*.db
+proxy.conf
+
+# Logs
+*.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+pnpm-debug.log*
+
+# Docker/local overrides
+docker-compose.override.yml
+
+# IDE/editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Local image/favicon assets (not committed)
+favicon*/
+**/favicon*/
+*.png
+*.PNG
+*.jpg
+*.JPG
+*.jpeg
+*.JPEG
+*.gif
+*.GIF
+*.webp
+*.WEBP
+*.bmp
+*.BMP
+*.ico
+*.ICO
+*.svg
+*.SVG
+*.avif
+*.AVIF
+*.tif
+*.TIF
+*.tiff
+*.TIFF
+
+# Temporary/backup files
+*.tmp
+*.temp
+*.bak

@@ -1,7 +1,145 @@
-.container {
-  max-width: 400px;
-  margin: auto;
-  padding: 2rem;
-  border: 1px solid #ccc;
-  border-radius: 8px;
+.hero {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 2560 / 1015;
+  overflow: visible;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: var(--space-5);
+  padding: var(--space-6);
+  text-align: center;
+  color: #ffffff;
+  isolation: isolate;
+  --hero-border-height: clamp(32px, 3.97vw, 102px);
+  --hero-border-offset: clamp(56px, calc(84px - 1.2vw), 74px);
+  margin-bottom: var(--hero-border-offset);
+}
+
+.heroBackground {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  z-index: -2;
+}
+
+.hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.18), rgba(21, 24, 24, 0.64));
+  z-index: -1;
+}
+
+.heroBorderFrame {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.heroBorderFrame::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: var(--hero-border-height);
+  background-image: var(--hero-border-image);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  bottom: calc(var(--hero-border-offset) * -1);
+}
+
+.title {
+  position: relative;
+  z-index: 2;
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(2.5rem, 6vw, 5rem);
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  line-height: 1.05;
+  text-transform: lowercase;
+  text-shadow: var(--shadow-hero);
+}
+
+.nav {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-4);
+}
+
+.loginContent {
+  text-align: center;
+}
+
+.heading {
+  margin: 0 0 var(--space-4);
+  font-family: var(--font-display);
+  font-size: clamp(1.6rem, 3vw, 1.9rem);
+  font-weight: 600;
+}
+
+.loginForm {
+  width: min(100%, 400px);
+  margin-inline: auto;
+}
+
+.error {
+  margin: 0;
+  color: var(--color-danger);
+  font-weight: 600;
+}
+
+@media (max-width: 700px) {
+  .hero {
+    --hero-border-height: clamp(22px, 3.97vw, 32px);
+    --hero-border-offset: clamp(16px, 6vw, 28px);
+    gap: var(--space-3);
+    padding: var(--space-3);
+  }
+
+  .title {
+    font-size: clamp(1.35rem, 7vw, 2.3rem);
+    letter-spacing: 0.08em;
+    line-height: 1.1;
+  }
+
+  .nav {
+    gap: var(--space-2);
+  }
+
+  .nav :global(.button) {
+    padding: 0.45rem 0.55rem;
+    font-size: 0.66rem;
+    letter-spacing: 0.06em;
+  }
+
+  .loginContent {
+    width: min(100% - 1.25rem, 420px);
+    padding-top: var(--space-6);
+    padding-bottom: var(--space-6);
+  }
+
+  .heading {
+    font-size: clamp(1.35rem, 6vw, 1.65rem);
+  }
+}
+
+@media (max-width: 420px) {
+  .hero {
+    padding: var(--space-2);
+  }
+
+  .nav :global(.button) {
+    padding: 0.38rem 0.45rem;
+    font-size: 0.6rem;
+  }
 }
