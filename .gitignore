@@ -72,6 +72,32 @@ docker-compose.override.yml
 .DS_Store
 Thumbs.db
 
+# Local image/favicon assets (not committed)
+favicon*/
+**/favicon*/
+*.png
+*.PNG
+*.jpg
+*.JPG
+*.jpeg
+*.JPEG
+*.gif
+*.GIF
+*.webp
+*.WEBP
+*.bmp
+*.BMP
+*.ico
+*.ICO
+*.svg
+*.SVG
+*.avif
+*.AVIF
+*.tif
+*.TIF
+*.tiff
+*.TIFF
+
 # Temporary/backup files
 *.tmp
 *.temp

@@ -11,6 +11,10 @@ type Character = {
   status: string;
 };
 
+const PUBLIC_ASSET_BASE = process.env.PUBLIC_URL || '';
+const CHARACTER_BACKGROUND_URL = `${PUBLIC_ASSET_BASE}/pictures/character-selection-background.webp`;
+const NAV_ITEMS = ['Gesuche', 'OOC', 'PM', 'Einwohnerliste', 'Storybook', 'Guidebook', 'MyCharacter'];
+
 const CharacterOverview = () => {
   const [characters, setCharacters] = useState<Character[]>([]);
   const [showModal, setShowModal] = useState(false);
@@ -65,7 +69,18 @@ const CharacterOverview = () => {
   };
 
   return (
-    <div className={styles.container}>
+    <div
+      className={styles.container}
+      style={{ '--character-background-image': `url(${CHARACTER_BACKGROUND_URL})` } as React.CSSProperties}
+    >
+      <nav className={styles.topNav} aria-label="Character navigation">
+        {NAV_ITEMS.map((item) => (
+          <button key={item} type="button" className={styles.navItem}>
+            {item}
+          </button>
+        ))}
+      </nav>
+
       <h1>Charakterübersicht</h1>
       <div className={styles.actions}>
         <button onClick={() => setShowModal(true)} className={`button ${styles.plusButton}`}>+</button>

@@ -1,32 +1,21 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { apiUrl } from '../../api';
 import styles from './Home.module.css';
 
-const HERO_IMAGE_URL =
-  'https://www.dropbox.com/scl/fi/83tzm2p7sf5t5f1h24skg/WWC1.png?rlkey=9awromqiin2oo97pmpnt2630k&st=d8g71vem&raw=1';
+const PUBLIC_ASSET_BASE = process.env.PUBLIC_URL || '';
+const HERO_IMAGE_URL = `${PUBLIC_ASSET_BASE}/pictures/hero-background.webp`;
+const HERO_BORDER_URL = `${PUBLIC_ASSET_BASE}/pictures/hero-border.webp`;
 
 const worldTags = ['FSK 18', 'Private RP', 'Multiverse', 'Eng & Ger', 'Xyz'];
 
 export default function Home() {
   const navigate = useNavigate();
-  const heroBackgroundRef = useRef<HTMLDivElement>(null);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const updateHeroParallax = () => {
-      if (!heroBackgroundRef.current) return;
-      heroBackgroundRef.current.style.transform = `translateY(${window.scrollY * 0.4}px)`;
-    };
-
-    updateHeroParallax();
-    window.addEventListener('scroll', updateHeroParallax, { passive: true });
-
-    return () => window.removeEventListener('scroll', updateHeroParallax);
-  }, []);
 
   const handleLogin = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -63,10 +52,17 @@ export default function Home() {
   return (
     <div className="app-shell">
       <section className={styles.hero} aria-label="When Worlds Collide Login">
-        <div
-          ref={heroBackgroundRef}
+        <img
           className={styles.heroBackground}
-          style={{ backgroundImage: `url(${HERO_IMAGE_URL})` }}
+          src={HERO_IMAGE_URL}
+          alt=""
+          loading="eager"
+          aria-hidden="true"
+        />
+
+        <div
+          className={styles.heroBorderFrame}
+          style={{ '--hero-border-image': `url(${HERO_BORDER_URL})` } as React.CSSProperties}
           aria-hidden="true"
         />
 

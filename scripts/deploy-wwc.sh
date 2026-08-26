@@ -30,6 +30,7 @@ rsync -az --delete \
   --exclude '.ssh/' \
   --exclude 'proxy.conf' \
   --exclude 'PROJECT-GUIDE.md' \
+  --exclude '/WWCHintergrundMystic.png' \
   ./ "$REMOTE"
 
 echo "Deployed. The host should auto-restart server.py within a few seconds."
