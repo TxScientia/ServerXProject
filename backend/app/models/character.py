@@ -1,6 +1,6 @@
 import uuid
 
-from sqlalchemy import Column, ForeignKey, String
+from sqlalchemy import Column, ForeignKey, String, Text
 from sqlalchemy.orm import relationship
 
 from ..database import Base
@@ -14,6 +14,7 @@ class Character(Base):
     race = Column(String, nullable=False)
     specification = Column(String, nullable=False)
     gender = Column(String, nullable=False)
+    editor_data = Column(Text, nullable=True)
     account_id = Column(GUID(), ForeignKey("accounts.id"), nullable=False)
 
     account = relationship("Account", back_populates="characters")
