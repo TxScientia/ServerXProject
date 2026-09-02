@@ -4,11 +4,17 @@ import styles from './CharacterOverview.module.css';
 import { apiUrl } from '../../api';
 
 type CharacterEditorData = {
-  displayName: string;
   fullName: string;
+  alias: string;
   species: string;
   specification: string;
-  secondSpecification: string;
+  age: string;
+  sexuality: string;
+  relationshipStatus: string;
+  profession: string;
+  residence: string;
+  origin: string;
+  era: string;
   biography: string;
   imageSettings: string;
   colorCodes: string;
@@ -39,11 +45,17 @@ const CHARACTER_BACKGROUND_URL = `${PUBLIC_ASSET_BASE}/pictures/rosesbackgroundW
 const NAV_ITEMS = ['Gesuche', 'OOC', 'PM', 'Einwohnerliste', 'Storybook', 'Guidebook', 'MyCharacter'];
 
 const emptyEditorData: CharacterEditorData = {
-  displayName: '',
   fullName: '',
+  alias: '',
   species: '',
   specification: '',
-  secondSpecification: '',
+  age: '',
+  sexuality: '',
+  relationshipStatus: '',
+  profession: '',
+  residence: '',
+  origin: '',
+  era: '',
   biography: '',
   imageSettings: '',
   colorCodes: '',
@@ -112,7 +124,7 @@ const CharacterOverview = () => {
       gender: character.gender,
       editorData: {
         ...editorData,
-        displayName: editorData.displayName || character.name,
+        alias: editorData.alias || (editorData as Partial<CharacterEditorData> & { displayName?: string }).displayName || character.name,
         species: editorData.species || character.race,
         specification: editorData.specification || character.spec,
       },
@@ -141,7 +153,7 @@ const CharacterOverview = () => {
       const nextEditorData = { ...currentForm.editorData, [name]: value };
       return {
         ...currentForm,
-        name: name === 'displayName' ? value : currentForm.name,
+        name: name === 'alias' || (name === 'fullName' && !currentForm.editorData.alias) ? value : currentForm.name,
         race: name === 'species' ? value : currentForm.race,
         spec: name === 'specification' ? value : currentForm.spec,
         editorData: nextEditorData,
@@ -153,13 +165,13 @@ const CharacterOverview = () => {
     const token = localStorage.getItem('token');
     const editorData = {
       ...form.editorData,
-      displayName: form.editorData.displayName || form.name,
+      alias: form.editorData.alias || form.name,
       species: form.editorData.species || form.race,
       specification: form.editorData.specification || form.spec,
     };
     const payload = {
       ...form,
-      name: form.name || editorData.displayName,
+      name: form.name || editorData.alias || editorData.fullName,
       race: form.race || editorData.species,
       spec: form.spec || editorData.specification,
       editorData,
@@ -254,30 +266,25 @@ const CharacterOverview = () => {
 
               {activeTab === 'charId' && (
                 <div className={styles.formGrid}>
-                  <label className={styles.fullWidth}>
-                    <span>Anzeigename</span>
-                    <small>Name deines Chars, der in der Bewohnerliste angezeigt wird</small>
-                    <input name="displayName" value={form.editorData.displayName} onChange={handleEditorDataChange} />
-                  </label>
-                  <label className={styles.fullWidth}>
-                    <span>Vollständiger Charaktername</span>
-                    <small>Alle vorhandenen Namen eintragen, zB Vorname Zweitname Nachname, diese werden nur in der ID angezeigt</small>
+                  <label>
+                    <span>Vollständiger Name</span>
                     <input name="fullName" value={form.editorData.fullName} onChange={handleEditorDataChange} />
                   </label>
                   <label>
+                    <span>Alias</span>
+                    <input name="alias" value={form.editorData.alias} onChange={handleEditorDataChange} />
+                  </label>
+                  <label>
                     <span>Spezies</span>
-                    <small>text</small>
                     <input name="species" value={form.editorData.species} onChange={handleEditorDataChange} />
                   </label>
                   <label>
                     <span>Spezifikation</span>
-                    <small>text</small>
                     <input name="specification" value={form.editorData.specification} onChange={handleEditorDataChange} />
                   </label>
                   <label>
-                    <span>Spezifikation</span>
-                    <small>text</small>
-                    <input name="secondSpecification" value={form.editorData.secondSpecification} onChange={handleEditorDataChange} />
+                    <span>Alter</span>
+                    <input name="age" value={form.editorData.age} onChange={handleEditorDataChange} />
                   </label>
                   <label>
                     <span>Geschlecht</span>
@@ -286,6 +293,30 @@ const CharacterOverview = () => {
                       <option value="Weiblich">Weiblich</option>
                       <option value="Divers">Divers</option>
                     </select>
+                  </label>
+                  <label>
+                    <span>Sexualität</span>
+                    <input name="sexuality" value={form.editorData.sexuality} onChange={handleEditorDataChange} />
+                  </label>
+                  <label>
+                    <span>Beziehungsstand</span>
+                    <input name="relationshipStatus" value={form.editorData.relationshipStatus} onChange={handleEditorDataChange} />
+                  </label>
+                  <label>
+                    <span>Beruf</span>
+                    <input name="profession" value={form.editorData.profession} onChange={handleEditorDataChange} />
+                  </label>
+                  <label>
+                    <span>Wohnsitz</span>
+                    <input name="residence" value={form.editorData.residence} onChange={handleEditorDataChange} />
+                  </label>
+                  <label>
+                    <span>Herkunft</span>
+                    <input name="origin" value={form.editorData.origin} onChange={handleEditorDataChange} />
+                  </label>
+                  <label>
+                    <span>Zeitalter</span>
+                    <input name="era" value={form.editorData.era} onChange={handleEditorDataChange} />
                   </label>
                 </div>
               )}
