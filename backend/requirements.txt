@@ -1,5 +1,4 @@
 bcrypt
-datetime
 fastapi
 PyJWT
 uvicorn
