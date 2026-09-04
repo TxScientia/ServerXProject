@@ -5,10 +5,18 @@ from .account import (
     get_account_by_login_name,
 )
 from .character import create_character
+from .place import create_place, list_places
+from .space import create_storybook, get_membership, get_storybook, list_storybooks
 
 __all__ = [
     "create_account",
     "get_account_by_email",
     "get_account_by_login_name",
     "create_character",
+    "create_place",
+    "list_places",
+    "create_storybook",
+    "get_membership",
+    "get_storybook",
+    "list_storybooks",
 ]
