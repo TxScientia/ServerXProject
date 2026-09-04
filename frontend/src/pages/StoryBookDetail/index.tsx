@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import AppLayout from '../../components/AppLayout';
 import { apiUrl, authHeaders, characterHeaders } from '../../api';
 import styles from './StoryBookDetail.module.css';
 
@@ -21,6 +22,9 @@ type Storybook = {
   created_at: string;
   places: Place[];
 };
+
+// Plot-scoped nav items from the wireframe — placeholders until built.
+const PLOT_NAV = ['OOC-Chat', 'News', 'Home', 'Gesuche', 'Mitglieder', 'Plot Settings'];
 
 function PlaceNode({ place, allPlaces }: { place: Place; allPlaces: Place[] }) {
   const children = allPlaces.filter((p) => p.parent_place_id === place.id);
@@ -89,64 +93,74 @@ export default function StoryBookDetail() {
       .catch((e) => setError(e.message));
   };
 
-  if (!storybook) {
-    return (
-      <div className={styles.container}>
-        <button className="button button--ghost" onClick={() => navigate('/storybooks')}>
-          ← Zurück
-        </button>
-        {error ? <p className={styles.error}>{error}</p> : <p>Lädt…</p>}
-      </div>
-    );
-  }
+  const topLevel = storybook?.places.filter((p) => !p.parent_place_id) ?? [];
 
-  const topLevel = storybook.places.filter((p) => !p.parent_place_id);
+  const leftNav = (
+    <div className={styles.sideNav}>
+      <button className={styles.backItem} onClick={() => navigate('/storybooks')}>
+        ← StoryBooks
+      </button>
+      <div className={styles.sideTitle}>{storybook?.title ?? 'Plot'}</div>
+
+      {PLOT_NAV.map((item) => (
+        <button key={item} className={styles.sideItem} disabled title="Bald verfügbar">
+          {item}
+        </button>
+      ))}
+
+      <hr className={styles.divider} />
+
+      <div className={styles.filterTitle}>Orte</div>
+      {topLevel.length === 0 ? (
+        <p className={styles.muted}>Noch keine Orte.</p>
+      ) : (
+        <ul className={styles.placeTree}>
+          {topLevel.map((p) => (
+            <PlaceNode key={p.id} place={p} allPlaces={storybook!.places} />
+          ))}
+        </ul>
+      )}
+    </div>
+  );
 
   return (
-    <div className={styles.container}>
-      <button className="button button--ghost" onClick={() => navigate('/storybooks')}>
-        ← Zurück
-      </button>
-      <h1 className={styles.title}>{storybook.title}</h1>
-      {storybook.description && <p className={styles.desc}>{storybook.description}</p>}
+    <AppLayout leftNav={leftNav}>
+      {!storybook ? (
+        <p className={error ? styles.error : undefined}>{error ?? 'Lädt…'}</p>
+      ) : (
+        <>
+          <h1 className={styles.title}>{storybook.title}</h1>
+          {storybook.description && <p className={styles.desc}>{storybook.description}</p>}
 
-      <section className={styles.places}>
-        <h2>Orte</h2>
-        {topLevel.length === 0 ? (
-          <p className={styles.empty}>Noch keine Orte.</p>
-        ) : (
-          <ul className={styles.placeTree}>
-            {topLevel.map((p) => (
-              <PlaceNode key={p.id} place={p} allPlaces={storybook.places} />
-            ))}
-          </ul>
-        )}
-
-        <div className={styles.addPlace}>
-          <input
-            className="text-input"
-            placeholder="Neuer Ort"
-            value={newPlace.title}
-            onChange={(e) => setNewPlace({ ...newPlace, title: e.target.value })}
-          />
-          <select
-            className="select-input"
-            value={newPlace.parent_place_id}
-            onChange={(e) => setNewPlace({ ...newPlace, parent_place_id: e.target.value })}
-          >
-            <option value="">— Oberort (keiner) —</option>
-            {storybook.places.map((p) => (
-              <option key={p.id} value={p.id}>
-                {p.title}
-              </option>
-            ))}
-          </select>
-          <button className="button" onClick={handleAddPlace} disabled={!newPlace.title}>
-            Ort hinzufügen
-          </button>
-        </div>
-        {error && <p className={styles.error}>{error}</p>}
-      </section>
-    </div>
+          <section className={styles.addSection}>
+            <h2 className={styles.sectionTitle}>Ort hinzufügen</h2>
+            <div className={styles.addPlace}>
+              <input
+                className="text-input"
+                placeholder="Neuer Ort"
+                value={newPlace.title}
+                onChange={(e) => setNewPlace({ ...newPlace, title: e.target.value })}
+              />
+              <select
+                className="select-input"
+                value={newPlace.parent_place_id}
+                onChange={(e) => setNewPlace({ ...newPlace, parent_place_id: e.target.value })}
+              >
+                <option value="">— Oberort (keiner) —</option>
+                {storybook.places.map((p) => (
+                  <option key={p.id} value={p.id}>
+                    {p.title}
+                  </option>
+                ))}
+              </select>
+              <button className="button" onClick={handleAddPlace} disabled={!newPlace.title}>
+                Ort hinzufügen
+              </button>
+            </div>
+            {error && <p className={styles.error}>{error}</p>}
+          </section>
+        </>
+      )}
+    </AppLayout>
   );
 }

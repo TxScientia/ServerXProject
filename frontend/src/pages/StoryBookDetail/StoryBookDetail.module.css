@@ -1,32 +1,60 @@
-.container {
-  min-height: 100vh;
-  padding: var(--space-6);
-  background: #070808;
+/* --- left nav --- */
+.sideNav {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.backItem {
+  text-align: left;
+  border: 0;
+  background: transparent;
+  color: #75b8ff;
+  font: inherit;
+  cursor: pointer;
+  padding: var(--space-2) 0;
+}
+
+.sideTitle {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  margin-bottom: var(--space-2);
+}
+
+.sideItem {
+  text-align: left;
+  border: 0;
+  background: transparent;
   color: var(--color-text);
+  font: inherit;
+  cursor: pointer;
+  padding: var(--space-2) 0;
 }
 
-.title {
-  margin: var(--space-4) 0 var(--space-2);
-  font-family: var(--font-display);
+.sideItem:disabled {
+  opacity: 0.4;
+  cursor: default;
 }
 
-.desc {
-  margin: 0 0 var(--space-6);
-  color: var(--color-text-muted, #b9c0c7);
+.divider {
+  width: 100%;
+  border: 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  margin: var(--space-3) 0;
 }
 
-.places {
-  max-width: 640px;
-}
-
-.places h2 {
-  font-family: var(--font-display);
+.filterTitle {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-text-muted, #8a929b);
+  margin-bottom: var(--space-2);
 }
 
 .placeTree,
 .placeChildren {
   list-style: none;
-  padding-left: var(--space-4);
+  padding-left: var(--space-3);
   margin: var(--space-2) 0;
 }
 
@@ -36,20 +64,39 @@
 
 .placeTitle {
   display: inline-block;
-  padding: var(--space-2) var(--space-3);
+  padding: var(--space-2) var(--space-2);
   border-left: 2px solid #75b8ff;
   margin-bottom: var(--space-2);
+}
+
+/* --- center --- */
+.title {
+  margin: 0 0 var(--space-2);
+  font-family: var(--font-display);
+}
+
+.desc {
+  margin: 0 0 var(--space-6);
+  color: var(--color-text-muted, #b9c0c7);
+}
+
+.sectionTitle {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  margin: 0 0 var(--space-3);
+  padding-bottom: var(--space-2);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .addPlace {
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-3);
-  margin-top: var(--space-4);
 }
 
-.empty {
+.muted {
   color: var(--color-text-muted, #b9c0c7);
+  opacity: 0.8;
 }
 
 .error {

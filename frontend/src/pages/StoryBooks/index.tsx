@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import AppLayout from '../../components/AppLayout';
 import { apiUrl, authHeaders, characterHeaders } from '../../api';
 import styles from './StoryBooks.module.css';
 
@@ -17,7 +18,6 @@ export default function StoryBooks() {
   const [showModal, setShowModal] = useState(false);
   const [form, setForm] = useState({ title: '', description: '' });
   const [error, setError] = useState<string | null>(null);
-  const characterName = localStorage.getItem('characterName');
 
   const fetchStorybooks = useCallback(() => {
     if (!localStorage.getItem('token')) {
@@ -63,37 +63,69 @@ export default function StoryBooks() {
       .catch(() => alert('Fehler beim Erstellen'));
   };
 
+  const leftNav = (
+    <div className={styles.sideNav}>
+      <div className={styles.sideTitle}>StoryBooks</div>
+      <button className={styles.sideItem} onClick={() => navigate('/storybooks')}>
+        My Plots
+      </button>
+      <button className={styles.sideItem} onClick={() => navigate('/characters')}>
+        Home
+      </button>
+
+      <hr className={styles.divider} />
+
+      <div className={styles.filterTitle}>Filtern nach</div>
+      <label className={styles.filterField}>
+        Titel
+        <input className="text-input" placeholder="Bald verfügbar" disabled />
+      </label>
+      <label className={styles.filterField}>
+        Ersteller
+        <input className="text-input" placeholder="Bald verfügbar" disabled />
+      </label>
+      <div className={styles.filterField}>
+        Tags <span className={styles.muted}>—</span>
+      </div>
+    </div>
+  );
+
   return (
-    <div className={styles.container}>
-      <header className={styles.header}>
-        <h1>StoryBooks</h1>
-        <div className={styles.headerRight}>
-          {characterName && <span className={styles.character}>als {characterName}</span>}
-          <button className="button" onClick={() => setShowModal(true)}>
-            + Neuer Plot
-          </button>
-        </div>
-      </header>
+    <AppLayout leftNav={leftNav}>
+      <div className={styles.headerRow}>
+        <h1 className={styles.pageTitle}>StoryBook</h1>
+        <button className="button" onClick={() => setShowModal(true)}>
+          + Neuer Plot
+        </button>
+      </div>
 
       {error && <p className={styles.error}>{error}</p>}
 
-      {storybooks.length === 0 ? (
-        <p className={styles.empty}>Noch keine StoryBooks. Erstelle den ersten Plot!</p>
-      ) : (
-        <div className={styles.grid}>
-          {storybooks.map((sb) => (
-            <button
-              key={sb.id}
-              type="button"
-              className={styles.card}
-              onClick={() => navigate(`/storybooks/${sb.id}`)}
-            >
-              <h2 className={styles.cardTitle}>{sb.title}</h2>
-              {sb.description && <p className={styles.cardDesc}>{sb.description}</p>}
-            </button>
-          ))}
-        </div>
-      )}
+      <section className={styles.section}>
+        <h2 className={styles.sectionTitle}>Generic</h2>
+        <p className={styles.muted}>Generische StoryBooks – bald verfügbar.</p>
+      </section>
+
+      <section className={styles.section}>
+        <h2 className={styles.sectionTitle}>Worlds from Users</h2>
+        {storybooks.length === 0 ? (
+          <p className={styles.muted}>Noch keine StoryBooks. Erstelle den ersten Plot!</p>
+        ) : (
+          <div className={styles.grid}>
+            {storybooks.map((sb) => (
+              <button
+                key={sb.id}
+                type="button"
+                className={styles.card}
+                onClick={() => navigate(`/storybooks/${sb.id}`)}
+              >
+                <h3 className={styles.cardTitle}>{sb.title}</h3>
+                {sb.description && <p className={styles.cardDesc}>{sb.description}</p>}
+              </button>
+            ))}
+          </div>
+        )}
+      </section>
 
       {showModal && (
         <div className={styles.modal}>
@@ -126,6 +158,6 @@ export default function StoryBooks() {
           </div>
         </div>
       )}
-    </div>
+    </AppLayout>
   );
 }

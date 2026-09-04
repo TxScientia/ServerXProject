@@ -30,7 +30,8 @@ test('renders storybooks from the API and the acting character', async () => {
   render(<StoryBooks />);
 
   expect(await screen.findByText('Neverwhere')).toBeInTheDocument();
-  expect(screen.getByText(/als Arthas/)).toBeInTheDocument();
+  // Acting character shown in the always-present character sidebar
+  expect(screen.getByText('Arthas')).toBeInTheDocument();
 });
 
 test('shows an empty state when there are no storybooks', async () => {

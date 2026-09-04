@@ -1,38 +1,83 @@
-.container {
-  min-height: 100vh;
-  padding: var(--space-6);
-  background: #070808;
-  color: var(--color-text);
+/* --- left nav --- */
+.sideNav {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
 }
 
-.header {
+.sideTitle {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  margin-bottom: var(--space-2);
+}
+
+.sideItem {
+  text-align: left;
+  border: 0;
+  background: transparent;
+  color: var(--color-text);
+  font: inherit;
+  cursor: pointer;
+  padding: var(--space-2) 0;
+  transition: color 160ms ease;
+}
+
+.sideItem:hover {
+  color: #75b8ff;
+}
+
+.divider {
+  width: 100%;
+  border: 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  margin: var(--space-3) 0;
+}
+
+.filterTitle {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-text-muted, #8a929b);
+  margin-bottom: var(--space-2);
+}
+
+.filterField {
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
+  font-size: 0.85rem;
+}
+
+/* --- center --- */
+.headerRow {
+  display: flex;
   align-items: center;
   justify-content: space-between;
   gap: var(--space-4);
   margin-bottom: var(--space-6);
 }
 
-.header h1 {
+.pageTitle {
   margin: 0;
   font-family: var(--font-display);
 }
 
-.headerRight {
-  display: flex;
-  align-items: center;
-  gap: var(--space-4);
+.section {
+  margin-bottom: var(--space-6);
 }
 
-.character {
-  color: #75b8ff;
-  font-weight: 600;
+.sectionTitle {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  margin: 0 0 var(--space-3);
+  padding-bottom: var(--space-2);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
   gap: var(--space-4);
 }
 
@@ -56,7 +101,7 @@
 .cardTitle {
   margin: 0 0 var(--space-2);
   font-family: var(--font-display);
-  font-size: 1.2rem;
+  font-size: 1.1rem;
 }
 
 .cardDesc {
@@ -65,14 +110,16 @@
   font-size: 0.9rem;
 }
 
-.empty {
+.muted {
   color: var(--color-text-muted, #b9c0c7);
+  opacity: 0.8;
 }
 
 .error {
   color: #ff8080;
 }
 
+/* --- modal --- */
 .modal {
   position: fixed;
   inset: 0;
