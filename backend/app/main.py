@@ -1,40 +1,37 @@
+import os
+import time
+from contextlib import asynccontextmanager
 from pathlib import Path
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
-from .database import engine, SessionLocal
-from .models import Base, Character
-from .crud import create_character, get_account_by_email, get_account_by_login_name, create_account
-from .routes.accounts import router as accounts_router
-from .routes.characters import router as characters_router
-import time
 from sqlalchemy.exc import OperationalError
 
-app = FastAPI()
-
-# Allow requests from frontend
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],  # For development only!
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+from .database import engine, SessionLocal, Base
+from .models import Character
+from .crud import (
+    create_account,
+    create_character,
+    get_account_by_email,
+    get_account_by_login_name,
 )
+from .routes.accounts import router as accounts_router
+from .routes.characters import router as characters_router
 
-app.include_router(router=accounts_router)
-app.include_router(router=characters_router)
 
-for _ in range(10):
-    try:
-        Base.metadata.create_all(bind=engine)
-        break
-    except OperationalError:
-        print("Warte auf Datenbank...")
-        time.sleep(2)
-else:
+def init_db():
+    """Create tables, retrying while the database comes up (Postgres in Docker)."""
+    for _ in range(10):
+        try:
+            Base.metadata.create_all(bind=engine)
+            return
+        except OperationalError:
+            print("Warte auf Datenbank...")
+            time.sleep(2)
     raise Exception("Datenbank nicht erreichbar!")
+
 
 def init_test_user():
     db = SessionLocal()
@@ -61,11 +58,35 @@ def init_test_user():
 
     db.close()
 
-init_test_user()
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    init_db()
+    # Seeding is on by default for dev/deploy; tests disable it via WWC_SEED_TEST_DATA=0.
+    if os.getenv("WWC_SEED_TEST_DATA", "1") == "1":
+        init_test_user()
+    yield
+
+
+app = FastAPI(lifespan=lifespan)
+
+# Allow requests from frontend
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # For development only!
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+app.include_router(router=accounts_router)
+app.include_router(router=characters_router)
+
 
 @app.get("/ping")
 def ping():
     return {"message": "pong"}
+
 
 @app.get("/db-status")
 def db_status():
