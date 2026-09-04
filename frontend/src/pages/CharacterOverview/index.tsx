@@ -4,6 +4,7 @@ import styles from './CharacterOverview.module.css';
 import { apiUrl } from '../../api';
 
 type Character = {
+  id: string;
   name: string;
   race: string;
   spec: string;
@@ -44,6 +45,12 @@ const CharacterOverview = () => {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleSelectCharacter = (char: Character) => {
+    localStorage.setItem('characterId', char.id);
+    localStorage.setItem('characterName', char.name);
+    navigate('/storybooks');
   };
 
   const handleSave = () => {
@@ -96,7 +103,12 @@ const CharacterOverview = () => {
         </thead>
         <tbody>
           {characters.map((char, index) => (
-            <tr key={index}>
+            <tr
+              key={index}
+              className={styles.characterRow}
+              onClick={() => handleSelectCharacter(char)}
+              title="Als diesen Charakter spielen"
+            >
               <td>{char.name}</td>
               <td>{char.race}</td>
               <td>{char.spec}</td>

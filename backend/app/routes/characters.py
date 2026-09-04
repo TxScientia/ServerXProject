@@ -16,7 +16,13 @@ def get_characters(
 ):
     chars = db.query(Character).filter_by(account_id=current_user.id).all()
     return [
-        {"name": c.name, "race": c.race, "spec": c.specification, "gender": c.gender}
+        {
+            "id": str(c.id),
+            "name": c.name,
+            "race": c.race,
+            "spec": c.specification,
+            "gender": c.gender,
+        }
         for c in chars
     ]
 

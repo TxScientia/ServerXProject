@@ -95,6 +95,15 @@
   color: var(--color-text);
 }
 
+.characterRow {
+  cursor: pointer;
+  transition: background-color 160ms ease;
+}
+
+.characterRow:hover {
+  background-color: color-mix(in srgb, #75b8ff 18%, transparent);
+}
+
 .plusButton {
   min-width: 2.75rem;
   padding: 0.35rem 0.8rem;
