@@ -10,11 +10,8 @@ permissions:
 
 jobs:
   quality:
-    name: Lint, test, coverage and SonarQube
+    name: Lint, test and coverage
     runs-on: ubuntu-latest
-    env:
-      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
 
     steps:
       - name: Checkout
@@ -77,6 +74,3 @@ jobs:
             frontend/coverage/lcov.info
           if-no-files-found: ignore
 
-      - name: Run SonarQube scan
-        if: env.SONAR_TOKEN != '' && env.SONAR_HOST_URL != ''
-        uses: SonarSource/sonarqube-scan-action@v5
