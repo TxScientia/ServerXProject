@@ -7,6 +7,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
+from sqlalchemy import inspect, text
 from sqlalchemy.exc import OperationalError
 
 from .database import engine, SessionLocal, Base
@@ -26,6 +27,11 @@ def init_db():
     for _ in range(10):
         try:
             Base.metadata.create_all(bind=engine)
+            inspector = inspect(engine)
+            character_columns = {column["name"] for column in inspector.get_columns("characters")}
+            if "editor_data" not in character_columns:
+                with engine.begin() as conn:
+                    conn.execute(text("ALTER TABLE characters ADD COLUMN editor_data TEXT"))
             return
         except OperationalError:
             print("Warte auf Datenbank...")

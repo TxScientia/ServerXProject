@@ -2,17 +2,49 @@
   position: relative;
   min-height: 100vh;
   padding: var(--space-6);
-  background:
-    var(--character-background-image),
-    #070808;
-  background-position: top center;
-  background-size: 2560px 2500px, auto;
-  background-attachment: fixed, scroll;
-  background-repeat: no-repeat;
+  isolation: isolate;
+  background: linear-gradient(180deg, #1b1b1e 0%, #151717 100%);
   color: var(--color-text);
 }
 
+.container::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.6;
+  mix-blend-mode: lighten;
+  background-image: var(--character-background-image);
+  background-position: center -60px;
+  background-size: auto;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+}
+
+.container::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.13;
+  mix-blend-mode: normal;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.75'/%3E%3C/svg%3E");
+  background-size: 280px 280px;
+  filter: contrast(260%);
+  -webkit-mask-image: linear-gradient(180deg, #000 0%, rgba(0, 0, 0, 0.75) 55%, rgba(0, 0, 0, 0.35) 100%);
+  mask-image: linear-gradient(180deg, #000 0%, rgba(0, 0, 0, 0.75) 55%, rgba(0, 0, 0, 0.35) 100%);
+}
+
+.container > * {
+  position: relative;
+  z-index: 2;
+}
+
 .topNav {
+  position: relative;
+  z-index: 20;
   width: calc(100% + (var(--space-6) * 2));
   margin: calc(var(--space-6) * -1) calc(var(--space-6) * -1) var(--space-6);
   display: flex;
@@ -20,7 +52,8 @@
   justify-content: flex-start;
   gap: clamp(1.5rem, 4vw, 4rem);
   padding: 0.75rem var(--space-6);
-  background: #070808;
+  background-color: color-mix(in srgb, var(--color-bg-elevated) 88%, transparent);
+  backdrop-filter: blur(4px);
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
@@ -102,43 +135,203 @@
   line-height: 1;
 }
 
-.modal {
+.editButton {
+  width: 2.25rem;
+  height: 2.25rem;
+  border: 1px solid rgba(132, 163, 132, 0.55);
+  border-radius: var(--radius-sm);
+  background: rgba(12, 15, 15, 0.74);
+  color: var(--color-text);
+  cursor: pointer;
+  font-size: 1.15rem;
+  line-height: 1;
+}
+
+.editButton:hover,
+.editButton:focus-visible {
+  border-color: #84a384;
+  color: #9fbd9f;
+}
+
+.editorOverlay {
   position: fixed;
   inset: 0;
+  z-index: 50;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: var(--space-4);
-  background: rgba(0, 0, 0, 0.55);
+  padding: clamp(1rem, 4vw, 4.5rem);
+  background: rgba(0, 0, 0, 0.48);
 }
 
-.modalContent {
-  width: min(100%, 420px);
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-4);
-  padding: var(--space-6);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  background: color-mix(in srgb, var(--color-bg-elevated) 92%, transparent);
-  backdrop-filter: blur(6px);
+.editorPanel {
+  width: min(100%, 1450px);
+  min-height: min(78vh, 900px);
+  display: grid;
+  grid-template-columns: 270px 1fr;
+  border: 1px solid rgba(120, 137, 120, 0.32);
+  background:
+    linear-gradient(rgba(12, 15, 15, 0.9), rgba(12, 15, 15, 0.92)),
+    var(--character-background-image);
+  background-position: center;
+  background-size: cover;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55);
+  color: #b7b7b3;
 }
 
-.modalContent h2 {
-  margin: 0;
+.editorSidebar {
+  padding: 8rem 1.65rem 2rem;
+  border-right: 3px solid rgba(132, 163, 132, 0.54);
+  background: rgba(6, 8, 8, 0.36);
+}
+
+.editorSidebar h2,
+.formGrid span {
+  margin: 0 0 1rem;
+  color: #74a274;
   font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-variant: small-caps;
+  letter-spacing: 0.08em;
 }
 
-.modalContent label {
+.sideItem,
+.sideItemActive {
+  display: block;
+  width: 100%;
+  padding: 0.28rem 0;
+  border: 0;
+  background: transparent;
+  color: #ababab;
+  cursor: pointer;
+  font: inherit;
+  letter-spacing: 0.06em;
+  text-align: left;
+}
+
+.sideItemActive,
+.sideItem:hover,
+.sideItem:focus-visible {
+  color: #d7ddd4;
+}
+
+.editorMain {
+  padding: 5rem clamp(2rem, 6vw, 6rem) 2rem;
+}
+
+.editorTabs {
+  display: flex;
+  align-items: flex-end;
+  margin-bottom: 5rem;
+  border-bottom: 1px solid rgba(160, 160, 160, 0.22);
+}
+
+.tab,
+.tabActive {
+  min-width: 7.4rem;
+  padding: 1rem 1.6rem 0.8rem;
+  border: 0;
+  border-right: 1px solid rgba(0, 0, 0, 0.35);
+  background: rgba(31, 34, 34, 0.46);
+  color: #90928e;
+  cursor: pointer;
+  font-family: var(--font-display);
+  font-variant: small-caps;
+  letter-spacing: 0.08em;
+}
+
+.tabActive {
+  position: relative;
+  color: #c2c7bc;
+}
+
+.tabActive::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 3px;
+  background: #a8b4a3;
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 2.2rem 1.2rem;
+}
+
+.formGrid label {
   display: flex;
   flex-direction: column;
-  gap: var(--space-2);
-  font-weight: 600;
+  gap: 0.45rem;
 }
 
-.modalActions {
+.fullWidth {
+  grid-column: 1 / -1;
+}
+
+.formGrid small {
+  color: #b9b9b4;
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+.formGrid input,
+.formGrid select,
+.formGrid textarea {
+  width: 100%;
+  border: 1px solid rgba(190, 190, 184, 0.34);
+  border-radius: 0;
+  background: rgba(18, 20, 20, 0.76);
+  color: #e1e1dd;
+  padding: 0.72rem 0.8rem;
+  font: inherit;
+}
+
+.formGrid textarea {
+  resize: vertical;
+}
+
+.formGrid input:focus,
+.formGrid select:focus,
+.formGrid textarea:focus {
+  outline: 1px solid rgba(132, 163, 132, 0.85);
+  border-color: rgba(132, 163, 132, 0.85);
+}
+
+.editorActions {
   display: flex;
   flex-wrap: wrap;
+  justify-content: flex-end;
   gap: var(--space-3);
-  margin-top: var(--space-2);
+  margin-top: 3rem;
+}
+
+@media (max-width: 820px) {
+  .editorPanel {
+    max-height: calc(100vh - 2rem);
+    overflow: auto;
+    grid-template-columns: 1fr;
+  }
+
+  .editorSidebar {
+    padding: 1.5rem;
+    border-right: 0;
+    border-bottom: 2px solid rgba(132, 163, 132, 0.54);
+  }
+
+  .editorMain {
+    padding: 1.5rem;
+  }
+
+  .editorTabs {
+    margin-bottom: 2rem;
+    overflow-x: auto;
+  }
+
+  .formGrid {
+    grid-template-columns: 1fr;
+  }
 }
