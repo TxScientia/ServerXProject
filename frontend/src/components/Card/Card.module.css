@@ -1,0 +1,21 @@
+.card {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--color-bg-elevated) 88%, transparent);
+  color: var(--color-text);
+}
+
+/* Interactive feedback only when the card is clickable. */
+button.card {
+  cursor: pointer;
+  transition: border-color 160ms ease, transform 160ms ease;
+}
+
+button.card:hover {
+  border-color: #75b8ff;
+  transform: translateY(-2px);
+}

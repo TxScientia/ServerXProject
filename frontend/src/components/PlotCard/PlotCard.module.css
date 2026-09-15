@@ -1,0 +1,11 @@
+.title {
+  margin: 0 0 var(--space-2);
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+}
+
+.description {
+  margin: 0;
+  color: var(--color-text-muted, #b9c0c7);
+  font-size: 0.9rem;
+}

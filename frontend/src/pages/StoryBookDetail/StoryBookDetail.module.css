@@ -1,0 +1,127 @@
+/* --- left nav --- */
+.sideNav {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.backItem {
+  text-align: left;
+  border: 0;
+  background: transparent;
+  color: #75b8ff;
+  font: inherit;
+  cursor: pointer;
+  padding: var(--space-2) 0;
+}
+
+.sideTitle {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  margin-bottom: var(--space-2);
+}
+
+.sideItem {
+  text-align: left;
+  border: 0;
+  background: transparent;
+  color: var(--color-text);
+  font: inherit;
+  cursor: pointer;
+  padding: var(--space-2) 0;
+}
+
+.sideItem:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.divider {
+  width: 100%;
+  border: 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  margin: var(--space-3) 0;
+}
+
+.enterItem {
+  text-align: left;
+  border: 0;
+  background: transparent;
+  color: #75b8ff;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  padding: var(--space-2) 0;
+}
+
+.enterItem:hover {
+  text-decoration: underline;
+}
+
+.filterTitle {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-text-muted, #8a929b);
+  margin-bottom: var(--space-2);
+}
+
+.placeTree,
+.placeChildren {
+  list-style: none;
+  padding-left: var(--space-3);
+  margin: var(--space-2) 0;
+}
+
+.placeTree {
+  padding-left: 0;
+}
+
+.placeItem {
+  display: inline-block;
+  text-align: left;
+  border: 0;
+  border-left: 2px solid transparent;
+  background: transparent;
+  color: var(--color-text);
+  font: inherit;
+  cursor: pointer;
+  padding: var(--space-2);
+}
+
+.placeItem:hover {
+  color: #75b8ff;
+}
+
+.placeItemActive {
+  border-left-color: #75b8ff;
+  color: #75b8ff;
+}
+
+/* --- center --- */
+.placeImage {
+  width: 100%;
+  max-height: 280px;
+  object-fit: cover;
+  border-radius: var(--radius-md);
+  margin-bottom: var(--space-4);
+}
+
+.title {
+  margin: 0 0 var(--space-2);
+  font-family: var(--font-display);
+}
+
+.desc {
+  margin: 0 0 var(--space-6);
+  color: var(--color-text-muted, #b9c0c7);
+}
+
+.muted {
+  color: var(--color-text-muted, #b9c0c7);
+  opacity: 0.8;
+}
+
+.error {
+  color: #ff8080;
+}

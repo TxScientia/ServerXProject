@@ -19,6 +19,7 @@ from .crud import (
 )
 from .routes.accounts import router as accounts_router
 from .routes.characters import router as characters_router
+from .routes.storybooks import router as storybooks_router
 
 
 def init_db():
@@ -81,6 +82,7 @@ app.add_middleware(
 
 app.include_router(router=accounts_router)
 app.include_router(router=characters_router)
+app.include_router(router=storybooks_router)
 
 
 @app.get("/ping")

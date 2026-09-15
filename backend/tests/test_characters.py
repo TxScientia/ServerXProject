@@ -22,7 +22,9 @@ def test_get_characters_returns_only_the_callers_characters(
     resp = client.get("/characters", headers=auth_headers)
 
     assert resp.status_code == 200
-    assert [c["name"] for c in resp.json()] == ["Mine"]
+    body = resp.json()
+    assert [c["name"] for c in body] == ["Mine"]
+    assert "id" in body[0]  # frontend needs the id for X-Character-Id
 
 
 def test_create_character(client, account, auth_headers):
