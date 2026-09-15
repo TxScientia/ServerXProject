@@ -81,35 +81,6 @@
   gap: var(--space-4);
 }
 
-.card {
-  display: block;
-  text-align: left;
-  padding: var(--space-4);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  background: color-mix(in srgb, var(--color-bg-elevated) 88%, transparent);
-  color: var(--color-text);
-  cursor: pointer;
-  transition: border-color 160ms ease, transform 160ms ease;
-}
-
-.card:hover {
-  border-color: #75b8ff;
-  transform: translateY(-2px);
-}
-
-.cardTitle {
-  margin: 0 0 var(--space-2);
-  font-family: var(--font-display);
-  font-size: 1.1rem;
-}
-
-.cardDesc {
-  margin: 0;
-  color: var(--color-text-muted, #b9c0c7);
-  font-size: 0.9rem;
-}
-
 .muted {
   color: var(--color-text-muted, #b9c0c7);
   opacity: 0.8;

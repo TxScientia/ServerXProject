@@ -61,26 +61,39 @@
 /* --- 3-column body --- */
 .body {
   flex: 1;
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: var(--space-5) var(--space-6);
   display: grid;
-  grid-template-columns: 220px 1fr 250px;
+  grid-template-columns: 240px 1fr 240px;
+  gap: var(--space-4);
   min-height: 0;
 }
 
-.leftNav {
+/* Shared base for the left + right side panels — one source of truth for size and
+   look. The two sides differ only in content (e.g. the right side's titles). */
+.sidePanel {
   padding: var(--space-4);
-  border-right: 1px solid rgba(255, 255, 255, 0.08);
   background: #0b0e13;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-md);
+}
+
+.leftNav {
+  composes: sidePanel;
+}
+
+.rightSidebar {
+  composes: sidePanel;
 }
 
 .center {
   padding: var(--space-6);
-  overflow: auto;
-}
-
-.rightSidebar {
-  padding: var(--space-4);
-  border-left: 1px solid rgba(255, 255, 255, 0.08);
   background: #0b0e13;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-md);
+  overflow: auto;
 }
 
 /* --- character sidebar --- */
@@ -124,10 +137,5 @@
 @media (max-width: 900px) {
   .body {
     grid-template-columns: 1fr;
-  }
-
-  .leftNav,
-  .rightSidebar {
-    border: 0;
   }
 }

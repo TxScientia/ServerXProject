@@ -1,16 +1,11 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AppLayout from '../../components/AppLayout';
+import PlotCard, { Plot } from '../../components/PlotCard';
 import { apiUrl, authHeaders, characterHeaders } from '../../api';
 import styles from './StoryBooks.module.css';
 
-type Storybook = {
-  id: string;
-  title: string;
-  description: string | null;
-  owner_character_id: string;
-  created_at: string;
-};
+type Storybook = Plot;
 
 export default function StoryBooks() {
   const navigate = useNavigate();
@@ -113,15 +108,11 @@ export default function StoryBooks() {
         ) : (
           <div className={styles.grid}>
             {storybooks.map((sb) => (
-              <button
+              <PlotCard
                 key={sb.id}
-                type="button"
-                className={styles.card}
+                plot={sb}
                 onClick={() => navigate(`/storybooks/${sb.id}`)}
-              >
-                <h3 className={styles.cardTitle}>{sb.title}</h3>
-                {sb.description && <p className={styles.cardDesc}>{sb.description}</p>}
-              </button>
+              />
             ))}
           </div>
         )}
