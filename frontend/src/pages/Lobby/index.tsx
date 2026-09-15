@@ -1,41 +1,27 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import styles from './CharacterOverview.module.css';
-import { apiUrl } from '../../api';
+import LobbyLayout from '../../pageLayouts/lobbyLayout/LobbyLayout';
+import CharacterList, { Character } from '../../components/CharacterList';
+import styles from './Lobby.module.css';
+import { apiUrl, authHeaders } from '../../api';
 
-type Character = {
-  id: string;
-  name: string;
-  race: string;
-  spec: string;
-  gender: string;
-  status: string;
-};
-
-const PUBLIC_ASSET_BASE = process.env.PUBLIC_URL || '';
-const CHARACTER_BACKGROUND_URL = `${PUBLIC_ASSET_BASE}/pictures/character-selection-background.webp`;
-const NAV_ITEMS = ['Gesuche', 'OOC', 'PM', 'Einwohnerliste', 'Storybook', 'Guidebook', 'MyCharacter'];
-
-const CharacterOverview = () => {
+export default function Lobby() {
   const [characters, setCharacters] = useState<Character[]>([]);
   const [showModal, setShowModal] = useState(false);
   const [form, setForm] = useState({ name: '', race: '', spec: '', gender: 'Männlich' });
   const navigate = useNavigate();
 
   const fetchCharacters = useCallback(() => {
-    const token = localStorage.getItem('token');
-    if (!token) {
+    if (!localStorage.getItem('token')) {
       navigate('/');
       return;
     }
-    fetch(apiUrl('/characters'), {
-      headers: { Authorization: `Bearer ${token}` },
-    })
+    fetch(apiUrl('/characters'), { headers: { ...authHeaders() } })
       .then((res) => {
         if (!res.ok) throw new Error();
         return res.json();
       })
-      .then((data) => setCharacters(data))
+      .then(setCharacters)
       .catch(() => navigate('/'));
   }, [navigate]);
 
@@ -47,20 +33,16 @@ const CharacterOverview = () => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSelectCharacter = (char: Character) => {
+  const enterServer = (char: Character) => {
     localStorage.setItem('characterId', char.id);
     localStorage.setItem('characterName', char.name);
-    navigate('/storybooks');
+    navigate('/residents');
   };
 
   const handleSave = () => {
-    const token = localStorage.getItem('token');
     fetch(apiUrl('/characters'), {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
+      headers: { 'Content-Type': 'application/json', ...authHeaders() },
       body: JSON.stringify(form),
     })
       .then((res) => {
@@ -76,47 +58,15 @@ const CharacterOverview = () => {
   };
 
   return (
-    <div
-      className={styles.container}
-      style={{ '--character-background-image': `url(${CHARACTER_BACKGROUND_URL})` } as React.CSSProperties}
-    >
-      <nav className={styles.topNav} aria-label="Character navigation">
-        {NAV_ITEMS.map((item) => (
-          <button key={item} type="button" className={styles.navItem}>
-            {item}
-          </button>
-        ))}
-      </nav>
-
-      <h1>Charakterübersicht</h1>
+    <LobbyLayout>
+      <h1 className={styles.heading}>Wähle deinen Charakter</h1>
+      <p className={styles.subheading}>Wähle einen Charakter, um die Welt zu betreten.</p>
       <div className={styles.actions}>
         <button onClick={() => setShowModal(true)} className={`button ${styles.plusButton}`}>+</button>
       </div>
-      <table className={styles.table}>
-        <thead>
-          <tr>
-            <th>Charaktername</th>
-            <th>Rasse</th>
-            <th>Spezifikation</th>
-            <th>Geschlecht</th>
-          </tr>
-        </thead>
-        <tbody>
-          {characters.map((char, index) => (
-            <tr
-              key={index}
-              className={styles.characterRow}
-              onClick={() => handleSelectCharacter(char)}
-              title="Als diesen Charakter spielen"
-            >
-              <td>{char.name}</td>
-              <td>{char.race}</td>
-              <td>{char.spec}</td>
-              <td>{char.gender}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+
+      <CharacterList characters={characters} onSelect={enterServer} />
+
       {showModal && (
         <div className={styles.modal}>
           <div className={styles.modalContent}>
@@ -148,8 +98,6 @@ const CharacterOverview = () => {
           </div>
         </div>
       )}
-    </div>
+    </LobbyLayout>
   );
-};
-
-export default CharacterOverview;
+}

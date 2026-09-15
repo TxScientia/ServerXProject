@@ -1,0 +1,30 @@
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background-color: color-mix(in srgb, var(--color-bg-elevated) 88%, transparent);
+  backdrop-filter: blur(4px);
+}
+
+.table th,
+.table td {
+  padding: var(--space-3);
+  border: 1px solid var(--color-border);
+  text-align: left;
+}
+
+.table th {
+  background-color: var(--color-surface-strong);
+  color: var(--color-text);
+}
+
+.clickable {
+  cursor: pointer;
+  transition: background-color 160ms ease;
+}
+
+.clickable:hover {
+  background-color: color-mix(in srgb, #75b8ff 18%, transparent);
+}

@@ -7,12 +7,12 @@ const GLOBAL_NAV: { label: string; path: string | null }[] = [
   { label: 'Gesuche', path: null },
   { label: 'OOC-Chat', path: null },
   { label: 'PM', path: null },
-  { label: 'Bewohnerliste', path: null },
+  { label: 'Residents', path: '/residents' },
   { label: 'StoryBooks', path: '/storybooks' },
 ];
 
 const RIGHT_NAV: { label: string; path: string | null }[] = [
-  { label: 'My Characters', path: '/characters' },
+  { label: 'My Characters', path: '/lobby' },
   { label: 'Settings', path: null },
   { label: 'FAQ', path: null },
 ];

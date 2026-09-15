@@ -1,0 +1,63 @@
+.heading {
+  margin: 0 0 var(--space-2);
+  font-family: var(--font-display);
+}
+
+.subheading {
+  margin: 0 0 var(--space-4);
+  color: var(--color-text-muted, #b9c0c7);
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: var(--space-4);
+}
+
+.plusButton {
+  min-width: 2.75rem;
+  padding: 0.35rem 0.8rem;
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+.modal {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-4);
+  background: rgba(0, 0, 0, 0.55);
+}
+
+.modalContent {
+  width: min(100%, 420px);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-6);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--color-bg-elevated) 92%, transparent);
+  backdrop-filter: blur(6px);
+}
+
+.modalContent h2 {
+  margin: 0;
+  font-family: var(--font-display);
+}
+
+.modalContent label {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  font-weight: 600;
+}
+
+.modalActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin-top: var(--space-2);
+}

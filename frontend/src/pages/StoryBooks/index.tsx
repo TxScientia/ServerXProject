@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import AppLayout from '../../components/AppLayout';
+import AppLayout from '../../pageLayouts/appLayout/AppLayout';
 import PlotCard, { Plot } from '../../components/PlotCard';
 import { apiUrl, authHeaders, characterHeaders } from '../../api';
 import styles from './StoryBooks.module.css';
@@ -20,7 +20,7 @@ export default function StoryBooks() {
       return;
     }
     if (!localStorage.getItem('characterId')) {
-      navigate('/characters');
+      navigate('/lobby');
       return;
     }
     fetch(apiUrl('/storybooks'), { headers: { ...authHeaders() } })
@@ -64,7 +64,7 @@ export default function StoryBooks() {
       <button className={styles.sideItem} onClick={() => navigate('/storybooks')}>
         My Plots
       </button>
-      <button className={styles.sideItem} onClick={() => navigate('/characters')}>
+      <button className={styles.sideItem} onClick={() => navigate('/lobby')}>
         Home
       </button>
 
