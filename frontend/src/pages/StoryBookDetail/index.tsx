@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import AppLayout from '../../components/AppLayout';
+import AppLayout from '../../pageLayouts/appLayout/AppLayout';
 import { apiUrl, authHeaders } from '../../api';
 import styles from './StoryBookDetail.module.css';
 

@@ -40,7 +40,7 @@ export default function Home() {
 
       const data = await response.json();
       localStorage.setItem('token', data.token);
-      navigate('/characters');
+      navigate('/lobby');
     } catch (loginError) {
       setError('Login fehlgeschlagen. Bitte überprüfe deine Eingaben.');
       console.error(loginError);

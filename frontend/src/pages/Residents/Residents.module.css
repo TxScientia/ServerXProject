@@ -1,0 +1,19 @@
+.sideTitle {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+}
+
+.pageTitle {
+  margin: 0 0 var(--space-2);
+  font-family: var(--font-display);
+}
+
+.muted {
+  color: var(--color-text-muted, #b9c0c7);
+  opacity: 0.8;
+  margin-bottom: var(--space-4);
+}
+
+.error {
+  color: #ff8080;
+}
