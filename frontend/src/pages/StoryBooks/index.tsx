@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import AppLayout from '../../pageLayouts/appLayout/AppLayout';
 import PlotCard, { Plot } from '../../components/PlotCard';
 import { apiUrl, authHeaders, characterHeaders } from '../../api';
@@ -9,6 +10,7 @@ type Storybook = Plot;
 
 export default function StoryBooks() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [storybooks, setStorybooks] = useState<Storybook[]>([]);
   const [showModal, setShowModal] = useState(false);
   const [form, setForm] = useState({ title: '', description: '' });
@@ -29,8 +31,8 @@ export default function StoryBooks() {
         return res.json();
       })
       .then(setStorybooks)
-      .catch(() => setError('StoryBooks konnten nicht geladen werden.'));
-  }, [navigate]);
+      .catch(() => setError(t('storybooks.loadError')));
+  }, [navigate, t]);
 
   useEffect(() => {
     fetchStorybooks();
@@ -55,32 +57,32 @@ export default function StoryBooks() {
         setForm({ title: '', description: '' });
         fetchStorybooks();
       })
-      .catch(() => alert('Fehler beim Erstellen'));
+      .catch(() => alert(t('storybooks.createError')));
   };
 
   const leftNav = (
     <div className={styles.sideNav}>
-      <div className={styles.sideTitle}>StoryBooks</div>
+      <div className={styles.sideTitle}>{t('storybooks.sideTitle')}</div>
       <button className={styles.sideItem} onClick={() => navigate('/storybooks')}>
-        My Plots
+        {t('storybooks.myPlots')}
       </button>
       <button className={styles.sideItem} onClick={() => navigate('/lobby')}>
-        Home
+        {t('storybooks.home')}
       </button>
 
       <hr className={styles.divider} />
 
-      <div className={styles.filterTitle}>Filtern nach</div>
+      <div className={styles.filterTitle}>{t('storybooks.filterBy')}</div>
       <label className={styles.filterField}>
-        Titel
-        <input className="text-input" placeholder="Bald verfügbar" disabled />
+        {t('storybooks.filterTitle')}
+        <input className="text-input" placeholder={t('common.comingSoon')} disabled />
       </label>
       <label className={styles.filterField}>
-        Ersteller
-        <input className="text-input" placeholder="Bald verfügbar" disabled />
+        {t('storybooks.filterCreator')}
+        <input className="text-input" placeholder={t('common.comingSoon')} disabled />
       </label>
       <div className={styles.filterField}>
-        Tags <span className={styles.muted}>—</span>
+        {t('storybooks.tags')} <span className={styles.muted}>—</span>
       </div>
     </div>
   );
@@ -88,23 +90,23 @@ export default function StoryBooks() {
   return (
     <AppLayout leftNav={leftNav}>
       <div className={styles.headerRow}>
-        <h1 className={styles.pageTitle}>StoryBook</h1>
+        <h1 className={styles.pageTitle}>{t('storybooks.pageTitle')}</h1>
         <button className="button" onClick={() => setShowModal(true)}>
-          + Neuer Plot
+          {t('storybooks.newPlot')}
         </button>
       </div>
 
       {error && <p className={styles.error}>{error}</p>}
 
       <section className={styles.section}>
-        <h2 className={styles.sectionTitle}>Generic</h2>
-        <p className={styles.muted}>Generische StoryBooks – bald verfügbar.</p>
+        <h2 className={styles.sectionTitle}>{t('storybooks.generic')}</h2>
+        <p className={styles.muted}>{t('storybooks.genericSoon')}</p>
       </section>
 
       <section className={styles.section}>
-        <h2 className={styles.sectionTitle}>Worlds from Users</h2>
+        <h2 className={styles.sectionTitle}>{t('storybooks.worldsFromUsers')}</h2>
         {storybooks.length === 0 ? (
-          <p className={styles.muted}>Noch keine StoryBooks. Erstelle den ersten Plot!</p>
+          <p className={styles.muted}>{t('storybooks.empty')}</p>
         ) : (
           <div className={styles.grid}>
             {storybooks.map((sb) => (
@@ -121,9 +123,9 @@ export default function StoryBooks() {
       {showModal && (
         <div className={styles.modal}>
           <div className={styles.modalContent}>
-            <h2>Neuen Plot erstellen</h2>
+            <h2>{t('storybooks.newPlotModal')}</h2>
             <label>
-              Titel:
+              {t('storybooks.plotTitle')}
               <input
                 className="text-input"
                 value={form.title}
@@ -131,7 +133,7 @@ export default function StoryBooks() {
               />
             </label>
             <label>
-              Beschreibung:
+              {t('storybooks.description')}
               <textarea
                 className="text-input"
                 value={form.description}
@@ -140,10 +142,10 @@ export default function StoryBooks() {
             </label>
             <div className={styles.modalActions}>
               <button className="button" onClick={handleCreate} disabled={!form.title}>
-                Erstellen
+                {t('common.create')}
               </button>
               <button className="button button--ghost" onClick={() => setShowModal(false)}>
-                Abbrechen
+                {t('common.cancel')}
               </button>
             </div>
           </div>

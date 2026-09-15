@@ -1,11 +1,13 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import LobbyLayout from '../../pageLayouts/lobbyLayout/LobbyLayout';
 import CharacterList, { Character } from '../../components/CharacterList';
 import styles from './Lobby.module.css';
 import { apiUrl, authHeaders } from '../../api';
 
 export default function Lobby() {
+  const { t } = useTranslation();
   const [characters, setCharacters] = useState<Character[]>([]);
   const [showModal, setShowModal] = useState(false);
   const [form, setForm] = useState({ name: '', race: '', spec: '', gender: 'Männlich' });
@@ -54,13 +56,13 @@ export default function Lobby() {
         setForm({ name: '', race: '', spec: '', gender: 'Männlich' });
         fetchCharacters();
       })
-      .catch(() => alert('Fehler beim Speichern'));
+      .catch(() => alert(t('lobby.saveError')));
   };
 
   return (
     <LobbyLayout>
-      <h1 className={styles.heading}>Wähle deinen Charakter</h1>
-      <p className={styles.subheading}>Wähle einen Charakter, um die Welt zu betreten.</p>
+      <h1 className={styles.heading}>{t('lobby.chooseCharacter')}</h1>
+      <p className={styles.subheading}>{t('lobby.chooseCharacterSub')}</p>
       <div className={styles.actions}>
         <button onClick={() => setShowModal(true)} className={`button ${styles.plusButton}`}>+</button>
       </div>
@@ -70,30 +72,30 @@ export default function Lobby() {
       {showModal && (
         <div className={styles.modal}>
           <div className={styles.modalContent}>
-            <h2>Neuen Charakter erstellen</h2>
+            <h2>{t('lobby.newCharacter')}</h2>
             <label>
-              Name:
+              {t('lobby.name')}
               <input className="text-input" name="name" value={form.name} onChange={handleInputChange} />
             </label>
             <label>
-              Rasse:
+              {t('lobby.race')}
               <input className="text-input" name="race" value={form.race} onChange={handleInputChange} />
             </label>
             <label>
-              Spezifikation:
+              {t('lobby.spec')}
               <input className="text-input" name="spec" value={form.spec} onChange={handleInputChange} />
             </label>
             <label>
-              Geschlecht:
+              {t('lobby.gender')}
               <select className="select-input" name="gender" value={form.gender} onChange={handleInputChange}>
-                <option value="Männlich">Männlich</option>
-                <option value="Weiblich">Weiblich</option>
-                <option value="Divers">Divers</option>
+                <option value="Männlich">{t('lobby.genderMale')}</option>
+                <option value="Weiblich">{t('lobby.genderFemale')}</option>
+                <option value="Divers">{t('lobby.genderDiverse')}</option>
               </select>
             </label>
             <div className={styles.modalActions}>
-              <button className="button" onClick={handleSave}>Speichern</button>
-              <button className="button button--ghost" onClick={() => setShowModal(false)}>Abbrechen</button>
+              <button className="button" onClick={handleSave}>{t('common.save')}</button>
+              <button className="button button--ghost" onClick={() => setShowModal(false)}>{t('common.cancel')}</button>
             </div>
           </div>
         </div>

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { apiUrl } from '../../api';
 import styles from './Home.module.css';
 
@@ -10,6 +11,7 @@ const worldTags = ['FSK 18', 'Private RP', 'Multiverse', 'Eng & Ger', 'Xyz'];
 
 export default function Home() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -41,7 +43,7 @@ export default function Home() {
       localStorage.setItem('token', data.token);
       navigate('/lobby');
     } catch (loginError) {
-      setError('Login fehlgeschlagen. Bitte überprüfe deine Eingaben.');
+      setError(t('home.loginError'));
       console.error(loginError);
     } finally {
       setIsSubmitting(false);
@@ -65,7 +67,7 @@ export default function Home() {
           aria-hidden="true"
         />
 
-        <h1 className={styles.title}>when worlds collide</h1>
+        <h1 className={styles.title}>{t('home.appTitle')}</h1>
         <nav className={styles.nav} aria-label="World tags">
           {worldTags.map((tag) => (
             <span key={tag} className="button button--ghost">
@@ -76,16 +78,16 @@ export default function Home() {
       </section>
 
       <main className={`page-content ${styles.loginContent}`}>
-        <h2 className={styles.heading}>Betrete die Welten:</h2>
+        <h2 className={styles.heading}>{t('home.enterWorlds')}</h2>
         <form className={`form-stack ${styles.loginForm}`} onSubmit={handleLogin}>
           <label className="form-field" htmlFor="login-user">
-            <span className="form-label">Benutzername oder E-Mail:</span>
+            <span className="form-label">{t('home.usernameLabel')}</span>
             <input
               className="text-input"
               type="text"
               id="login-user"
               name="user"
-              placeholder="Benutzername oder E-Mail"
+              placeholder={t('home.usernamePlaceholder')}
               autoComplete="username"
               value={username}
               onChange={(event) => setUsername(event.target.value)}
@@ -94,13 +96,13 @@ export default function Home() {
           </label>
 
           <label className="form-field" htmlFor="login-password">
-            <span className="form-label">Passwort:</span>
+            <span className="form-label">{t('home.passwordLabel')}</span>
             <input
               className="text-input"
               type="password"
               id="login-password"
               name="password"
-              placeholder="Passwort"
+              placeholder={t('home.passwordPlaceholder')}
               autoComplete="current-password"
               value={password}
               onChange={(event) => setPassword(event.target.value)}
@@ -111,12 +113,12 @@ export default function Home() {
           {error && <p className={styles.error}>{error}</p>}
 
           <button className="button" type="submit" disabled={isSubmitting}>
-            {isSubmitting ? 'Bitte warten …' : 'Eintreten'}
+            {isSubmitting ? t('home.submitting') : t('home.submit')}
           </button>
         </form>
       </main>
 
-      <footer className="site-footer">&copy; 2025 Worlds Collide – Alle Rechte vorbehalten</footer>
+      <footer className="site-footer">{t('home.footer')}</footer>
     </div>
   );
 }

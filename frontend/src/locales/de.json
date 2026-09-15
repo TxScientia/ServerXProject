@@ -1,0 +1,101 @@
+{
+  "common": {
+    "logout": "Logout",
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "create": "Erstellen",
+    "comingSoon": "Bald verfügbar",
+    "loading": "Lädt…"
+  },
+  "nav": {
+    "gesuche": "Gesuche",
+    "oocChat": "OOC-Chat",
+    "pm": "PM",
+    "residents": "Residents",
+    "storybooks": "StoryBooks",
+    "myCharacters": "My Characters",
+    "settings": "Settings",
+    "faq": "FAQ",
+    "systemNews": "System News",
+    "news": "News",
+    "home": "Home",
+    "mitglieder": "Mitglieder",
+    "plotSettings": "Plot Settings"
+  },
+  "sidebar": {
+    "noCharacter": "Kein Charakter gewählt",
+    "biografie": "Biografie",
+    "steckbrief": "Steckbrief",
+    "haeuser": "Häuser",
+    "plots": "Plots",
+    "favOrte": "Fav. Orte"
+  },
+  "lobby": {
+    "chooseCharacter": "Wähle deinen Charakter",
+    "chooseCharacterSub": "Wähle einen Charakter, um die Welt zu betreten.",
+    "newCharacter": "Neuen Charakter erstellen",
+    "name": "Name:",
+    "race": "Rasse:",
+    "spec": "Spezifikation:",
+    "gender": "Geschlecht:",
+    "genderMale": "Männlich",
+    "genderFemale": "Weiblich",
+    "genderDiverse": "Divers",
+    "saveError": "Fehler beim Speichern"
+  },
+  "characterList": {
+    "colName": "Charaktername",
+    "colRace": "Rasse",
+    "colSpec": "Spezifikation",
+    "colGender": "Geschlecht",
+    "playAs": "Als diesen Charakter spielen"
+  },
+  "residents": {
+    "pageTitle": "Residents",
+    "sideTitle": "Bewohner",
+    "allNote": "Alle Charaktere. (Online-Status folgt später.)",
+    "loadError": "Bewohner konnten nicht geladen werden."
+  },
+  "storybooks": {
+    "sideTitle": "StoryBooks",
+    "myPlots": "My Plots",
+    "home": "Home",
+    "filterBy": "Filtern nach",
+    "filterTitle": "Titel",
+    "filterCreator": "Ersteller",
+    "tags": "Tags",
+    "pageTitle": "StoryBook",
+    "newPlot": "+ Neuer Plot",
+    "generic": "Generic",
+    "genericSoon": "Generische StoryBooks – bald verfügbar.",
+    "worldsFromUsers": "Worlds from Users",
+    "empty": "Noch keine StoryBooks. Erstelle den ersten Plot!",
+    "newPlotModal": "Neuen Plot erstellen",
+    "plotTitle": "Titel:",
+    "description": "Beschreibung:",
+    "createError": "Fehler beim Erstellen",
+    "loadError": "StoryBooks konnten nicht geladen werden."
+  },
+  "plot": {
+    "backToStorybooks": "← StoryBooks",
+    "back": "← Zurück",
+    "enterWorld": "Welt betreten",
+    "places": "Orte",
+    "noPlaces": "Noch keine Orte.",
+    "worldBioPlaceholder": "Weltbeschreibung – bald über die StoryBook-Einstellungen bearbeitbar.",
+    "worldNoPlaces": "Diese Welt hat noch keine Orte.",
+    "loadError": "StoryBook konnte nicht geladen werden."
+  },
+  "home": {
+    "appTitle": "when worlds collide",
+    "enterWorlds": "Betrete die Welten:",
+    "usernameLabel": "Benutzername oder E-Mail:",
+    "usernamePlaceholder": "Benutzername oder E-Mail",
+    "passwordLabel": "Passwort:",
+    "passwordPlaceholder": "Passwort",
+    "loginError": "Login fehlgeschlagen. Bitte überprüfe deine Eingaben.",
+    "submitting": "Bitte warten …",
+    "submit": "Eintreten",
+    "footer": "© 2025 Worlds Collide – Alle Rechte vorbehalten"
+  }
+}

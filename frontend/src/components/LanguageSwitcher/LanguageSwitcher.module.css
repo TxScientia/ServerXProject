@@ -1,0 +1,29 @@
+.switcher {
+  display: inline-flex;
+  gap: 0.25rem;
+  align-items: center;
+}
+
+.lang {
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: transparent;
+  color: var(--color-text);
+  font: inherit;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.15rem 0.4rem;
+  border-radius: var(--radius-sm, 4px);
+  cursor: pointer;
+  opacity: 0.6;
+  transition: opacity 160ms ease, border-color 160ms ease;
+}
+
+.lang:hover {
+  opacity: 1;
+}
+
+.active {
+  opacity: 1;
+  border-color: #75b8ff;
+  color: #75b8ff;
+}

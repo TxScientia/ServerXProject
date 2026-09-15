@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import AppLayout from '../../pageLayouts/appLayout/AppLayout';
 import { apiUrl, authHeaders } from '../../api';
 import styles from './StoryBookDetail.module.css';
@@ -24,7 +25,7 @@ type Storybook = {
 };
 
 // Plot-scoped nav items from the wireframe — placeholders until built (own branches).
-const PLOT_NAV = ['OOC-Chat', 'News', 'Home', 'Gesuche', 'Mitglieder', 'Plot Settings'];
+const PLOT_NAV = ['nav.oocChat', 'nav.news', 'nav.home', 'nav.gesuche', 'nav.mitglieder', 'nav.plotSettings'];
 
 function PlaceNode({
   place,
@@ -68,6 +69,7 @@ function PlaceNode({
 export default function StoryBookDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [storybook, setStorybook] = useState<Storybook | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [enteredWorld, setEnteredWorld] = useState(false);
@@ -84,8 +86,8 @@ export default function StoryBookDetail() {
         return res.json();
       })
       .then(setStorybook)
-      .catch(() => setError('StoryBook konnte nicht geladen werden.'));
-  }, [id, navigate]);
+      .catch(() => setError(t('plot.loadError')));
+  }, [id, navigate, t]);
 
   useEffect(() => {
     fetchStorybook();
@@ -106,7 +108,7 @@ export default function StoryBookDetail() {
     leftNav = (
       <div className={styles.sideNav}>
         <button className={styles.backItem} onClick={() => navigate('/storybooks')}>
-          ← StoryBooks
+          {t('plot.backToStorybooks')}
         </button>
       </div>
     );
@@ -114,17 +116,17 @@ export default function StoryBookDetail() {
     leftNav = (
       <div className={styles.sideNav}>
         <button className={styles.backItem} onClick={() => navigate('/storybooks')}>
-          ← StoryBooks
+          {t('plot.backToStorybooks')}
         </button>
         <div className={styles.sideTitle}>{storybook.title}</div>
-        {PLOT_NAV.map((item) => (
-          <button key={item} className={styles.sideItem} disabled title="Bald verfügbar">
-            {item}
+        {PLOT_NAV.map((key) => (
+          <button key={key} className={styles.sideItem} disabled title={t('common.comingSoon')}>
+            {t(key)}
           </button>
         ))}
         <hr className={styles.divider} />
         <button className={styles.enterItem} onClick={enterWorld}>
-          Welt betreten
+          {t('plot.enterWorld')}
         </button>
       </div>
     );
@@ -132,12 +134,12 @@ export default function StoryBookDetail() {
     leftNav = (
       <div className={styles.sideNav}>
         <button className={styles.backItem} onClick={() => setEnteredWorld(false)}>
-          ← Zurück
+          {t('plot.back')}
         </button>
         <div className={styles.sideTitle}>{storybook.title}</div>
-        <div className={styles.filterTitle}>Orte</div>
+        <div className={styles.filterTitle}>{t('plot.places')}</div>
         {topLevel.length === 0 ? (
-          <p className={styles.muted}>Noch keine Orte.</p>
+          <p className={styles.muted}>{t('plot.noPlaces')}</p>
         ) : (
           <ul className={styles.placeTree}>
             {topLevel.map((p) => (
@@ -158,17 +160,13 @@ export default function StoryBookDetail() {
   // --- center ---
   let center;
   if (!storybook) {
-    center = <p className={error ? styles.error : undefined}>{error ?? 'Lädt…'}</p>;
+    center = <p className={error ? styles.error : undefined}>{error ?? t('common.loading')}</p>;
   } else if (!enteredWorld) {
     // Empty for now — will become the world "biography" (description + image),
     // edited via StoryBook settings (own feature branch).
-    center = (
-      <p className={styles.muted}>
-        Weltbeschreibung – bald über die StoryBook-Einstellungen bearbeitbar.
-      </p>
-    );
+    center = <p className={styles.muted}>{t('plot.worldBioPlaceholder')}</p>;
   } else if (!selectedPlace) {
-    center = <p className={styles.muted}>Diese Welt hat noch keine Orte.</p>;
+    center = <p className={styles.muted}>{t('plot.worldNoPlaces')}</p>;
   } else {
     center = (
       <>

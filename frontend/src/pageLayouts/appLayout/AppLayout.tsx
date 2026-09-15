@@ -1,27 +1,32 @@
 import { ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import LanguageSwitcher from '../../components/LanguageSwitcher';
 import styles from './AppLayout.module.css';
 
 // Global top-nav. Items without a path are placeholders for not-yet-built features.
-const GLOBAL_NAV: { label: string; path: string | null }[] = [
-  { label: 'Gesuche', path: null },
-  { label: 'OOC-Chat', path: null },
-  { label: 'PM', path: null },
-  { label: 'Residents', path: '/residents' },
-  { label: 'StoryBooks', path: '/storybooks' },
+const GLOBAL_NAV: { key: string; path: string | null }[] = [
+  { key: 'nav.gesuche', path: null },
+  { key: 'nav.oocChat', path: null },
+  { key: 'nav.pm', path: null },
+  { key: 'nav.residents', path: '/residents' },
+  { key: 'nav.storybooks', path: '/storybooks' },
 ];
 
-const RIGHT_NAV: { label: string; path: string | null }[] = [
-  { label: 'My Characters', path: '/lobby' },
-  { label: 'Settings', path: null },
-  { label: 'FAQ', path: null },
+const RIGHT_NAV: { key: string; path: string | null }[] = [
+  { key: 'nav.myCharacters', path: '/lobby' },
+  { key: 'nav.settings', path: null },
+  { key: 'nav.faq', path: null },
 ];
 
 function TopNavbar() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
+
   const go = (path: string | null) => {
     if (path) navigate(path);
   };
+
   const logout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('characterId');
@@ -34,14 +39,14 @@ function TopNavbar() {
       <nav className={styles.topLeft} aria-label="Global navigation">
         {GLOBAL_NAV.map((item) => (
           <button
-            key={item.label}
+            key={item.key}
             type="button"
             className={styles.navLink}
             onClick={() => go(item.path)}
             disabled={!item.path}
-            title={item.path ? undefined : 'Bald verfügbar'}
+            title={item.path ? undefined : t('common.comingSoon')}
           >
-            {item.label}
+            {t(item.key)}
           </button>
         ))}
       </nav>
@@ -51,39 +56,41 @@ function TopNavbar() {
       <nav className={styles.topRight} aria-label="Account navigation">
         {RIGHT_NAV.map((item) => (
           <button
-            key={item.label}
+            key={item.key}
             type="button"
             className={styles.navLink}
             onClick={() => go(item.path)}
             disabled={!item.path}
-            title={item.path ? undefined : 'Bald verfügbar'}
+            title={item.path ? undefined : t('common.comingSoon')}
           >
-            {item.label}
+            {t(item.key)}
           </button>
         ))}
         <button type="button" className={styles.navLink} onClick={logout}>
-          Logout
+          {t('common.logout')}
         </button>
+        <LanguageSwitcher />
       </nav>
     </header>
   );
 }
 
-const PLACEHOLDER_SECTIONS = ['Häuser', 'Plots', 'Fav. Orte'];
+const PLACEHOLDER_SECTIONS = ['sidebar.haeuser', 'sidebar.plots', 'sidebar.favOrte'];
 
 function CharacterSidebar() {
+  const { t } = useTranslation();
   const name = localStorage.getItem('characterName');
 
   return (
     <aside className={styles.rightSidebar} aria-label="Character details">
-      <div className={styles.charName}>{name ?? 'Kein Charakter gewählt'}</div>
+      <div className={styles.charName}>{name ?? t('sidebar.noCharacter')}</div>
       <ul className={styles.charLinks}>
-        <li className={styles.charLink}>Biografie</li>
-        <li className={styles.charLink}>Steckbrief</li>
+        <li className={styles.charLink}>{t('sidebar.biografie')}</li>
+        <li className={styles.charLink}>{t('sidebar.steckbrief')}</li>
       </ul>
-      {PLACEHOLDER_SECTIONS.map((section) => (
-        <div key={section} className={styles.charSection}>
-          <h4>{section}</h4>
+      {PLACEHOLDER_SECTIONS.map((sectionKey) => (
+        <div key={sectionKey} className={styles.charSection}>
+          <h4>{t(sectionKey)}</h4>
           <p className={styles.placeholder}>—</p>
         </div>
       ))}
