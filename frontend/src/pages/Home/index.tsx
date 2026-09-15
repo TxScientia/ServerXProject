@@ -3,9 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { apiUrl } from '../../api';
 import styles from './Home.module.css';
 
-const PUBLIC_ASSET_BASE = process.env.PUBLIC_URL || '';
-const HERO_IMAGE_URL = `${PUBLIC_ASSET_BASE}/pictures/hero-background.webp`;
-const HERO_BORDER_URL = `${PUBLIC_ASSET_BASE}/pictures/hero-border.webp`;
+const HERO_IMAGE_URL = '/pictures/hero-background.webp';
+const HERO_BORDER_URL = '/pictures/hero-border.webp';
 
 const worldTags = ['FSK 18', 'Private RP', 'Multiverse', 'Eng & Ger', 'Xyz'];
 

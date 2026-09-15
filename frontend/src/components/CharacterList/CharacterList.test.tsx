@@ -13,7 +13,7 @@ test('renders each character in a table', () => {
 });
 
 test('calls onSelect with the character when its row is clicked', () => {
-  const onSelect = jest.fn();
+  const onSelect = vi.fn();
   render(<CharacterList characters={chars} onSelect={onSelect} />);
   fireEvent.click(screen.getByText('Arthas'));
   expect(onSelect).toHaveBeenCalledWith(chars[0]);

@@ -102,9 +102,10 @@ def db_status():
 
 FRONTEND_BUILD_DIR = Path(__file__).resolve().parents[2] / "frontend" / "build"
 if FRONTEND_BUILD_DIR.exists():
-    static_dir = FRONTEND_BUILD_DIR / "static"
-    if static_dir.exists():
-        app.mount("/static", StaticFiles(directory=static_dir), name="static")
+    # Vite emits hashed bundles into build/assets (CRA used build/static).
+    assets_dir = FRONTEND_BUILD_DIR / "assets"
+    if assets_dir.exists():
+        app.mount("/assets", StaticFiles(directory=assets_dir), name="assets")
 
     @app.get("/{full_path:path}")
     def serve_frontend(full_path: str):
