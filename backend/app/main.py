@@ -19,6 +19,7 @@ from .crud import (
 )
 from .routes.accounts import router as accounts_router
 from .routes.characters import router as characters_router
+from .routes.residents import router as residents_router
 from .routes.storybooks import router as storybooks_router
 
 
@@ -47,15 +48,12 @@ def init_test_user():
         if not db.query(Character).filter_by(name="Sylvanas", account_id=user.id).first():
             create_character(db, user.id, "Sylvanas", "Untote", "Jägerin", "Weiblich")
 
+    # These are ACCOUNTS (players), not characters — do not auto-create characters for them.
     test_accounts = ["Cana", "Jaksha", "Darling", "Luminary", "Mara", "Lordi", "Yalaria"]
     for login_name in test_accounts:
         email = f"{login_name.lower()}@example.com"
         if not get_account_by_email(db, email) and not get_account_by_login_name(db, login_name):
             create_account(db, email, login_name, login_name)
-
-        account = get_account_by_login_name(db, login_name)
-        if account and not db.query(Character).filter_by(name=login_name, account_id=account.id).first():
-            create_character(db, account.id, login_name, "Mensch", "Abenteurerin", "Weiblich")
 
     db.close()
 
@@ -82,6 +80,7 @@ app.add_middleware(
 
 app.include_router(router=accounts_router)
 app.include_router(router=characters_router)
+app.include_router(router=residents_router)
 app.include_router(router=storybooks_router)
 
 
