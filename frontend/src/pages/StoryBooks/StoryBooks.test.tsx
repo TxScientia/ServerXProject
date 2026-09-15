@@ -5,16 +5,16 @@ beforeEach(() => {
   localStorage.setItem('token', 'test-token');
   localStorage.setItem('characterId', 'char-1');
   localStorage.setItem('characterName', 'Arthas');
-  global.fetch = jest.fn();
+  global.fetch = vi.fn();
 });
 
 afterEach(() => {
   localStorage.clear();
-  jest.restoreAllMocks();
+  vi.restoreAllMocks();
 });
 
 test('renders storybooks from the API and the acting character', async () => {
-  (global.fetch as jest.Mock).mockResolvedValue({
+  (global.fetch as any).mockResolvedValue({
     ok: true,
     json: async () => [
       {
@@ -35,7 +35,7 @@ test('renders storybooks from the API and the acting character', async () => {
 });
 
 test('shows an empty state when there are no storybooks', async () => {
-  (global.fetch as jest.Mock).mockResolvedValue({
+  (global.fetch as any).mockResolvedValue({
     ok: true,
     json: async () => [],
   });

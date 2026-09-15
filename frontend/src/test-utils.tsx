@@ -6,14 +6,11 @@
  * of directly from @testing-library/react.
  *
  * API mocking: components call `fetch` via the `apiUrl` helper in ./api. In tests,
- * stub it per test with `jest.spyOn(global, 'fetch')` returning canned JSON, e.g.
+ * stub it per test with Vitest, e.g.
  *
- *   jest.spyOn(global, 'fetch').mockResolvedValue(
- *     new Response(JSON.stringify([{ id: '1', title: 'Plot' }]), { status: 200 })
- *   );
+ *   global.fetch = vi.fn().mockResolvedValue({ ok: true, json: async () => [...] });
  *
- * (If mocking grows unwieldy across many components, revisit MSW — deferred for now
- * due to CRA/Jest v27 compatibility friction.)
+ * (If mocking grows unwieldy across many components, revisit MSW.)
  */
 import { ReactElement } from 'react';
 import { render as rtlRender, RenderOptions } from '@testing-library/react';
