@@ -1,9 +1,11 @@
 import { ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import LanguageSwitcher from '../../components/LanguageSwitcher';
 import styles from './LobbyLayout.module.css';
 
 // Account-scoped nav only — no character-scoped items. Placeholders until built.
-const LOBBY_NAV = ['PM', 'Settings', 'System News', 'FAQ'];
+const LOBBY_NAV = ['nav.pm', 'nav.settings', 'nav.systemNews', 'nav.faq'];
 
 /**
  * Pre-character "lobby" shell: shown after login, before a character is selected.
@@ -12,6 +14,7 @@ const LOBBY_NAV = ['PM', 'Settings', 'System News', 'FAQ'];
  */
 export default function LobbyLayout({ children }: { children: ReactNode }) {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const logout = () => {
     localStorage.removeItem('token');
@@ -24,17 +27,18 @@ export default function LobbyLayout({ children }: { children: ReactNode }) {
     <div className={styles.shell}>
       <header className={styles.topbar}>
         <nav className={styles.left} aria-label="Account navigation">
-          {LOBBY_NAV.map((item) => (
-            <button key={item} type="button" className={styles.navLink} disabled title="Bald verfügbar">
-              {item}
+          {LOBBY_NAV.map((key) => (
+            <button key={key} type="button" className={styles.navLink} disabled title={t('common.comingSoon')}>
+              {t(key)}
             </button>
           ))}
         </nav>
         <div className={styles.logo}>LOGO</div>
         <nav className={styles.right} aria-label="Session">
           <button type="button" className={styles.navLink} onClick={logout}>
-            Logout
+            {t('common.logout')}
           </button>
+          <LanguageSwitcher />
         </nav>
       </header>
       <main className={styles.content}>{children}</main>

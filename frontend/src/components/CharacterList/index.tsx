@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import styles from './CharacterList.module.css';
 
 export type Character = {
@@ -19,14 +20,16 @@ type CharacterListProps = {
  * and Residents (all characters, browse-only).
  */
 export default function CharacterList({ characters, onSelect }: CharacterListProps) {
+  const { t } = useTranslation();
+
   return (
     <table className={styles.table}>
       <thead>
         <tr>
-          <th>Charaktername</th>
-          <th>Rasse</th>
-          <th>Spezifikation</th>
-          <th>Geschlecht</th>
+          <th>{t('characterList.colName')}</th>
+          <th>{t('characterList.colRace')}</th>
+          <th>{t('characterList.colSpec')}</th>
+          <th>{t('characterList.colGender')}</th>
         </tr>
       </thead>
       <tbody>
@@ -35,7 +38,7 @@ export default function CharacterList({ characters, onSelect }: CharacterListPro
             key={c.id}
             className={onSelect ? styles.clickable : undefined}
             onClick={onSelect ? () => onSelect(c) : undefined}
-            title={onSelect ? 'Als diesen Charakter spielen' : undefined}
+            title={onSelect ? t('characterList.playAs') : undefined}
           >
             <td>{c.name}</td>
             <td>{c.race}</td>

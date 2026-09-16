@@ -1,6 +1,8 @@
 // jest-dom adds custom matchers for asserting on DOM nodes (works with Vitest's expect).
 // e.g. expect(element).toHaveTextContent(/react/i)
 import '@testing-library/jest-dom';
+// Initialize i18n (default: German) so components using useTranslation render real text.
+import './i18n';
 
 // jsdom under Vitest doesn't reliably expose localStorage as a global — provide a
 // simple in-memory implementation so components using localStorage work in tests.
