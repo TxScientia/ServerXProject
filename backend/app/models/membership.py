@@ -9,13 +9,13 @@ from ..types import GUID
 
 
 class Membership(Base):
-    """Character × Space link carrying the per-space role (admin | member)."""
+    """Character × Space link carrying the per-space role (creator | editor | member)."""
 
     __tablename__ = "memberships"
     id = Column(GUID(), primary_key=True, default=uuid.uuid4, unique=True, nullable=False)
     space_id = Column(GUID(), ForeignKey("spaces.id"), nullable=False)
     character_id = Column(GUID(), ForeignKey("characters.id"), nullable=False)
-    role = Column(String, nullable=False)  # 'admin' | 'member'
+    role = Column(String, nullable=False)  # 'creator' | 'editor' | 'member'
     created_at = Column(DateTime(timezone=True), nullable=False, server_default=func.now())
 
     __table_args__ = (

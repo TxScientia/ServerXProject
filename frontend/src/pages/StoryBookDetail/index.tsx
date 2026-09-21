@@ -19,6 +19,7 @@ type Storybook = {
   id: string;
   title: string;
   description: string | null;
+  biography: string | null;
   owner_character_id: string;
   created_at: string;
   places: Place[];
@@ -96,6 +97,9 @@ export default function StoryBookDetail() {
   const places = storybook?.places ?? [];
   const topLevel = places.filter((p) => !p.parent_place_id);
   const selectedPlace = places.find((p) => p.id === selectedPlaceId) ?? null;
+  // Phase 1: only the owner (creator) can open Plot Settings. Editors arrive with Phase 2.
+  const canEditSettings =
+    storybook != null && localStorage.getItem('characterId') === storybook.owner_character_id;
 
   const enterWorld = () => {
     setEnteredWorld(true);
@@ -119,11 +123,27 @@ export default function StoryBookDetail() {
           {t('plot.backToStorybooks')}
         </button>
         <div className={styles.sideTitle}>{storybook.title}</div>
-        {PLOT_NAV.map((key) => (
-          <button key={key} className={styles.sideItem} disabled title={t('common.comingSoon')}>
-            {t(key)}
-          </button>
-        ))}
+        {PLOT_NAV.map((key) => {
+          if (key === 'nav.plotSettings') {
+            if (!canEditSettings) return null;
+
+            return (
+              <button
+                key={key}
+                className={styles.sideItem}
+                onClick={() => navigate(`/storybooks/${storybook!.id}/settings`)}
+              >
+                {t(key)}
+              </button>
+            );
+          }
+
+          return (
+            <button key={key} className={styles.sideItem} disabled title={t('common.comingSoon')}>
+              {t(key)}
+            </button>
+          );
+        })}
         <hr className={styles.divider} />
         <button className={styles.enterItem} onClick={enterWorld}>
           {t('plot.enterWorld')}
@@ -162,9 +182,12 @@ export default function StoryBookDetail() {
   if (!storybook) {
     center = <p className={error ? styles.error : undefined}>{error ?? t('common.loading')}</p>;
   } else if (!enteredWorld) {
-    // Empty for now — will become the world "biography" (description + image),
-    // edited via StoryBook settings (own feature branch).
-    center = <p className={styles.muted}>{t('plot.worldBioPlaceholder')}</p>;
+    // World "biography" (edited via Plot Settings). Plain text for now; BBCode later.
+    center = storybook.biography ? (
+      <div className={styles.biography}>{storybook.biography}</div>
+    ) : (
+      <p className={styles.muted}>{t('plot.worldBioPlaceholder')}</p>
+    );
   } else if (!selectedPlace) {
     center = <p className={styles.muted}>{t('plot.worldNoPlaces')}</p>;
   } else {

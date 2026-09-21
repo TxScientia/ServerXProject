@@ -21,7 +21,11 @@ class Space(Base):
     type = Column(String, nullable=False)  # 'storybook' | 'house'
     owner_character_id = Column(GUID(), ForeignKey("characters.id"), nullable=False)
     title = Column(String, nullable=False)
-    description = Column(Text, nullable=True)
+    description = Column(Text, nullable=True)  # short summary (Kurzbeschreibung, shown on the card)
+    image_url = Column(String, nullable=True)  # plot image
+    # World "biography" shown in the detail center. Stores the RAW BBCode source
+    # (rendered to HTML on display); plain text in Phase 1, BBCode from Phase 3.
+    biography = Column(Text, nullable=True)
     # Occupancy backstop; both types have scenes, so it lives on the space.
     scene_timeout_days = Column(Integer, nullable=False, default=90, server_default="90")
     created_at = Column(DateTime(timezone=True), nullable=False, server_default=func.now())
@@ -37,7 +41,13 @@ class Space(Base):
         "Membership", back_populates="space", cascade="all, delete-orphan"
     )
     places = relationship("Place", back_populates="space", cascade="all, delete-orphan")
+    ranks = relationship("Rank", back_populates="space", cascade="all, delete-orphan")
     tags = relationship("Tag", secondary="space_tags", back_populates="spaces")
+
+    @property
+    def visibility(self):
+        """StoryBook visibility (from the 1:1 detail row), or None for houses."""
+        return self.storybook_detail.visibility if self.storybook_detail else None
 
 
 class StorybookDetail(Base):

@@ -39,7 +39,7 @@ def test_cannot_act_as_someone_elses_character(client, db_session, auth_headers)
     assert resp.status_code == 403
 
 
-def test_creator_becomes_admin_member(client, character, auth_headers, db_session):
+def test_creator_becomes_creator_member(client, character, auth_headers, db_session):
     from backend.app.crud import get_membership
 
     resp = client.post(
@@ -48,7 +48,7 @@ def test_creator_becomes_admin_member(client, character, auth_headers, db_sessio
     sb_id = resp.json()["id"]
     membership = get_membership(db_session, sb_id, character.id)
     assert membership is not None
-    assert membership.role == "admin"
+    assert membership.role == "creator"
 
 
 # --- list / enter ---------------------------------------------------------

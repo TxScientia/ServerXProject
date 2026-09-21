@@ -1,0 +1,136 @@
+.sideNav {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.backItem {
+  text-align: left;
+  border: 0;
+  background: transparent;
+  color: #75b8ff;
+  font: inherit;
+  cursor: pointer;
+  padding: var(--space-2) 0;
+}
+
+.sideItem {
+  text-align: left;
+  border: 0;
+  background: transparent;
+  color: var(--color-text);
+  font: inherit;
+  cursor: pointer;
+  padding: var(--space-2) 0;
+}
+
+.sideItem:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.active {
+  color: #75b8ff;
+  font-weight: 600;
+}
+
+.divider {
+  width: 100%;
+  border: 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  margin: var(--space-3) 0;
+}
+
+.pageTitle {
+  margin: 0 0 var(--space-4);
+  font-family: var(--font-display);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  max-width: 640px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  font-weight: 600;
+}
+
+.biography {
+  min-height: 160px;
+}
+
+.tagRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, #75b8ff 20%, transparent);
+  font-weight: 500;
+  font-size: 0.85rem;
+}
+
+.tag button {
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.tagAdd {
+  margin-top: var(--space-2);
+  max-width: 260px;
+}
+
+.muted {
+  color: var(--color-text-muted, #b9c0c7);
+  font-weight: 400;
+}
+
+.ok {
+  color: #7ee787;
+}
+
+.error {
+  color: #ff8080;
+}
+
+.rankSection {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-4);
+  max-width: 640px;
+}
+
+.rankList {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.rankCard {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--color-bg-elevated) 80%, transparent);
+}
+

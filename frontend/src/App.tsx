@@ -4,6 +4,7 @@ import Lobby from './pages/Lobby';
 import Residents from './pages/Residents';
 import StoryBooks from './pages/StoryBooks';
 import StoryBookDetail from './pages/StoryBookDetail';
+import PlotSettings from './pages/PlotSettings';
 
 export default function App() {
   return (
@@ -14,6 +15,7 @@ export default function App() {
         <Route path="/residents" element={<Residents />} />
         <Route path="/storybooks" element={<StoryBooks />} />
         <Route path="/storybooks/:id" element={<StoryBookDetail />} />
+        <Route path="/storybooks/:id/settings" element={<PlotSettings />} />
       </Routes>
     </BrowserRouter>
   );
