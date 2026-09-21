@@ -8,6 +8,7 @@ from .account import Account
 from .character import Character
 from .membership import Membership
 from .place import Place
+from .rank import Rank
 from .space import Space, StorybookDetail
 from .tag import SpaceTag, Tag
 
@@ -16,6 +17,7 @@ __all__ = [
     "Character",
     "Membership",
     "Place",
+    "Rank",
     "Space",
     "StorybookDetail",
     "SpaceTag",
