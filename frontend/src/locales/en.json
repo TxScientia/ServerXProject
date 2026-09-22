@@ -143,5 +143,14 @@
     "rankSaveError": "Error while saving rank.",
     "rankDeleteError": "Error while deleting rank.",
     "backToPlot": "← To plot"
+  },
+  "editor": {
+    "toolbar": "Formatting",
+    "bold": "Bold",
+    "italic": "Italic",
+    "underline": "Underline",
+    "strike": "Strikethrough",
+    "color": "Text color",
+    "clearColor": "Remove color"
   }
 }
