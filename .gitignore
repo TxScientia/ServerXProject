@@ -99,6 +99,9 @@ favicon*/
 *.tiff
 *.TIFF
 
+# Local dev server logs (scripts/dev.sh)
+.dev-logs/
+
 # Temporary/backup files
 *.tmp
 *.temp
