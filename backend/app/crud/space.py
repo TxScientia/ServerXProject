@@ -55,6 +55,11 @@ def can_edit_space(db: Session, space_id, character_id) -> bool:
     return membership is not None and membership.role in EDIT_ROLES
 
 
+def is_member(db: Session, space_id, character_id) -> bool:
+    """True if the character has any membership in the space (gameplay, not admin)."""
+    return get_membership(db, space_id, character_id) is not None
+
+
 def _get_or_create_tag(db: Session, name: str) -> Tag:
     tag = db.query(Tag).filter(Tag.name == name).first()
     if tag is None:

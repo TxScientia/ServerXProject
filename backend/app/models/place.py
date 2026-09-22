@@ -26,3 +26,6 @@ class Place(Base):
     children = relationship(
         "Place", back_populates="parent", cascade="all, delete-orphan"
     )
+    scenes = relationship(
+        "Scene", back_populates="place", cascade="all, delete-orphan"
+    )

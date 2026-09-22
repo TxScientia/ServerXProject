@@ -14,11 +14,23 @@ from .place import (
     update_place,
 )
 from .rank import create_rank, delete_rank, get_rank, list_ranks, update_rank
+from .scene import (
+    create_post,
+    create_scene_with_post,
+    get_active_scene,
+    get_post,
+    get_scene,
+    list_scenes_in_place,
+    scene_participant_ids,
+    scene_status,
+    update_post,
+)
 from .space import (
     can_edit_space,
     create_storybook,
     get_membership,
     get_storybook,
+    is_member,
     list_storybooks,
     update_storybook,
 )
@@ -40,10 +52,20 @@ __all__ = [
     "get_rank",
     "list_ranks",
     "update_rank",
+    "create_post",
+    "create_scene_with_post",
+    "get_active_scene",
+    "get_post",
+    "get_scene",
+    "list_scenes_in_place",
+    "scene_participant_ids",
+    "scene_status",
+    "update_post",
     "can_edit_space",
     "create_storybook",
     "get_membership",
     "get_storybook",
+    "is_member",
     "list_storybooks",
     "update_storybook",
 ]
