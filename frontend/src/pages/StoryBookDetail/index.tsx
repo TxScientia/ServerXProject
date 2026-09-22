@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import AppLayout from '../../pageLayouts/appLayout/AppLayout';
+import Scene from '../../components/Scene';
 import { apiUrl, authHeaders } from '../../api';
 import styles from './StoryBookDetail.module.css';
 
@@ -193,15 +194,18 @@ export default function StoryBookDetail() {
   } else {
     center = (
       <>
-        {selectedPlace.image_url && (
-          <img
-            className={styles.placeImage}
-            src={selectedPlace.image_url}
-            alt={selectedPlace.title}
-          />
-        )}
-        <h1 className={styles.title}>{selectedPlace.title}</h1>
-        {selectedPlace.description && <p className={styles.desc}>{selectedPlace.description}</p>}
+        <div className={styles.placeHeader}>
+          {selectedPlace.image_url && (
+            <img
+              className={styles.placeImage}
+              src={selectedPlace.image_url}
+              alt={selectedPlace.title}
+            />
+          )}
+          <h1 className={styles.title}>{selectedPlace.title}</h1>
+          {selectedPlace.description && <p className={styles.desc}>{selectedPlace.description}</p>}
+        </div>
+        <Scene storybookId={storybook.id} placeId={selectedPlace.id} />
       </>
     );
   }
