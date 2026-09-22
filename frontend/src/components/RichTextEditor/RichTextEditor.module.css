@@ -1,0 +1,129 @@
+.editor {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: #111414;
+  overflow: hidden;
+}
+
+.editor:focus-within {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.12);
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-2);
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-surface);
+}
+
+.toolBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2rem;
+  height: 2rem;
+  padding: 0 var(--space-2);
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--color-text);
+  font-size: 0.95rem;
+  line-height: 1;
+  transition: background var(--transition-fast), border-color var(--transition-fast);
+}
+
+.toolBtn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.toolBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.toolBtnActive {
+  background: var(--color-accent);
+  color: var(--color-accent-contrast);
+  border-color: var(--color-accent);
+}
+
+.bold {
+  font-weight: 800;
+}
+.italic {
+  font-style: italic;
+}
+.underline {
+  text-decoration: underline;
+}
+.strike {
+  text-decoration: line-through;
+}
+
+/* Colour picker: a swatch that opens the native colour input (kept invisible). */
+.colorBtn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+
+.colorBtn:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.colorSwatch {
+  width: 1.15rem;
+  height: 1.15rem;
+  border: 1px solid var(--color-border);
+  border-radius: 3px;
+}
+
+.colorInput {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+  border: none;
+  padding: 0;
+}
+
+/* Shared by the editable area and the read-only renderer, so posts read exactly
+   as they were written. */
+.content {
+  padding: var(--space-3);
+  color: var(--color-text);
+  line-height: 1.6;
+  word-break: break-word;
+}
+
+.content :global(.ProseMirror) {
+  outline: none;
+  min-height: inherit;
+}
+
+.content p {
+  margin: 0 0 var(--space-3);
+}
+
+.content p:last-child {
+  margin-bottom: 0;
+}
+
+/* Placeholder text for an empty editor (Tiptap Placeholder extension). */
+.content :global(.ProseMirror p.is-editor-empty:first-child::before) {
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  color: var(--color-text-muted);
+  pointer-events: none;
+}

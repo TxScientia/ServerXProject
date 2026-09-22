@@ -143,5 +143,14 @@
     "rankSaveError": "Fehler beim Speichern des Rangs.",
     "rankDeleteError": "Fehler beim Löschen des Rangs.",
     "backToPlot": "← Zum Plot"
+  },
+  "editor": {
+    "toolbar": "Formatierung",
+    "bold": "Fett",
+    "italic": "Kursiv",
+    "underline": "Unterstrichen",
+    "strike": "Durchgestrichen",
+    "color": "Textfarbe",
+    "clearColor": "Farbe entfernen"
   }
 }

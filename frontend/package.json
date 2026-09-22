@@ -12,6 +12,11 @@
     "test:ci": "vitest run"
   },
   "dependencies": {
+    "@tiptap/extension-color": "^3.31.3",
+    "@tiptap/extension-text-style": "^3.31.3",
+    "@tiptap/pm": "^3.31.3",
+    "@tiptap/react": "^3.31.3",
+    "@tiptap/starter-kit": "^3.31.3",
     "i18next": "^26.4.2",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
