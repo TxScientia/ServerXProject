@@ -152,5 +152,27 @@
     "strike": "Strikethrough",
     "color": "Text color",
     "clearColor": "Remove color"
+  },
+  "scene": {
+    "participants": "Participants: {{count}}",
+    "noActiveScene": "No scene is currently running in this place.",
+    "startScene": "Start scene",
+    "reply": "Reply",
+    "edit": "Edit",
+    "edited": "edited",
+    "titlePlaceholder": "Scene title",
+    "firstPostPlaceholder": "Begin the scene …",
+    "replyPlaceholder": "Write a reply …",
+    "selectCharacterToPost": "Choose a character to play.",
+    "pastScenes": "Past scenes",
+    "emptyPost": "The post cannot be empty.",
+    "emptyTitle": "The title cannot be empty.",
+    "loadError": "Could not load scenes.",
+    "saveError": "Saving failed.",
+    "status": {
+      "active": "active",
+      "inactive": "inactive",
+      "finished": "finished"
+    }
   }
 }

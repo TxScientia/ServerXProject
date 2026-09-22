@@ -152,5 +152,27 @@
     "strike": "Durchgestrichen",
     "color": "Textfarbe",
     "clearColor": "Farbe entfernen"
+  },
+  "scene": {
+    "participants": "Teilnehmer: {{count}}",
+    "noActiveScene": "An diesem Ort läuft gerade keine Szene.",
+    "startScene": "Szene starten",
+    "reply": "Antworten",
+    "edit": "Bearbeiten",
+    "edited": "bearbeitet",
+    "titlePlaceholder": "Titel der Szene",
+    "firstPostPlaceholder": "Beginne die Szene …",
+    "replyPlaceholder": "Schreibe eine Antwort …",
+    "selectCharacterToPost": "Wähle einen Charakter, um mitzuspielen.",
+    "pastScenes": "Vergangene Szenen",
+    "emptyPost": "Der Beitrag darf nicht leer sein.",
+    "emptyTitle": "Der Titel darf nicht leer sein.",
+    "loadError": "Szenen konnten nicht geladen werden.",
+    "saveError": "Speichern fehlgeschlagen.",
+    "status": {
+      "active": "aktiv",
+      "inactive": "inaktiv",
+      "finished": "abgeschlossen"
+    }
   }
 }

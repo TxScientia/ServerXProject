@@ -99,6 +99,15 @@
 }
 
 /* --- center --- */
+/* Keep the place's image/title/description visible while scrolling the scene. */
+.placeHeader {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: var(--color-bg);
+  padding-bottom: var(--space-3);
+}
+
 .placeImage {
   width: 100%;
   max-height: 280px;
