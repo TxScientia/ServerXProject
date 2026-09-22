@@ -158,6 +158,8 @@
     "noActiveScene": "An diesem Ort läuft gerade keine Szene.",
     "startScene": "Szene starten",
     "reply": "Antworten",
+    "finish": "Szene abschliessen",
+    "reopen": "Wieder öffnen",
     "edit": "Bearbeiten",
     "edited": "bearbeitet",
     "titlePlaceholder": "Titel der Szene",
@@ -171,7 +173,6 @@
     "saveError": "Speichern fehlgeschlagen.",
     "status": {
       "active": "aktiv",
-      "inactive": "inaktiv",
       "finished": "abgeschlossen"
     }
   }

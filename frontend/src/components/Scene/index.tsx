@@ -10,13 +10,15 @@ import styles from './Scene.module.css';
 type Props = {
   storybookId: string;
   placeId: string;
+  /** The viewer may moderate this plot (creator/editor) — can finish/reopen any scene. */
+  canModerate?: boolean;
 };
 
 function postHeaders() {
   return { 'Content-Type': 'application/json', ...authHeaders(), ...characterHeaders() };
 }
 
-export default function Scene({ storybookId, placeId }: Props) {
+export default function Scene({ storybookId, placeId, canModerate = false }: Props) {
   const { t } = useTranslation();
   const [scenes, setScenes] = useState<SceneRead[]>([]);
   const [active, setActive] = useState<SceneWithPosts | null>(null);
@@ -81,6 +83,19 @@ export default function Scene({ storybookId, placeId }: Props) {
     load();
   };
 
+  // Participants and plot moderators may finish/reopen a scene.
+  const canManage = (participantIds: string[]) =>
+    canModerate || (myCharacterId != null && participantIds.includes(myCharacterId));
+
+  const manageScene = async (sceneId: string, action: 'finish' | 'reopen') => {
+    const resp = await fetch(apiUrl(`/storybooks/${storybookId}/scenes/${sceneId}/${action}`), {
+      method: 'POST',
+      headers: postHeaders(),
+    });
+    if (resp.ok) load();
+    else setError(t('scene.saveError'));
+  };
+
   const toggleHistory = async (scene: SceneRead) => {
     if (openHistory[scene.id]) {
       setOpenHistory((prev) => {
@@ -119,9 +134,20 @@ export default function Scene({ storybookId, placeId }: Props) {
         <>
           <div className={styles.header}>
             <h2 className={styles.title}>{active.title}</h2>
-            <span className={styles.meta}>
-              {t('scene.participants', { count: active.participant_ids.length })}
-            </span>
+            <div className={styles.headerRight}>
+              <span className={styles.meta}>
+                {t('scene.participants', { count: active.participant_ids.length })}
+              </span>
+              {canManage(active.participant_ids) && (
+                <button
+                  type="button"
+                  className="button button--ghost"
+                  onClick={() => manageScene(active.id, 'finish')}
+                >
+                  {t('scene.finish')}
+                </button>
+              )}
+            </div>
           </div>
           {renderThread(active, canPost)}
           {canPost ? (
@@ -146,11 +172,23 @@ export default function Scene({ storybookId, placeId }: Props) {
           <h3 className={styles.historyTitle}>{t('scene.pastScenes')}</h3>
           {history.map((s) => (
             <div key={s.id} className={styles.historyItem}>
-              <button type="button" className={styles.historyToggle} onClick={() => toggleHistory(s)}>
-                <span>{openHistory[s.id] ? '▾' : '▸'}</span>
-                <span className={styles.historyName}>{s.title}</span>
-                <span className={styles.historyStatus}>{t(`scene.status.${s.status}`)}</span>
-              </button>
+              <div className={styles.historyRow}>
+                <button type="button" className={styles.historyToggle} onClick={() => toggleHistory(s)}>
+                  <span>{openHistory[s.id] ? '▾' : '▸'}</span>
+                  <span className={styles.historyName}>{s.title}</span>
+                  <span className={styles.historyStatus}>{t(`scene.status.${s.status}`)}</span>
+                </button>
+                {/* Reopen only when the place is free (no active scene) and the viewer may manage it. */}
+                {!active && canManage(s.participant_ids) && (
+                  <button
+                    type="button"
+                    className={styles.reopenBtn}
+                    onClick={() => manageScene(s.id, 'reopen')}
+                  >
+                    {t('scene.reopen')}
+                  </button>
+                )}
+              </div>
               {openHistory[s.id] && <div>{renderThread(openHistory[s.id], false)}</div>}
             </div>
           ))}
