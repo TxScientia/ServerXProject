@@ -1,6 +1,17 @@
 """Pydantic request/response schemas, split by domain."""
 from .account import LoginRequest
 from .character import CharacterCreate
+from .chat import (
+    ChatRead,
+    ChatWithMessages,
+    CreateDirectChatRequest,
+    CreateGroupChatRequest,
+    MessageCreate,
+    MessageRead,
+    SystemMessageCreate,
+    SystemMessageRead,
+    SystemMessageResponse,
+)
 from .place import PlaceCreate, PlaceRead, PlaceReorder, PlaceUpdate
 from .post import PostCreate, PostRead, PostUpdate
 from .rank import RankCreate, RankRead, RankUpdate
@@ -15,6 +26,15 @@ from .space import (
 __all__ = [
     "LoginRequest",
     "CharacterCreate",
+    "ChatRead",
+    "ChatWithMessages",
+    "CreateDirectChatRequest",
+    "CreateGroupChatRequest",
+    "MessageCreate",
+    "MessageRead",
+    "SystemMessageCreate",
+    "SystemMessageRead",
+    "SystemMessageResponse",
     "PlaceCreate",
     "PlaceRead",
     "PlaceReorder",
