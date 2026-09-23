@@ -5,6 +5,7 @@ import PMNavigation from '../../components/PM/PMNavigation';
 import ChatList from '../../components/PM/ChatList';
 import ThreadView from '../../components/PM/ThreadView';
 import SystemMessagesTab from '../../components/PM/SystemMessagesTab';
+import CreateChatModal from '../../components/PM/CreateChatModal';
 import { apiUrl, authHeaders } from '../../api';
 import styles from './PM.module.css';
 
@@ -45,9 +46,7 @@ export default function PM() {
   const [selectedChat, setSelectedChat] = useState<ChatDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [characters, setCharacters] = useState<Character[]>([]);
-  const [pendingChatCharacterId, setPendingChatCharacterId] = useState<string | null>(null);
-  const [showCharacterPicker, setShowCharacterPicker] = useState(false);
-  const [pickedCharacterId, setPickedCharacterId] = useState<string | null>(null);
+  const [showCreateChatModal, setShowCreateChatModal] = useState(false);
 
   const fetchCharacters = useCallback(async () => {
     try {
@@ -128,56 +127,68 @@ export default function PM() {
     }
   };
 
-  const handleCreateChat = (characterId: string) => {
-    console.log('handleCreateChat called with:', characterId);
-    setPendingChatCharacterId(characterId);
-    setShowCharacterPicker(true);
-  };
-
-  const handleConfirmCharacterAndCreate = async (actingCharacterId: string) => {
-    console.log('handleConfirmCharacterAndCreate called', { actingCharacterId, pendingChatCharacterId });
-    if (!pendingChatCharacterId) {
-      console.error('No pending chat character ID set!');
-      alert('Fehler: Kein Charakter zum Chatten ausgewählt');
-      return;
-    }
-
+  const handleCreateDirectChat = async (characterId: string) => {
     try {
-      console.log('Creating direct chat with character ID:', pendingChatCharacterId);
+      // Use first character from account as the sender
+      const firstChar = characters[0];
+      if (!firstChar) {
+        alert('Fehler: Kein Charakter verfügbar');
+        return;
+      }
+
       const res = await fetch(apiUrl('/pm/chats/direct'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           ...authHeaders(),
-          'X-Character-Id': actingCharacterId,
+          'X-Character-Id': firstChar.id,
         },
-        body: JSON.stringify({ character_id: pendingChatCharacterId }),
+        body: JSON.stringify({ character_id: characterId }),
       });
 
-      console.log('Create chat response:', res.status);
       if (res.ok) {
-        console.log('Chat created successfully');
-        setShowCharacterPicker(false);
-        setPendingChatCharacterId(null);
-        localStorage.setItem('characterId', actingCharacterId);
-        console.log('About to fetch chats...');
+        setShowCreateChatModal(false);
+        localStorage.setItem('characterId', firstChar.id);
         await fetchChats();
-        console.log('Chats fetched successfully');
       } else {
         const error = await res.json().catch(() => ({ detail: 'Unknown error' }));
-        console.error('Failed to create chat:', res.status, error);
-        let errorMsg = t('scene.saveError');
-        if (error.detail) {
-          if (Array.isArray(error.detail)) {
-            errorMsg = error.detail.map((e: any) => e.msg || e).join(', ');
-          } else if (typeof error.detail === 'string') {
-            errorMsg = error.detail;
-          }
-        }
-        alert(`Fehler beim Erstellen: ${errorMsg}`);
+        alert('Fehler beim Erstellen des Chats');
       }
     } catch (error) {
-      console.error('Exception in handleConfirmCharacterAndCreate:', error);
+      console.error('Failed to create direct chat:', error);
+      alert(t('scene.saveError'));
+    }
+  };
+
+  const handleCreateGroupChat = async (characterIds: string[], groupName: string) => {
+    try {
+      // Use first character from account as the creator
+      const firstChar = characters[0];
+      if (!firstChar) {
+        alert('Fehler: Kein Charakter verfügbar');
+        return;
+      }
+
+      const res = await fetch(apiUrl('/pm/chats/group'), {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...authHeaders(),
+          'X-Character-Id': firstChar.id,
+        },
+        body: JSON.stringify({ name: groupName, character_ids: characterIds }),
+      });
+
+      if (res.ok) {
+        setShowCreateChatModal(false);
+        localStorage.setItem('characterId', firstChar.id);
+        await fetchChats();
+      } else {
+        const error = await res.json().catch(() => ({ detail: 'Unknown error' }));
+        alert('Fehler beim Erstellen der Gruppe');
+      }
+    } catch (error) {
+      console.error('Failed to create group chat:', error);
       alert(t('scene.saveError'));
     }
   };
@@ -214,7 +225,7 @@ export default function PM() {
       <div className={styles.pmContainer}>
         <div className={styles.header}>
           <h1 className={styles.title}>Nachrichten</h1>
-          <button className={styles.newChatBtn} onClick={() => setShowCharacterPicker(true)}>
+          <button className={styles.newChatBtn} onClick={() => setShowCreateChatModal(true)}>
             + Neuer Chat
           </button>
         </div>
@@ -239,49 +250,13 @@ export default function PM() {
           )}
         </div>
 
-        {showCharacterPicker && (
-          <div className={styles.pickerOverlay} onClick={() => setShowCharacterPicker(false)}>
-            <div className={styles.picker} onClick={(e) => e.stopPropagation()}>
-              <h3>Welcher Charakter schreibt?</h3>
-              <div className={styles.characterOptions}>
-                {characters.map((char) => (
-                  <button
-                    key={char.id}
-                    className={`${styles.characterOption} ${
-                      char.id === pickedCharacterId ? styles.selected : ''
-                    }`}
-                    onClick={() => setPickedCharacterId(char.id)}
-                  >
-                    {char.name}
-                    {char.id === pickedCharacterId && ' ✓'}
-                  </button>
-                ))}
-              </div>
-              <div className={styles.pickerActions}>
-                <button
-                  className={styles.pickerOk}
-                  onClick={() => {
-                    if (pickedCharacterId) {
-                      handleConfirmCharacterAndCreate(pickedCharacterId);
-                      setPickedCharacterId(null);
-                    }
-                  }}
-                  disabled={!pickedCharacterId}
-                >
-                  OK
-                </button>
-                <button
-                  className={styles.pickerCancel}
-                  onClick={() => {
-                    setShowCharacterPicker(false);
-                    setPickedCharacterId(null);
-                  }}
-                >
-                  Abbrechen
-                </button>
-              </div>
-            </div>
-          </div>
+        {showCreateChatModal && (
+          <CreateChatModal
+            onClose={() => setShowCreateChatModal(false)}
+            onCreateDirect={handleCreateDirectChat}
+            onCreateGroup={handleCreateGroupChat}
+            excludeCharacterIds={[]}
+          />
         )}
       </div>
     </AppLayout>
