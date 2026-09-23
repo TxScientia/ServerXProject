@@ -82,12 +82,6 @@ export default function ChatList({
 
   return (
     <div className={styles.chatListWrapper}>
-      <div className={styles.header}>
-        <button className={styles.newChatBtn} onClick={() => setShowSearch(!showSearch)}>
-          + Neuer Chat
-        </button>
-      </div>
-
       {showSearch && (
         <div className={styles.searchBox}>
           <input

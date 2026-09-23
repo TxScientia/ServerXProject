@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import Badge from '../../components/Badge/Badge';
 import AppLayout from '../../pageLayouts/appLayout/AppLayout';
+import PMNavigation from '../../components/PM/PMNavigation';
 import ChatList from '../../components/PM/ChatList';
 import ThreadView from '../../components/PM/ThreadView';
 import SystemMessagesTab from '../../components/PM/SystemMessagesTab';
@@ -199,30 +199,23 @@ export default function PM() {
   const systemUnread = 0; // TODO: implement system message unread count
   const totalUnread = groupsUnread + directUnread + systemUnread;
 
+  const leftNav = (
+    <PMNavigation
+      activeTab={activeTab}
+      onTabChange={setActiveTab}
+      groupsUnread={groupsUnread}
+      directUnread={directUnread}
+      systemUnread={systemUnread}
+    />
+  );
+
   return (
-    <AppLayout pmUnreadCount={totalUnread}>
+    <AppLayout pmUnreadCount={totalUnread} leftNav={leftNav}>
       <div className={styles.pmContainer}>
-        <div className={styles.tabs}>
-          <button
-            className={`${styles.tab} ${activeTab === 'groups' ? styles.active : ''}`}
-            onClick={() => setActiveTab('groups')}
-          >
-            {t('pm.tabGroups')}
-            <Badge count={groupsUnread} variant="tab" />
-          </button>
-          <button
-            className={`${styles.tab} ${activeTab === 'direct' ? styles.active : ''}`}
-            onClick={() => setActiveTab('direct')}
-          >
-            {t('pm.tabDirect')}
-            <Badge count={directUnread} variant="tab" />
-          </button>
-          <button
-            className={`${styles.tab} ${activeTab === 'system' ? styles.active : ''}`}
-            onClick={() => setActiveTab('system')}
-          >
-            {t('pm.tabSystem')}
-            <Badge count={systemUnread} variant="tab" />
+        <div className={styles.header}>
+          <h1 className={styles.title}>{t('pm.tabGroups') === t('pm.tabGroups') ? 'Messages' : 'Nachrichten'}</h1>
+          <button className={styles.newChatBtn} onClick={() => setShowCharacterPicker(true)}>
+            + {t('pm.newChat') || 'Neuer Chat'}
           </button>
         </div>
 

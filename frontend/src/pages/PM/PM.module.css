@@ -1,36 +1,43 @@
 .pmContainer {
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  height: 100%;
   background: var(--bg-secondary);
 }
 
-
-.tabs {
+.header {
   display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
   border-bottom: 1px solid var(--border-color);
   background: var(--bg-primary);
 }
 
-.tab {
-  flex: 1;
-  padding: 12px 16px;
-  background: none;
+.title {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.newChatBtn {
+  padding: 10px 16px;
+  background: var(--accent-color);
+  color: white;
   border: none;
-  color: var(--text-secondary);
-  font-size: 0.95rem;
+  border-radius: 6px;
   cursor: pointer;
-  border-bottom: 2px solid transparent;
+  font-size: 0.95rem;
+  font-weight: 600;
   transition: all 0.2s ease;
+  flex-shrink: 0;
 }
 
-.tab:hover {
-  color: var(--text-primary);
-}
-
-.tab.active {
-  color: var(--text-primary);
-  border-bottom-color: var(--accent-color);
+.newChatBtn:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
 .content {
