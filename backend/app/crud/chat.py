@@ -4,7 +4,7 @@ from typing import List, Optional
 from sqlalchemy import and_, or_, func, case
 from sqlalchemy.orm import Session
 
-from ..models import Chat, ChatMember, Message, SystemMessage, Character
+from ..models import Chat, ChatMember, Message, MessageRead, SystemMessage, Character
 
 
 def create_direct_chat(db: Session, character_id_1: uuid.UUID, character_id_2: uuid.UUID) -> Chat:
@@ -176,3 +176,61 @@ def respond_to_system_message(
         db.commit()
         db.refresh(msg)
     return msg
+
+
+def mark_messages_as_read(db: Session, chat_id: uuid.UUID, character_id: uuid.UUID) -> None:
+    """Mark all messages in a chat as read for the given character."""
+    # Get all messages in the chat that this character hasn't read yet
+    messages = (
+        db.query(Message)
+        .filter(Message.chat_id == chat_id)
+        .filter(~Message.reads.any(MessageRead.character_id == character_id))
+        .all()
+    )
+    for msg in messages:
+        read = MessageRead(message_id=msg.id, character_id=character_id)
+        db.add(read)
+    db.commit()
+
+
+def get_unread_count_for_chat(db: Session, chat_id: uuid.UUID, character_id: uuid.UUID) -> int:
+    """Count unread messages in a chat for a character (messages not from them that they haven't read)."""
+    return (
+        db.query(Message)
+        .filter(
+            and_(
+                Message.chat_id == chat_id,
+                Message.from_character_id != character_id,
+                ~Message.reads.any(MessageRead.character_id == character_id),
+            )
+        )
+        .count()
+    )
+
+
+def get_unread_count_for_account(db: Session, account_id: uuid.UUID) -> dict:
+    """Get total unread count per chat for all characters in an account.
+
+    Returns dict with chat_id -> unread_count.
+    Unread = not read by ANY character in the account.
+    """
+    # Get all character IDs for this account
+    character_ids = [c.id for c in db.query(Character.id).filter(Character.account_id == account_id).all()]
+
+    if not character_ids:
+        return {}
+
+    # For each chat, count messages not read by any character in the account
+    chats = list_chats_for_account(db, account_id)
+    result = {}
+    for chat in chats:
+        # Messages in chat that haven't been read by any of the account's characters
+        unread = (
+            db.query(Message)
+            .filter(Message.chat_id == chat.id)
+            .filter(Message.from_character_id.notin_(character_ids))  # not from account's chars
+            .filter(~Message.reads.any(MessageRead.character_id.in_(character_ids)))  # not read by account's chars
+            .count()
+        )
+        result[chat.id] = unread
+    return result

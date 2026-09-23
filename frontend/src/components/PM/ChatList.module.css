@@ -88,28 +88,7 @@
 .chatList {
   flex: 1;
   overflow-y: auto;
-}
-
-.chatItem {
-  padding: 12px 16px;
-  border-bottom: 1px solid var(--border-color);
-  cursor: pointer;
-  transition: background 0.2s ease;
-}
-
-.chatItem:hover {
-  background: var(--bg-hover);
-}
-
-.chatName {
-  font-weight: 500;
-  color: var(--text-primary);
-  margin-bottom: 4px;
-}
-
-.chatMeta {
-  font-size: 0.85rem;
-  color: var(--text-secondary);
+  padding: 8px 12px;
 }
 
 .loading,

@@ -11,10 +11,12 @@ from ..crud import (
     get_chat,
     get_message,
     get_system_message,
+    get_unread_count_for_account,
     list_chats_for_character,
     list_chats_for_account,
     list_messages,
     list_system_messages,
+    mark_messages_as_read,
     respond_to_system_message,
     send_message,
     send_system_message,
@@ -52,6 +54,7 @@ def create_direct_chat_endpoint(
         created_at=chat.created_at,
         member_count=len(chat.members),
         member_names=[m.character.name for m in chat.members] if chat.members else [],
+        unread_count=0,
     )
 
 
@@ -75,6 +78,7 @@ def create_group_chat_endpoint(
         created_at=chat.created_at,
         member_count=len(chat.members),
         member_names=[m.character.name for m in chat.members] if chat.members else [],
+        unread_count=0,
     )
 
 
@@ -85,6 +89,7 @@ def list_chats_endpoint(
 ):
     """List all chats for all characters in this account."""
     chats = list_chats_for_account(db, current_user.id)
+    unread_counts = get_unread_count_for_account(db, current_user.id)
     return [
         ChatRead(
             id=c.id,
@@ -93,6 +98,7 @@ def list_chats_endpoint(
             created_at=c.created_at,
             member_count=len(c.members),
             member_names=[m.character.name for m in c.members] if c.members else [],
+            unread_count=unread_counts.get(c.id, 0),
         )
         for c in chats
     ]
@@ -101,17 +107,28 @@ def list_chats_endpoint(
 @router.get("/chats/{chat_id}", response_model=ChatWithMessages)
 def get_chat_endpoint(
     chat_id: uuid.UUID,
-    character: Character = Depends(get_current_character),
+    current_user: Account = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    """Get a chat and its recent messages. Acting character must be a member."""
+    """Get a chat and its recent messages. Any of the account's characters must be a member."""
+    from ..models import Character
+
     chat = get_chat(db, chat_id)
     if not chat:
         raise HTTPException(status_code=404, detail="Chat nicht gefunden")
-    # Check membership
-    member_ids = [m.character_id for m in chat.members]
-    if character.id not in member_ids:
+
+    # Check if ANY of the account's characters are members
+    user_character_ids = [c.id for c in db.query(Character).filter(Character.account_id == current_user.id).all()]
+    chat_member_ids = [m.character_id for m in chat.members]
+
+    if not any(cid in chat_member_ids for cid in user_character_ids):
         raise HTTPException(status_code=403, detail="Keine Berechtigung")
+
+    # Mark messages as read for all account's characters
+    for char_id in user_character_ids:
+        if char_id in chat_member_ids:
+            mark_messages_as_read(db, chat_id, char_id)
+
     messages = list_messages(db, chat_id, limit=50)
     return ChatWithMessages(
         id=chat.id,
@@ -120,6 +137,7 @@ def get_chat_endpoint(
         created_at=chat.created_at,
         member_count=len(chat.members),
         member_names=[m.character.name for m in chat.members] if chat.members else [],
+        unread_count=0,  # Messages are marked as read above
         messages=[
             MessageRead(
                 id=m.id,

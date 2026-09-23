@@ -8,7 +8,7 @@ from .account import Account
 from .character import Character
 from .chat import Chat, ChatMember
 from .membership import Membership
-from .message import Message, SystemMessage
+from .message import Message, MessageRead, SystemMessage
 from .place import Place
 from .post import Post
 from .rank import Rank
@@ -23,6 +23,7 @@ __all__ = [
     "ChatMember",
     "Membership",
     "Message",
+    "MessageRead",
     "Place",
     "Post",
     "Rank",

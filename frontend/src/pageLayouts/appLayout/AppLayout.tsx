@@ -19,7 +19,11 @@ const RIGHT_NAV: { key: string; path: string | null }[] = [
   { key: 'nav.faq', path: null },
 ];
 
-function TopNavbar() {
+type TopNavbarProps = {
+  pmUnreadCount?: number;
+};
+
+function TopNavbar({ pmUnreadCount }: TopNavbarProps) {
   const navigate = useNavigate();
   const { t } = useTranslation();
 
@@ -47,6 +51,9 @@ function TopNavbar() {
             title={item.path ? undefined : t('common.comingSoon')}
           >
             {t(item.key)}
+            {item.key === 'nav.pm' && pmUnreadCount && pmUnreadCount > 0 && (
+              <span className={styles.navBadge}>{pmUnreadCount}</span>
+            )}
           </button>
         ))}
       </nav>
@@ -101,16 +108,17 @@ function CharacterSidebar() {
 type AppLayoutProps = {
   leftNav?: ReactNode;
   children: ReactNode;
+  pmUnreadCount?: number;
 };
 
 /**
  * Shared page shell: top navbar (always), a context-specific left nav, the center
  * content, and the character sidebar (always). Every page renders inside this.
  */
-export default function AppLayout({ leftNav, children }: AppLayoutProps) {
+export default function AppLayout({ leftNav, children, pmUnreadCount }: AppLayoutProps) {
   return (
     <div className={styles.shell}>
-      <TopNavbar />
+      <TopNavbar pmUnreadCount={pmUnreadCount} />
       <div className={styles.body}>
         <nav className={styles.leftNav} aria-label="Section navigation">
           {leftNav}

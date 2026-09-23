@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { apiUrl, authHeaders } from '../../api';
+import ChatCard from './ChatCard';
 import styles from './ChatList.module.css';
 
 interface Chat {
@@ -10,6 +11,7 @@ interface Chat {
   member_count: number;
   created_at: string;
   member_names?: string[];
+  unread_count: number;
 }
 
 interface Character {
@@ -130,16 +132,13 @@ export default function ChatList({
           {chats.map((chat) => {
             const displayName = chat.type === 'group' ? chat.name : chat.member_names?.join(' & ') || t('pm.tabDirect');
             return (
-              <div
+              <ChatCard
                 key={chat.id}
-                className={styles.chatItem}
+                displayName={displayName}
+                memberCount={chat.member_count}
+                unreadCount={chat.unread_count}
                 onClick={() => onSelectChat(chat)}
-              >
-                <div className={styles.chatName}>{displayName}</div>
-                <div className={styles.chatMeta}>
-                  {chat.member_count} {t('pm.members', { count: chat.member_count })}
-                </div>
-              </div>
+              />
             );
           })}
         </div>

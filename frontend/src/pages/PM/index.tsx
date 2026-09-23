@@ -21,6 +21,7 @@ interface Chat {
   member_count: number;
   created_at: string;
   member_names?: string[];
+  unread_count: number;
 }
 
 interface Message {
@@ -112,6 +113,8 @@ export default function PM() {
 
   const handleBackToList = () => {
     setSelectedChat(null);
+    // Refresh chats to update badges
+    fetchChats();
   };
 
   const handleRefresh = () => {
@@ -181,8 +184,19 @@ export default function PM() {
     return false;
   });
 
+  const getUnreadCount = (type: 'groups' | 'direct') => {
+    return chats
+      .filter((chat) => chat.type === (type === 'groups' ? 'group' : 'direct'))
+      .reduce((sum, chat) => sum + (chat.unread_count || 0), 0);
+  };
+
+  const groupsUnread = getUnreadCount('groups');
+  const directUnread = getUnreadCount('direct');
+  const systemUnread = 0; // TODO: implement system message unread count
+  const totalUnread = groupsUnread + directUnread + systemUnread;
+
   return (
-    <AppLayout>
+    <AppLayout pmUnreadCount={totalUnread}>
       <div className={styles.pmContainer}>
         <div className={styles.tabs}>
           <button
@@ -190,18 +204,21 @@ export default function PM() {
             onClick={() => setActiveTab('groups')}
           >
             {t('pm.tabGroups')}
+            {groupsUnread > 0 && <span className={styles.badge}>{groupsUnread}</span>}
           </button>
           <button
             className={`${styles.tab} ${activeTab === 'direct' ? styles.active : ''}`}
             onClick={() => setActiveTab('direct')}
           >
             {t('pm.tabDirect')}
+            {directUnread > 0 && <span className={styles.badge}>{directUnread}</span>}
           </button>
           <button
             className={`${styles.tab} ${activeTab === 'system' ? styles.active : ''}`}
             onClick={() => setActiveTab('system')}
           >
             {t('pm.tabSystem')}
+            {systemUnread > 0 && <span className={styles.badge}>{systemUnread}</span>}
           </button>
         </div>
 

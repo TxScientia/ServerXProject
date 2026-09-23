@@ -25,6 +25,7 @@ class ChatRead(BaseModel):
     created_at: datetime.datetime
     member_count: int = 0
     member_names: List[str] = []  # Names of all members
+    unread_count: int = 0  # Unread messages in this chat
 
 
 class ChatWithMessages(ChatRead):

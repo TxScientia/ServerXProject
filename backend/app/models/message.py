@@ -24,6 +24,18 @@ class Message(Base):
 
     chat = relationship("Chat", back_populates="messages")
     from_character = relationship("Character")
+    reads = relationship("MessageRead", back_populates="message", cascade="all, delete-orphan")
+
+
+class MessageRead(Base):
+    """Tracks which character has read a message."""
+
+    __tablename__ = "message_reads"
+    message_id = Column(GUID(), ForeignKey("messages.id"), primary_key=True)
+    character_id = Column(GUID(), ForeignKey("characters.id"), primary_key=True)
+    read_at = Column(DateTime(timezone=True), nullable=False, server_default=func.now())
+
+    message = relationship("Message", back_populates="reads")
 
 
 class SystemMessage(Base):

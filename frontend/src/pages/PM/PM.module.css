@@ -33,6 +33,21 @@
   border-bottom-color: var(--accent-color);
 }
 
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 5px;
+  margin-left: 6px;
+  background: var(--accent-color);
+  color: white;
+  border-radius: 10px;
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
 .content {
   flex: 1;
   overflow: hidden;

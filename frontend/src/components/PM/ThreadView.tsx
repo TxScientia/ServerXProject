@@ -20,6 +20,7 @@ interface Chat {
   type: 'direct' | 'group';
   name?: string;
   member_count: number;
+  member_names?: string[];
   created_at: string;
   messages: Message[];
 }
@@ -80,7 +81,8 @@ export default function ThreadView({ chat, onBack, onRefresh }: ThreadViewProps)
     }
   };
 
-  const chatName = chat.type === 'group' ? chat.name : messages[0]?.from_character_name || 'Chat';
+  const chatName = chat.type === 'group' ? chat.name : chat.member_names?.join(' & ') || 'Chat';
+  const memberList = chat.member_names?.join(', ') || '';
 
   return (
     <div className={styles.threadView}>
@@ -88,8 +90,11 @@ export default function ThreadView({ chat, onBack, onRefresh }: ThreadViewProps)
         <button className={styles.backBtn} onClick={onBack}>
           {t('pm.back')}
         </button>
-        <h2 className={styles.title}>{chatName}</h2>
-        <button className={styles.refreshBtn} onClick={onRefresh}>
+        <div className={styles.titleSection}>
+          <h2 className={styles.title}>{chatName}</h2>
+          {memberList && <p className={styles.subtitle}>{memberList}</p>}
+        </div>
+        <button className={styles.refreshBtn} onClick={onRefresh} title="Aktualisieren">
           ↻
         </button>
       </div>
