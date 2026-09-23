@@ -85,6 +85,12 @@ export default function PM() {
   };
 
   const handleCreateChat = async (characterId: string) => {
+    const currentCharacterId = localStorage.getItem('characterId');
+    if (!currentCharacterId) {
+      alert('Bitte wähle erst einen Charakter aus.');
+      return;
+    }
+
     try {
       console.log('Creating direct chat with character ID:', characterId);
       const res = await fetch(apiUrl('/pm/chats/direct'), {
@@ -103,7 +109,15 @@ export default function PM() {
       } else {
         const error = await res.json().catch(() => ({ detail: 'Unknown error' }));
         console.error('Failed to create chat:', res.status, error);
-        alert(`Fehler: ${error.detail || t('scene.saveError')}`);
+        let errorMsg = t('scene.saveError');
+        if (error.detail) {
+          if (Array.isArray(error.detail)) {
+            errorMsg = error.detail.map((e: any) => e.msg || e).join(', ');
+          } else if (typeof error.detail === 'string') {
+            errorMsg = error.detail;
+          }
+        }
+        alert(`Fehler: ${errorMsg}`);
       }
     } catch (error) {
       console.error('Failed to create chat:', error);
