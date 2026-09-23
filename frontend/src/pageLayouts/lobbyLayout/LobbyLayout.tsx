@@ -4,8 +4,13 @@ import { useTranslation } from 'react-i18next';
 import LanguageSwitcher from '../../components/LanguageSwitcher';
 import styles from './LobbyLayout.module.css';
 
-// Account-scoped nav only — no character-scoped items. Placeholders until built.
-const LOBBY_NAV = ['nav.pm', 'nav.settings', 'nav.systemNews', 'nav.faq'];
+// Account-scoped nav only — no character-scoped items. Items without a path are placeholders.
+const LOBBY_NAV: { key: string; path: string | null }[] = [
+  { key: 'nav.pm', path: '/pm' },
+  { key: 'nav.settings', path: null },
+  { key: 'nav.systemNews', path: null },
+  { key: 'nav.faq', path: null },
+];
 
 /**
  * Pre-character "lobby" shell: shown after login, before a character is selected.
@@ -27,9 +32,16 @@ export default function LobbyLayout({ children }: { children: ReactNode }) {
     <div className={styles.shell}>
       <header className={styles.topbar}>
         <nav className={styles.left} aria-label="Account navigation">
-          {LOBBY_NAV.map((key) => (
-            <button key={key} type="button" className={styles.navLink} disabled title={t('common.comingSoon')}>
-              {t(key)}
+          {LOBBY_NAV.map((item) => (
+            <button
+              key={item.key}
+              type="button"
+              className={styles.navLink}
+              disabled={!item.path}
+              onClick={() => item.path && navigate(item.path)}
+              title={item.path ? undefined : t('common.comingSoon')}
+            >
+              {t(item.key)}
             </button>
           ))}
         </nav>
