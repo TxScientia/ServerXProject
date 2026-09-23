@@ -7,6 +7,11 @@ import SystemMessagesTab from '../../components/PM/SystemMessagesTab';
 import { apiUrl, authHeaders, characterHeaders } from '../../api';
 import styles from './PM.module.css';
 
+interface Character {
+  id: string;
+  name: string;
+}
+
 type TabType = 'groups' | 'direct' | 'system';
 
 interface Chat {
@@ -36,9 +41,30 @@ export default function PM() {
   const [chats, setChats] = useState<Chat[]>([]);
   const [selectedChat, setSelectedChat] = useState<ChatDetail | null>(null);
   const [loading, setLoading] = useState(true);
+  const [characters, setCharacters] = useState<Character[]>([]);
+  const [selectedCharacterId, setSelectedCharacterId] = useState<string | null>(
+    localStorage.getItem('characterId')
+  );
+  const [pendingChatCharacterId, setPendingChatCharacterId] = useState<string | null>(null);
+  const [showCharacterPicker, setShowCharacterPicker] = useState(false);
 
   useEffect(() => {
     fetchChats();
+    fetchCharacters();
+  }, []);
+
+  const fetchCharacters = useCallback(async () => {
+    try {
+      const res = await fetch(apiUrl('/characters'), {
+        headers: authHeaders(),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setCharacters(data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch characters:', error);
+    }
   }, []);
 
   const fetchChats = useCallback(async () => {
@@ -84,27 +110,32 @@ export default function PM() {
     }
   };
 
-  const handleCreateChat = async (characterId: string) => {
-    const currentCharacterId = localStorage.getItem('characterId');
-    if (!currentCharacterId) {
-      alert('Bitte wähle erst einen Charakter aus.');
-      return;
-    }
+  const handleCreateChat = (characterId: string) => {
+    setPendingChatCharacterId(characterId);
+    setShowCharacterPicker(true);
+  };
+
+  const handleConfirmCharacterAndCreate = async (actingCharacterId: string) => {
+    if (!pendingChatCharacterId) return;
 
     try {
-      console.log('Creating direct chat with character ID:', characterId);
+      console.log('Creating direct chat with character ID:', pendingChatCharacterId);
       const res = await fetch(apiUrl('/pm/chats/direct'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           ...authHeaders(),
-          ...characterHeaders(),
+          'X-Character-Id': actingCharacterId,
         },
-        body: JSON.stringify({ character_id: characterId }),
+        body: JSON.stringify({ character_id: pendingChatCharacterId }),
       });
 
       if (res.ok) {
         console.log('Chat created successfully');
+        setShowCharacterPicker(false);
+        setPendingChatCharacterId(null);
+        setSelectedCharacterId(actingCharacterId);
+        localStorage.setItem('characterId', actingCharacterId);
         fetchChats();
       } else {
         const error = await res.json().catch(() => ({ detail: 'Unknown error' }));
@@ -174,6 +205,34 @@ export default function PM() {
             />
           )}
         </div>
+
+        {showCharacterPicker && (
+          <div className={styles.pickerOverlay} onClick={() => setShowCharacterPicker(false)}>
+            <div className={styles.picker} onClick={(e) => e.stopPropagation()}>
+              <h3>Welcher Charakter schreibt?</h3>
+              <div className={styles.characterOptions}>
+                {characters.map((char) => (
+                  <button
+                    key={char.id}
+                    className={`${styles.characterOption} ${
+                      char.id === selectedCharacterId ? styles.selected : ''
+                    }`}
+                    onClick={() => handleConfirmCharacterAndCreate(char.id)}
+                  >
+                    {char.name}
+                    {char.id === selectedCharacterId && ' ✓'}
+                  </button>
+                ))}
+              </div>
+              <button
+                className={styles.pickerCancel}
+                onClick={() => setShowCharacterPicker(false)}
+              >
+                Abbrechen
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </AppLayout>
   );
