@@ -1,4 +1,8 @@
 .editor {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-sm);
   background: #111414;
@@ -100,10 +104,12 @@
 /* Shared by the editable area and the read-only renderer, so posts read exactly
    as they were written. */
 .content {
+  flex: 1;
   padding: var(--space-3);
   color: var(--color-text);
   line-height: 1.6;
   word-break: break-word;
+  overflow-y: auto;
 }
 
 .content :global(.ProseMirror) {
