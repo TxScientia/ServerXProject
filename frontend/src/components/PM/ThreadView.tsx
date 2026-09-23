@@ -2,7 +2,7 @@ import { useRef, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import RichTextEditor from '../RichTextEditor';
 import RichText from '../RichTextEditor/RichText';
-import { EMPTY_DOC } from '../RichTextEditor/schema';
+import { EMPTY_DOC, isEmptyDoc } from '../RichTextEditor/schema';
 import { apiUrl, authHeaders, characterHeaders } from '../../api';
 import styles from './ThreadView.module.css';
 
@@ -73,7 +73,7 @@ export default function ThreadView({ chat, onBack, onRefresh }: ThreadViewProps)
       alert(t('scene.selectCharacterToPost'));
       return;
     }
-    if (!body.content || body.content.length === 0) return;
+    if (isEmptyDoc(body)) return;
 
     setSending(true);
     try {
@@ -161,7 +161,7 @@ export default function ThreadView({ chat, onBack, onRefresh }: ThreadViewProps)
         <button
           className={styles.sendBtn}
           onClick={handleSendMessage}
-          disabled={sending || !body.content || body.content.length === 0}
+          disabled={sending || isEmptyDoc(body)}
         >
           {sending ? t('pm.sending') : t('pm.send')}
         </button>
