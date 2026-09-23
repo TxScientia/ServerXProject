@@ -8,7 +8,7 @@ import styles from './AppLayout.module.css';
 const GLOBAL_NAV: { key: string; path: string | null }[] = [
   { key: 'nav.gesuche', path: null },
   { key: 'nav.oocChat', path: null },
-  { key: 'nav.pm', path: null },
+  { key: 'nav.pm', path: '/pm' },
   { key: 'nav.residents', path: '/residents' },
   { key: 'nav.storybooks', path: '/storybooks' },
 ];
