@@ -86,6 +86,7 @@ export default function PM() {
 
   const handleCreateChat = async (characterId: string) => {
     try {
+      console.log('Creating direct chat with character ID:', characterId);
       const res = await fetch(apiUrl('/pm/chats/direct'), {
         method: 'POST',
         headers: {
@@ -97,9 +98,12 @@ export default function PM() {
       });
 
       if (res.ok) {
+        console.log('Chat created successfully');
         fetchChats();
       } else {
-        alert(t('scene.saveError'));
+        const error = await res.json().catch(() => ({ detail: 'Unknown error' }));
+        console.error('Failed to create chat:', res.status, error);
+        alert(`Fehler: ${error.detail || t('scene.saveError')}`);
       }
     } catch (error) {
       console.error('Failed to create chat:', error);

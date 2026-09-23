@@ -65,6 +65,7 @@ export default function ChatList({
 
   const handleSelectCharacter = (char: Character) => {
     if (onCreateChat) {
+      console.log('Creating chat with character:', char);
       onCreateChat(char.id);
     }
     setSearchQuery('');

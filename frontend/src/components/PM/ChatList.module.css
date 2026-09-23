@@ -1,9 +1,93 @@
-.chatList {
+.chatListWrapper {
   width: 100%;
   max-width: 300px;
   border-right: 1px solid var(--border-color);
-  overflow-y: auto;
   background: var(--bg-primary);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.header {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.newChatBtn {
+  width: 100%;
+  padding: 12px 16px;
+  background: var(--accent-color);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: opacity 0.2s ease;
+}
+
+.newChatBtn:hover {
+  opacity: 0.9;
+}
+
+.searchBox {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border-color);
+  position: relative;
+}
+
+.searchInput {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid var(--accent-color);
+  border-radius: 4px;
+  font-size: 0.9rem;
+  box-sizing: border-box;
+  color: var(--text-primary);
+  background: var(--bg-secondary);
+}
+
+.searchInput:focus {
+  outline: none;
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 2px rgba(var(--accent-color-rgb), 0.1);
+}
+
+.dropdown {
+  position: absolute;
+  top: 100%;
+  left: 16px;
+  right: 16px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-top: none;
+  border-radius: 0 0 4px 4px;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 100;
+  margin-top: -1px;
+}
+
+.dropdownItem {
+  padding: 12px;
+  cursor: pointer;
+  transition: background 0.15s ease;
+  color: var(--text-primary);
+  border-bottom: 1px solid var(--border-color);
+  font-size: 0.9rem;
+}
+
+.dropdownItem:last-child {
+  border-bottom: none;
+}
+
+.dropdownItem:hover {
+  background: var(--bg-hover);
+}
+
+.chatList {
+  flex: 1;
+  overflow-y: auto;
 }
 
 .chatItem {
@@ -42,14 +126,15 @@
 
 .refreshBtn {
   padding: 8px 16px;
-  background: var(--accent-color);
-  color: white;
-  border: none;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
   border-radius: 4px;
   cursor: pointer;
   font-size: 0.9rem;
 }
 
 .refreshBtn:hover {
-  opacity: 0.9;
+  border-color: var(--accent-color);
+  color: var(--accent-color);
 }
