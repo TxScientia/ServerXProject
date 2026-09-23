@@ -21,6 +21,12 @@
   display: flex;
   flex-wrap: wrap;
   gap: clamp(1rem, 2vw, 2rem);
+  align-items: center;
+}
+
+.navItemWrapper {
+  position: relative;
+  display: inline-flex;
 }
 
 .topRight {
@@ -56,22 +62,6 @@
 .navLink:disabled {
   opacity: 0.4;
   cursor: default;
-}
-
-.navBadge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 18px;
-  height: 18px;
-  padding: 0 4px;
-  margin-left: 6px;
-  background: #ff6b6b;
-  color: white;
-  border-radius: 9px;
-  font-size: 0.7rem;
-  font-weight: 700;
-  font-style: normal;
 }
 
 /* --- 3-column body --- */

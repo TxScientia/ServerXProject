@@ -1,6 +1,7 @@
 import { ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import Badge from '../../components/Badge/Badge';
 import LanguageSwitcher from '../../components/LanguageSwitcher';
 import styles from './AppLayout.module.css';
 
@@ -42,19 +43,18 @@ function TopNavbar({ pmUnreadCount }: TopNavbarProps) {
     <header className={styles.topbar}>
       <nav className={styles.topLeft} aria-label="Global navigation">
         {GLOBAL_NAV.map((item) => (
-          <button
-            key={item.key}
-            type="button"
-            className={styles.navLink}
-            onClick={() => go(item.path)}
-            disabled={!item.path}
-            title={item.path ? undefined : t('common.comingSoon')}
-          >
-            {t(item.key)}
-            {item.key === 'nav.pm' && pmUnreadCount && pmUnreadCount > 0 && (
-              <span className={styles.navBadge}>{pmUnreadCount}</span>
-            )}
-          </button>
+          <div key={item.key} className={styles.navItemWrapper}>
+            <button
+              type="button"
+              className={styles.navLink}
+              onClick={() => go(item.path)}
+              disabled={!item.path}
+              title={item.path ? undefined : t('common.comingSoon')}
+            >
+              {t(item.key)}
+            </button>
+            {item.key === 'nav.pm' && <Badge count={pmUnreadCount || 0} variant="nav" />}
+          </div>
         ))}
       </nav>
 

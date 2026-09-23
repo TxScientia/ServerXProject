@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
+import Badge from '../../components/Badge/Badge';
 import AppLayout from '../../pageLayouts/appLayout/AppLayout';
 import ChatList from '../../components/PM/ChatList';
 import ThreadView from '../../components/PM/ThreadView';
@@ -204,21 +205,21 @@ export default function PM() {
             onClick={() => setActiveTab('groups')}
           >
             {t('pm.tabGroups')}
-            {groupsUnread > 0 && <span className={styles.badge}>{groupsUnread}</span>}
+            <Badge count={groupsUnread} variant="tab" />
           </button>
           <button
             className={`${styles.tab} ${activeTab === 'direct' ? styles.active : ''}`}
             onClick={() => setActiveTab('direct')}
           >
             {t('pm.tabDirect')}
-            {directUnread > 0 && <span className={styles.badge}>{directUnread}</span>}
+            <Badge count={directUnread} variant="tab" />
           </button>
           <button
             className={`${styles.tab} ${activeTab === 'system' ? styles.active : ''}`}
             onClick={() => setActiveTab('system')}
           >
             {t('pm.tabSystem')}
-            {systemUnread > 0 && <span className={styles.badge}>{systemUnread}</span>}
+            <Badge count={systemUnread} variant="tab" />
           </button>
         </div>
 
