@@ -92,6 +92,9 @@ export default function PM() {
 
   const handleSelectChat = async (chat: Chat) => {
     try {
+      // Immediately mark this chat as read in local state
+      setChats(chats.map(c => c.id === chat.id ? { ...c, unread_count: 0 } : c));
+
       const res = await fetch(apiUrl(`/pm/chats/${chat.id}`), {
         headers: authHeaders(),
       });
