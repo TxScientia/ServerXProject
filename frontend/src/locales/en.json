@@ -175,5 +175,27 @@
       "active": "active",
       "finished": "finished"
     }
+  },
+  "pm": {
+    "tabGroups": "Groups",
+    "tabDirect": "Direct",
+    "tabSystem": "System",
+    "noChats": "No chats",
+    "loading": "Loading…",
+    "refresh": "Refresh",
+    "back": "← Back",
+    "send": "Send",
+    "sending": "Sending…",
+    "noSystemMessages": "No system messages",
+    "typeStillPlaying": "Still playing?",
+    "typeInvite": "Invitation",
+    "typePlotLink": "Plot link",
+    "typeSystemNews": "System news",
+    "free": "Free",
+    "keepOccupied": "Still here",
+    "accept": "Accept",
+    "decline": "Decline",
+    "answered": "Answered: {{action}}",
+    "members": "Member{{count}}"
   }
 }

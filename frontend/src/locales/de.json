@@ -175,5 +175,27 @@
       "active": "aktiv",
       "finished": "abgeschlossen"
     }
+  },
+  "pm": {
+    "tabGroups": "Gruppen",
+    "tabDirect": "Direkt",
+    "tabSystem": "System",
+    "noChats": "Keine Chats vorhanden",
+    "loading": "Lädt…",
+    "refresh": "Aktualisieren",
+    "back": "← Zurück",
+    "send": "Senden",
+    "sending": "Sendet…",
+    "noSystemMessages": "Keine Systemmeldungen",
+    "typeStillPlaying": "Noch aktiv?",
+    "typeInvite": "Einladung",
+    "typePlotLink": "Plot-Link",
+    "typeSystemNews": "System-Nachricht",
+    "free": "Freigeben",
+    "keepOccupied": "Noch da",
+    "accept": "Annehmen",
+    "decline": "Ablehnen",
+    "answered": "Beantwortet: {{action}}",
+    "members": "Mitglied{{count}}"
   }
 }

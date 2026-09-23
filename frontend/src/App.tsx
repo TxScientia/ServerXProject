@@ -5,6 +5,7 @@ import Residents from './pages/Residents';
 import StoryBooks from './pages/StoryBooks';
 import StoryBookDetail from './pages/StoryBookDetail';
 import PlotSettings from './pages/PlotSettings';
+import PM from './pages/PM';
 
 export default function App() {
   return (
@@ -12,6 +13,7 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/lobby" element={<Lobby />} />
+        <Route path="/pm" element={<PM />} />
         <Route path="/residents" element={<Residents />} />
         <Route path="/storybooks" element={<StoryBooks />} />
         <Route path="/storybooks/:id" element={<StoryBookDetail />} />
