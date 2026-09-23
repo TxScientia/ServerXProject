@@ -57,6 +57,24 @@ def update_post(db: Session, post: Post, body, *, now=None):
     return post
 
 
+def finish_scene(db: Session, scene: Scene, *, now=None):
+    """Explicitly finish a scene (frees the place early)."""
+    scene.finished_at = now or _utcnow()
+    db.commit()
+    db.refresh(scene)
+    return scene
+
+
+def reopen_scene(db: Session, scene: Scene, *, now=None):
+    """Reopen a finished scene: clear ``finished_at`` and bump ``last_post_at`` so
+    it counts as active again (handles both manual close and timeout-finish)."""
+    scene.finished_at = None
+    scene.last_post_at = now or _utcnow()
+    db.commit()
+    db.refresh(scene)
+    return scene
+
+
 def get_scene(db: Session, scene_id):
     return db.query(Scene).filter(Scene.id == scene_id).first()
 
@@ -78,7 +96,11 @@ def list_scenes_in_place(db: Session, place_id):
 # --- Derived state (pure helpers; reused by routes and tests) --------------
 
 def scene_status(scene: Scene, timeout_days: int, *, now=None) -> str:
-    """'finished' | 'inactive' | 'active' — never stored, always derived."""
+    """'active' | 'finished' — never stored, always derived.
+
+    Finished = explicitly closed (``finished_at`` set) OR timed out (no post within
+    ``timeout_days``). Manual close and timeout land in the same state on purpose.
+    """
     if scene.finished_at is not None:
         return "finished"
     now = now or _utcnow()
@@ -88,7 +110,7 @@ def scene_status(scene: Scene, timeout_days: int, *, now=None) -> str:
     if last.tzinfo is None:  # SQLite returns naive datetimes; treat as UTC
         last = last.replace(tzinfo=datetime.timezone.utc)
     if now - last > datetime.timedelta(days=timeout_days):
-        return "inactive"
+        return "finished"
     return "active"
 
 
@@ -99,6 +121,11 @@ def scene_participant_ids(scene: Scene):
         if post.author_character_id not in seen:
             seen.append(post.author_character_id)
     return seen
+
+
+def is_scene_participant(scene: Scene, character_id) -> bool:
+    """True if the character has posted in the scene (may finish/reopen it)."""
+    return character_id in scene_participant_ids(scene)
 
 
 def get_active_scene(db: Session, place_id, timeout_days: int, *, now=None):

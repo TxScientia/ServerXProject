@@ -91,7 +91,7 @@ def test_cannot_start_second_active_scene(client, character, auth_headers):
     assert resp.status_code == 409
 
 
-def test_can_start_new_scene_after_previous_went_inactive(client, character, auth_headers, db_session):
+def test_can_start_new_scene_after_previous_timed_out(client, character, auth_headers, db_session):
     h = char_headers(auth_headers, character)
     sb = _make_storybook(client, h)
     place = _make_place(client, h, sb)
@@ -101,7 +101,7 @@ def test_can_start_new_scene_after_previous_went_inactive(client, character, aut
         json={"title": "Old", "body": doc()},
     ).json()
 
-    # Back-date last_post_at past the 90-day timeout → the scene becomes inactive.
+    # Back-date last_post_at past the 90-day timeout → the scene auto-finishes.
     scene = db_session.query(Scene).filter(Scene.id == first["id"]).first()
     scene.last_post_at = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=100)
     db_session.commit()
@@ -109,7 +109,7 @@ def test_can_start_new_scene_after_previous_went_inactive(client, character, aut
     scenes = client.get(
         f"/storybooks/{sb['id']}/places/{place['id']}/scenes", headers=auth_headers
     ).json()
-    assert scenes[0]["status"] == "inactive"
+    assert scenes[0]["status"] == "finished"
 
     resp = client.post(
         f"/storybooks/{sb['id']}/places/{place['id']}/scenes",
@@ -117,6 +117,124 @@ def test_can_start_new_scene_after_previous_went_inactive(client, character, aut
         json={"title": "New", "body": doc()},
     )
     assert resp.status_code == 200
+
+
+def test_finish_scene_frees_place_and_locks_posting(client, character, auth_headers):
+    h = char_headers(auth_headers, character)
+    sb = _make_storybook(client, h)
+    place = _make_place(client, h, sb)
+    scene = client.post(
+        f"/storybooks/{sb['id']}/places/{place['id']}/scenes",
+        headers=h,
+        json={"title": "RP", "body": doc()},
+    ).json()
+
+    # The participant finishes it.
+    resp = client.post(f"/storybooks/{sb['id']}/scenes/{scene['id']}/finish", headers=h)
+    assert resp.status_code == 200
+    assert resp.json()["status"] == "finished"
+
+    # Posting is now locked...
+    resp = client.post(
+        f"/storybooks/{sb['id']}/scenes/{scene['id']}/posts",
+        headers=h,
+        json={"body": doc("after finish")},
+    )
+    assert resp.status_code == 409
+
+    # ...and the place is free, so a new scene can start.
+    resp = client.post(
+        f"/storybooks/{sb['id']}/places/{place['id']}/scenes",
+        headers=h,
+        json={"title": "Next", "body": doc()},
+    )
+    assert resp.status_code == 200
+
+
+def test_reopen_scene_when_place_free(client, character, auth_headers):
+    h = char_headers(auth_headers, character)
+    sb = _make_storybook(client, h)
+    place = _make_place(client, h, sb)
+    scene = client.post(
+        f"/storybooks/{sb['id']}/places/{place['id']}/scenes",
+        headers=h,
+        json={"title": "RP", "body": doc()},
+    ).json()
+    client.post(f"/storybooks/{sb['id']}/scenes/{scene['id']}/finish", headers=h)
+
+    resp = client.post(f"/storybooks/{sb['id']}/scenes/{scene['id']}/reopen", headers=h)
+    assert resp.status_code == 200
+    assert resp.json()["status"] == "active"
+
+    # Posting works again.
+    resp = client.post(
+        f"/storybooks/{sb['id']}/scenes/{scene['id']}/posts",
+        headers=h,
+        json={"body": doc("back")},
+    )
+    assert resp.status_code == 200
+
+
+def test_cannot_reopen_when_another_scene_active(client, character, auth_headers):
+    h = char_headers(auth_headers, character)
+    sb = _make_storybook(client, h)
+    place = _make_place(client, h, sb)
+    first = client.post(
+        f"/storybooks/{sb['id']}/places/{place['id']}/scenes",
+        headers=h,
+        json={"title": "First", "body": doc()},
+    ).json()
+    client.post(f"/storybooks/{sb['id']}/scenes/{first['id']}/finish", headers=h)
+    # Someone starts a fresh scene in the now-free place.
+    client.post(
+        f"/storybooks/{sb['id']}/places/{place['id']}/scenes",
+        headers=h,
+        json={"title": "Second", "body": doc()},
+    )
+
+    resp = client.post(f"/storybooks/{sb['id']}/scenes/{first['id']}/reopen", headers=h)
+    assert resp.status_code == 409
+
+
+def test_non_participant_non_admin_cannot_finish(client, character, auth_headers, account, db_session):
+    h = char_headers(auth_headers, character)
+    sb = _make_storybook(client, h)
+    place = _make_place(client, h, sb)
+    scene = client.post(
+        f"/storybooks/{sb['id']}/places/{place['id']}/scenes",
+        headers=h,
+        json={"title": "RP", "body": doc()},
+    ).json()
+
+    # A member who never posted in the scene (not a participant, not an admin).
+    bystander = create_character(db_session, account.id, "Bystander", "Elf", "Bard", "Divers")
+    _add_member(db_session, sb["id"], bystander)
+
+    resp = client.post(
+        f"/storybooks/{sb['id']}/scenes/{scene['id']}/finish",
+        headers=char_headers(auth_headers, bystander),
+    )
+    assert resp.status_code == 403
+
+
+def test_cannot_edit_post_in_finished_scene(client, character, auth_headers, db_session):
+    h = char_headers(auth_headers, character)
+    sb = _make_storybook(client, h)
+    place = _make_place(client, h, sb)
+    scene = client.post(
+        f"/storybooks/{sb['id']}/places/{place['id']}/scenes",
+        headers=h,
+        json={"title": "RP", "body": doc("original")},
+    ).json()
+    post_id = scene["posts"][0]["id"]
+    client.post(f"/storybooks/{sb['id']}/scenes/{scene['id']}/finish", headers=h)
+
+    resp = client.patch(
+        f"/storybooks/{sb['id']}/scenes/{scene['id']}/posts/{post_id}",
+        headers=h,
+        json={"body": doc("edited")},
+    )
+    assert resp.status_code == 409
 
 
 def test_posting_to_finished_scene_conflicts(client, character, auth_headers, db_session):

@@ -15,6 +15,7 @@ from ..crud import (
     create_storybook,
     delete_place,
     delete_rank,
+    finish_scene,
     get_active_scene,
     get_place,
     get_post,
@@ -22,10 +23,12 @@ from ..crud import (
     get_scene,
     get_storybook,
     is_member,
+    is_scene_participant,
     list_places,
     list_ranks,
     list_scenes_in_place,
     list_storybooks,
+    reopen_scene,
     reorder_places,
     scene_participant_ids,
     scene_status,
@@ -153,6 +156,14 @@ def _get_scene_in_space(db: Session, space, scene_id):
         if place is not None and place.space_id == space.id:
             return scene
     raise HTTPException(status_code=404, detail="Szene nicht gefunden")
+
+
+def _require_scene_manager(db: Session, space, scene, character):
+    """Finishing/reopening is limited to the scene's participants and plot admins."""
+    if not (is_scene_participant(scene, character.id) or can_edit_space(db, space.id, character.id)):
+        raise HTTPException(
+            status_code=403, detail="Nur Teilnehmer oder Plot-Admins dürfen die Szene verwalten"
+        )
 
 
 def _get_rank_in_space(db: Session, space_id, rank_id):
@@ -419,7 +430,7 @@ def create_post_endpoint(
     scene = _get_scene_in_space(db, space, scene_id)
     if not is_member(db, space.id, character.id):
         raise HTTPException(status_code=403, detail="Nur Mitglieder können posten")
-    if scene.finished_at is not None:
+    if scene_status(scene, space.scene_timeout_days) == "finished":
         raise HTTPException(status_code=409, detail="Szene ist abgeschlossen")
     _validate_body(data.body)
     post = create_post(db, scene, character.id, data.body)
@@ -445,7 +456,7 @@ def update_post_endpoint(
         raise HTTPException(status_code=404, detail="Beitrag nicht gefunden")
     if post.author_character_id != character.id:
         raise HTTPException(status_code=403, detail="Nur eigene Beiträge bearbeitbar")
-    if scene.finished_at is not None:
+    if scene_status(scene, space.scene_timeout_days) == "finished":
         raise HTTPException(status_code=409, detail="Szene ist abgeschlossen")
     _validate_body(data.body)
     # Editing the first post may also rename the scene (its title is the RP name).
@@ -454,3 +465,45 @@ def update_post_endpoint(
             raise HTTPException(status_code=422, detail="Titel darf nicht leer sein")
         scene.title = data.title.strip()
     return PostRead.model_validate(update_post(db, post, data.body))
+
+
+@router.post(
+    "/{storybook_id}/scenes/{scene_id}/finish",
+    response_model=SceneWithPosts,
+)
+def finish_scene_endpoint(
+    storybook_id: uuid.UUID,
+    scene_id: uuid.UUID,
+    character: Character = Depends(get_current_character),
+    db: Session = Depends(get_db),
+):
+    space = _require_storybook(db, storybook_id)
+    scene = _get_scene_in_space(db, space, scene_id)
+    _require_scene_manager(db, space, scene, character)
+    if scene.finished_at is not None:
+        raise HTTPException(status_code=409, detail="Szene ist bereits abgeschlossen")
+    return _serialize_scene(finish_scene(db, scene), space.scene_timeout_days, include_posts=True)
+
+
+@router.post(
+    "/{storybook_id}/scenes/{scene_id}/reopen",
+    response_model=SceneWithPosts,
+)
+def reopen_scene_endpoint(
+    storybook_id: uuid.UUID,
+    scene_id: uuid.UUID,
+    character: Character = Depends(get_current_character),
+    db: Session = Depends(get_db),
+):
+    space = _require_storybook(db, storybook_id)
+    scene = _get_scene_in_space(db, space, scene_id)
+    _require_scene_manager(db, space, scene, character)
+    if scene_status(scene, space.scene_timeout_days) != "finished":
+        raise HTTPException(status_code=409, detail="Szene ist nicht abgeschlossen")
+    # A place may only ever have one active scene — if another already took over,
+    # this one stays finished (start a "Continuation" scene instead).
+    if get_active_scene(db, scene.place_id, space.scene_timeout_days) is not None:
+        raise HTTPException(
+            status_code=409, detail="An diesem Ort läuft bereits eine andere aktive Szene"
+        )
+    return _serialize_scene(reopen_scene(db, scene), space.scene_timeout_days, include_posts=True)

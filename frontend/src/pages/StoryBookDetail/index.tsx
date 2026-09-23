@@ -205,7 +205,7 @@ export default function StoryBookDetail() {
           <h1 className={styles.title}>{selectedPlace.title}</h1>
           {selectedPlace.description && <p className={styles.desc}>{selectedPlace.description}</p>}
         </div>
-        <Scene storybookId={storybook.id} placeId={selectedPlace.id} />
+        <Scene storybookId={storybook.id} placeId={selectedPlace.id} canModerate={canEditSettings} />
       </>
     );
   }

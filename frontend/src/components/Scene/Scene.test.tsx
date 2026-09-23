@@ -72,4 +72,6 @@ test('renders the active scene thread with posts and a reply box', async () => {
   expect(screen.getByText('The tavern was quiet.')).toBeInTheDocument();
   expect(screen.getByText('Teilnehmer: 1')).toBeInTheDocument();
   expect(screen.getByRole('button', { name: 'Antworten' })).toBeInTheDocument();
+  // c1 is a participant, so they can finish the scene.
+  expect(screen.getByRole('button', { name: 'Szene abschliessen' })).toBeInTheDocument();
 });

@@ -158,6 +158,8 @@
     "noActiveScene": "No scene is currently running in this place.",
     "startScene": "Start scene",
     "reply": "Reply",
+    "finish": "Finish scene",
+    "reopen": "Reopen",
     "edit": "Edit",
     "edited": "edited",
     "titlePlaceholder": "Scene title",
@@ -171,7 +173,6 @@
     "saveError": "Saving failed.",
     "status": {
       "active": "active",
-      "inactive": "inactive",
       "finished": "finished"
     }
   }
