@@ -213,9 +213,9 @@ export default function PM() {
     <AppLayout pmUnreadCount={totalUnread} leftNav={leftNav}>
       <div className={styles.pmContainer}>
         <div className={styles.header}>
-          <h1 className={styles.title}>{t('pm.tabGroups') === t('pm.tabGroups') ? 'Messages' : 'Nachrichten'}</h1>
+          <h1 className={styles.title}>Nachrichten</h1>
           <button className={styles.newChatBtn} onClick={() => setShowCharacterPicker(true)}>
-            + {t('pm.newChat') || 'Neuer Chat'}
+            + Neuer Chat
           </button>
         </div>
 

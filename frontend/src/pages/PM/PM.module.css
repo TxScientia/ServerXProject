@@ -22,8 +22,8 @@
 }
 
 .newChatBtn {
-  padding: 10px 16px;
-  background: var(--accent-color);
+  padding: 12px 20px;
+  background: linear-gradient(135deg, #00897b 0%, #00695c 100%);
   color: white;
   border: none;
   border-radius: 6px;
@@ -32,12 +32,19 @@
   font-weight: 600;
   transition: all 0.2s ease;
   flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(0, 137, 123, 0.3);
+  text-transform: none;
+  letter-spacing: 0.3px;
 }
 
 .newChatBtn:hover {
-  opacity: 0.9;
-  transform: translateY(-1px);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  background: linear-gradient(135deg, #00a089 0%, #007a6f 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 137, 123, 0.4);
+}
+
+.newChatBtn:active {
+  transform: translateY(0);
 }
 
 .content {
