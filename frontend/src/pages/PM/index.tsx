@@ -48,11 +48,6 @@ export default function PM() {
   const [pendingChatCharacterId, setPendingChatCharacterId] = useState<string | null>(null);
   const [showCharacterPicker, setShowCharacterPicker] = useState(false);
 
-  useEffect(() => {
-    fetchChats();
-    fetchCharacters();
-  }, []);
-
   const fetchCharacters = useCallback(async () => {
     try {
       const res = await fetch(apiUrl('/characters'), {
@@ -68,9 +63,14 @@ export default function PM() {
   }, []);
 
   const fetchChats = useCallback(async () => {
+    if (!selectedCharacterId) {
+      setLoading(false);
+      return;
+    }
+
     try {
       const res = await fetch(apiUrl('/pm/chats'), {
-        headers: { ...authHeaders(), ...characterHeaders() },
+        headers: { ...authHeaders(), 'X-Character-Id': selectedCharacterId },
       });
       if (res.ok) {
         const data = await res.json();
@@ -83,7 +83,15 @@ export default function PM() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [selectedCharacterId]);
+
+  useEffect(() => {
+    fetchCharacters();
+  }, [fetchCharacters]);
+
+  useEffect(() => {
+    fetchChats();
+  }, [fetchChats]);
 
   const handleSelectChat = async (chat: Chat) => {
     try {
@@ -165,6 +173,27 @@ export default function PM() {
   return (
     <AppLayout>
       <div className={styles.pmContainer}>
+        {!selectedCharacterId ? (
+          <div className={styles.noCharacterState}>
+            <h2>Wähle einen Charakter</h2>
+            <p>Um Nachrichten zu sehen, wähle einen deiner Charaktere:</p>
+            <div className={styles.characterGrid}>
+              {characters.map((char) => (
+                <button
+                  key={char.id}
+                  className={styles.characterBtn}
+                  onClick={() => {
+                    setSelectedCharacterId(char.id);
+                    localStorage.setItem('characterId', char.id);
+                  }}
+                >
+                  {char.name}
+                </button>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <>
         <div className={styles.tabs}>
           <button
             className={`${styles.tab} ${activeTab === 'groups' ? styles.active : ''}`}
@@ -205,6 +234,8 @@ export default function PM() {
             />
           )}
         </div>
+          </>
+        )}
 
         {showCharacterPicker && (
           <div className={styles.pickerOverlay} onClick={() => setShowCharacterPicker(false)}>
