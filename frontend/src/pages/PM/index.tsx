@@ -147,9 +147,11 @@ export default function PM() {
       });
 
       if (res.ok) {
+        const newChat = await res.json();
         setShowCreateChatModal(false);
         localStorage.setItem('characterId', firstChar.id);
-        await fetchChats();
+        // Automatically select and enter the new chat
+        await handleSelectChat(newChat);
       } else {
         const error = await res.json().catch(() => ({ detail: 'Unknown error' }));
         alert('Fehler beim Erstellen des Chats');
@@ -180,9 +182,11 @@ export default function PM() {
       });
 
       if (res.ok) {
+        const newChat = await res.json();
         setShowCreateChatModal(false);
         localStorage.setItem('characterId', firstChar.id);
-        await fetchChats();
+        // Automatically select and enter the new chat
+        await handleSelectChat(newChat);
       } else {
         const error = await res.json().catch(() => ({ detail: 'Unknown error' }));
         alert('Fehler beim Erstellen der Gruppe');
