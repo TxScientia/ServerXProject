@@ -43,11 +43,9 @@ export default function PM() {
   const [selectedChat, setSelectedChat] = useState<ChatDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [characters, setCharacters] = useState<Character[]>([]);
-  const [selectedCharacterId, setSelectedCharacterId] = useState<string | null>(
-    localStorage.getItem('characterId')
-  );
   const [pendingChatCharacterId, setPendingChatCharacterId] = useState<string | null>(null);
   const [showCharacterPicker, setShowCharacterPicker] = useState(false);
+  const [pickedCharacterId, setPickedCharacterId] = useState<string | null>(null);
 
   const fetchCharacters = useCallback(async () => {
     try {
@@ -135,7 +133,6 @@ export default function PM() {
         console.log('Chat created successfully');
         setShowCharacterPicker(false);
         setPendingChatCharacterId(null);
-        setSelectedCharacterId(actingCharacterId);
         localStorage.setItem('characterId', actingCharacterId);
         fetchChats();
       } else {
@@ -216,21 +213,38 @@ export default function PM() {
                   <button
                     key={char.id}
                     className={`${styles.characterOption} ${
-                      char.id === selectedCharacterId ? styles.selected : ''
+                      char.id === pickedCharacterId ? styles.selected : ''
                     }`}
-                    onClick={() => handleConfirmCharacterAndCreate(char.id)}
+                    onClick={() => setPickedCharacterId(char.id)}
                   >
                     {char.name}
-                    {char.id === selectedCharacterId && ' ✓'}
+                    {char.id === pickedCharacterId && ' ✓'}
                   </button>
                 ))}
               </div>
-              <button
-                className={styles.pickerCancel}
-                onClick={() => setShowCharacterPicker(false)}
-              >
-                Abbrechen
-              </button>
+              <div className={styles.pickerActions}>
+                <button
+                  className={styles.pickerOk}
+                  onClick={() => {
+                    if (pickedCharacterId) {
+                      handleConfirmCharacterAndCreate(pickedCharacterId);
+                      setPickedCharacterId(null);
+                    }
+                  }}
+                  disabled={!pickedCharacterId}
+                >
+                  OK
+                </button>
+                <button
+                  className={styles.pickerCancel}
+                  onClick={() => {
+                    setShowCharacterPicker(false);
+                    setPickedCharacterId(null);
+                  }}
+                >
+                  Abbrechen
+                </button>
+              </div>
             </div>
           </div>
         )}

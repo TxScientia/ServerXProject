@@ -99,9 +99,35 @@
   font-weight: 600;
 }
 
+.pickerActions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  margin-top: 16px;
+}
+
+.pickerOk {
+  padding: 10px 20px;
+  background: var(--accent-color);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.pickerOk:hover:not(:disabled) {
+  opacity: 0.9;
+}
+
+.pickerOk:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .pickerCancel {
-  width: 100%;
-  padding: 10px;
+  padding: 10px 20px;
   background: none;
   border: 1px solid var(--border-color);
   color: var(--text-secondary);
