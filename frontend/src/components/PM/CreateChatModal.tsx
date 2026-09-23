@@ -73,7 +73,7 @@ export default function CreateChatModal({
   const selectedCharacters = selectedIds.map((id) => characters.find((c) => c.id === id)).filter(Boolean) as Character[];
 
   return (
-    <Modal title={t('pm.createChat') || 'Neuer Chat'}>
+    <Modal title="Neuer Chat">
       <div className={styles.selectedChars}>
         {selectedCharacters.map((char) => (
           <div key={char.id} className={styles.chip}>
@@ -92,7 +92,7 @@ export default function CreateChatModal({
 
       <input
         type="text"
-        placeholder={t('common.search') || 'Suchen...'}
+        placeholder="Suchen..."
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
         className={styles.searchInput}
@@ -102,7 +102,7 @@ export default function CreateChatModal({
       {selectedIds.length > 1 && (
         <input
           type="text"
-          placeholder={t('pm.groupName') || 'Gruppenname (optional)'}
+          placeholder="Gruppenname (optional)"
           value={groupName}
           onChange={(e) => setGroupName(e.target.value)}
           className={styles.groupNameInput}
@@ -111,9 +111,9 @@ export default function CreateChatModal({
 
       <div className={styles.characterList}>
         {loading ? (
-          <div className={styles.loading}>{t('common.loading')}</div>
+          <div className={styles.loading}>Laden...</div>
         ) : filteredCharacters.length === 0 ? (
-          <div className={styles.empty}>{t('common.noResults')}</div>
+          <div className={styles.empty}>Keine Ergebnisse</div>
         ) : (
           filteredCharacters.map((char) => (
             <button
@@ -130,7 +130,7 @@ export default function CreateChatModal({
 
       <ModalActions>
         <button className="button button--ghost" onClick={onClose} type="button">
-          {t('common.cancel')}
+          Abbrechen
         </button>
         <ModalSpacer />
         <button
