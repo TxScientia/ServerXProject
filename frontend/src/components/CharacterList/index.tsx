@@ -7,19 +7,21 @@ export type Character = {
   race: string;
   spec: string;
   gender: string;
+  editorData?: Record<string, unknown>;
 };
 
 type CharacterListProps = {
   characters: Character[];
   /** When provided, each row is clickable (e.g. select-to-enter). */
   onSelect?: (character: Character) => void;
+  editorPageHref?: (character: Character) => string;
 };
 
 /**
  * A table of characters. Shared by the Lobby (your own characters, selectable)
  * and Residents (all characters, browse-only).
  */
-export default function CharacterList({ characters, onSelect }: CharacterListProps) {
+export default function CharacterList({ characters, onSelect, editorPageHref }: CharacterListProps) {
   const { t } = useTranslation();
 
   return (
@@ -30,6 +32,7 @@ export default function CharacterList({ characters, onSelect }: CharacterListPro
           <th>{t('characterList.colRace')}</th>
           <th>{t('characterList.colSpec')}</th>
           <th>{t('characterList.colGender')}</th>
+          {editorPageHref && <th>Editor</th>}
         </tr>
       </thead>
       <tbody>
@@ -44,6 +47,21 @@ export default function CharacterList({ characters, onSelect }: CharacterListPro
             <td>{c.race}</td>
             <td>{c.spec}</td>
             <td>{c.gender}</td>
+            {editorPageHref && (
+              <td>
+                <a
+                  className={styles.iconButton}
+                  href={editorPageHref(c)}
+                  target="_blank"
+                  rel="noreferrer"
+                  onClick={(event) => event.stopPropagation()}
+                  aria-label={`${c.name} in neuem Tab bearbeiten`}
+                  title="Editor in neuem Tab öffnen"
+                >
+                  ↗
+                </a>
+              </td>
+            )}
           </tr>
         ))}
       </tbody>
