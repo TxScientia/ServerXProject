@@ -36,6 +36,8 @@ export default function PM() {
   const [chats, setChats] = useState<Chat[]>([]);
   const [selectedChat, setSelectedChat] = useState<ChatDetail | null>(null);
   const [loading, setLoading] = useState(true);
+  const [showCreateDialog, setShowCreateDialog] = useState(false);
+  const [createInput, setCreateInput] = useState('');
 
   useEffect(() => {
     fetchChats();
@@ -84,6 +86,33 @@ export default function PM() {
     }
   };
 
+  const handleCreateChat = async () => {
+    if (!createInput.trim()) return;
+
+    try {
+      const res = await fetch(apiUrl('/pm/chats/direct'), {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...authHeaders(),
+          ...characterHeaders(),
+        },
+        body: JSON.stringify({ character_id: createInput.trim() }),
+      });
+
+      if (res.ok) {
+        setCreateInput('');
+        setShowCreateDialog(false);
+        fetchChats();
+      } else {
+        alert(t('scene.saveError'));
+      }
+    } catch (error) {
+      console.error('Failed to create chat:', error);
+      alert(t('scene.saveError'));
+    }
+  };
+
   const filteredChats = chats.filter((chat) => {
     if (activeTab === 'groups') return chat.type === 'group';
     if (activeTab === 'direct') return chat.type === 'direct';
@@ -129,9 +158,39 @@ export default function PM() {
               loading={loading}
               onSelectChat={handleSelectChat}
               onRefresh={handleRefresh}
+              onCreateChat={() => setShowCreateDialog(true)}
+              chatType={activeTab === 'groups' ? 'group' : 'direct'}
             />
           )}
         </div>
+
+        {showCreateDialog && (
+          <div className={styles.dialogOverlay} onClick={() => setShowCreateDialog(false)}>
+            <div className={styles.dialog} onClick={(e) => e.stopPropagation()}>
+              <h3>Direkten Chat erstellen</h3>
+              <p>Character ID eingeben:</p>
+              <input
+                type="text"
+                placeholder="Character ID..."
+                value={createInput}
+                onChange={(e) => setCreateInput(e.target.value)}
+                onKeyPress={(e) => e.key === 'Enter' && handleCreateChat()}
+                className={styles.dialogInput}
+              />
+              <div className={styles.dialogActions}>
+                <button onClick={handleCreateChat} className={styles.dialogBtn}>
+                  Erstellen
+                </button>
+                <button
+                  onClick={() => setShowCreateDialog(false)}
+                  className={`${styles.dialogBtn} ${styles.secondary}`}
+                >
+                  Abbrechen
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </AppLayout>
   );

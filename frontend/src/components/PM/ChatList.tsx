@@ -14,6 +14,8 @@ interface ChatListProps {
   loading: boolean;
   onSelectChat: (chat: Chat) => void;
   onRefresh: () => void;
+  onCreateChat?: () => void;
+  chatType?: 'direct' | 'group';
 }
 
 export default function ChatList({
@@ -21,6 +23,8 @@ export default function ChatList({
   loading,
   onSelectChat,
   onRefresh,
+  onCreateChat,
+  chatType,
 }: ChatListProps) {
   const { t } = useTranslation();
 
@@ -32,6 +36,11 @@ export default function ChatList({
     return (
       <div className={styles.empty}>
         <p>{t('pm.noChats')}</p>
+        {onCreateChat && (
+          <button className={styles.createBtn} onClick={onCreateChat}>
+            + {chatType === 'direct' ? 'Direkter Chat' : 'Gruppe'}
+          </button>
+        )}
         <button className={styles.refreshBtn} onClick={onRefresh}>
           {t('pm.refresh')}
         </button>
