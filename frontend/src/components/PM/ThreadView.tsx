@@ -47,6 +47,10 @@ export default function ThreadView({ chat, onBack, onRefresh }: ThreadViewProps)
   };
 
   const handleSendMessage = async () => {
+    if (!characterId) {
+      alert(t('scene.selectCharacterToPost'));
+      return;
+    }
     if (!body.content || body.content.length === 0) return;
 
     setSending(true);

@@ -1,5 +1,4 @@
 import { useEffect, useState, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import AppLayout from '../../pageLayouts/appLayout/AppLayout';
 import ChatList from '../../components/PM/ChatList';
@@ -32,22 +31,15 @@ interface ChatDetail extends Chat {
 }
 
 export default function PM() {
-  const navigate = useNavigate();
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<TabType>('groups');
   const [chats, setChats] = useState<Chat[]>([]);
   const [selectedChat, setSelectedChat] = useState<ChatDetail | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const characterId = localStorage.getItem('characterId');
-
   useEffect(() => {
-    if (!characterId) {
-      navigate('/lobby');
-      return;
-    }
     fetchChats();
-  }, [characterId, navigate]);
+  }, []);
 
   const fetchChats = useCallback(async () => {
     try {
