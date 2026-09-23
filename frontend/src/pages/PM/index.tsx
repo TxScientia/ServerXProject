@@ -4,7 +4,7 @@ import AppLayout from '../../pageLayouts/appLayout/AppLayout';
 import ChatList from '../../components/PM/ChatList';
 import ThreadView from '../../components/PM/ThreadView';
 import SystemMessagesTab from '../../components/PM/SystemMessagesTab';
-import { apiUrl, authHeaders, characterHeaders } from '../../api';
+import { apiUrl, authHeaders } from '../../api';
 import styles from './PM.module.css';
 
 interface Character {
@@ -91,11 +91,19 @@ export default function PM() {
   const handleSelectChat = async (chat: Chat) => {
     try {
       const res = await fetch(apiUrl(`/pm/chats/${chat.id}`), {
-        headers: { ...authHeaders(), ...characterHeaders() },
+        headers: authHeaders(),
       });
       if (res.ok) {
         const detail = await res.json();
         setSelectedChat(detail);
+
+        // Auto-select first character from chat that belongs to this account
+        if (chat.member_names && chat.member_names.length > 0 && !localStorage.getItem('characterId')) {
+          const firstCharId = characters.find(c => chat.member_names?.includes(c.name))?.id;
+          if (firstCharId) {
+            localStorage.setItem('characterId', firstCharId);
+          }
+        }
       }
     } catch (error) {
       console.error('Failed to fetch chat detail:', error);
