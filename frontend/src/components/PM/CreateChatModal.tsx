@@ -139,7 +139,7 @@ export default function CreateChatModal({
           disabled={selectedIds.length === 0}
           type="button"
         >
-          {selectedIds.length === 1 ? t('pm.createDirect') || 'Direktnachricht' : t('pm.createGroup') || 'Gruppe erstellen'}
+          Erstellen
         </button>
       </ModalActions>
     </Modal>
