@@ -51,6 +51,7 @@ def create_direct_chat_endpoint(
         name=chat.name,
         created_at=chat.created_at,
         member_count=len(chat.members),
+        member_names=[m.character.name for m in chat.members] if chat.members else [],
     )
 
 
@@ -73,6 +74,7 @@ def create_group_chat_endpoint(
         name=chat.name,
         created_at=chat.created_at,
         member_count=len(chat.members),
+        member_names=[m.character.name for m in chat.members] if chat.members else [],
     )
 
 
@@ -90,6 +92,7 @@ def list_chats_endpoint(
             name=c.name,
             created_at=c.created_at,
             member_count=len(c.members),
+            member_names=[m.character.name for m in c.members] if c.members else [],
         )
         for c in chats
     ]
@@ -116,6 +119,7 @@ def get_chat_endpoint(
         name=chat.name,
         created_at=chat.created_at,
         member_count=len(chat.members),
+        member_names=[m.character.name for m in chat.members] if chat.members else [],
         messages=[
             MessageRead(
                 id=m.id,

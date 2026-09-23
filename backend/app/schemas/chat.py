@@ -24,6 +24,7 @@ class ChatRead(BaseModel):
     name: Optional[str] = None
     created_at: datetime.datetime
     member_count: int = 0
+    member_names: List[str] = []  # Names of all members
 
 
 class ChatWithMessages(ChatRead):

@@ -9,6 +9,7 @@ interface Chat {
   name?: string;
   member_count: number;
   created_at: string;
+  member_names?: string[];
 }
 
 interface Character {
@@ -126,20 +127,21 @@ export default function ChatList({
         </div>
       ) : (
         <div className={styles.chatList}>
-          {chats.map((chat) => (
-            <div
-              key={chat.id}
-              className={styles.chatItem}
-              onClick={() => onSelectChat(chat)}
-            >
-              <div className={styles.chatName}>
-                {chat.type === 'group' ? chat.name : chat.name || t('pm.tabDirect')}
+          {chats.map((chat) => {
+            const displayName = chat.type === 'group' ? chat.name : chat.member_names?.join(' & ') || t('pm.tabDirect');
+            return (
+              <div
+                key={chat.id}
+                className={styles.chatItem}
+                onClick={() => onSelectChat(chat)}
+              >
+                <div className={styles.chatName}>{displayName}</div>
+                <div className={styles.chatMeta}>
+                  {chat.member_count} {t('pm.members', { count: chat.member_count })}
+                </div>
               </div>
-              <div className={styles.chatMeta}>
-                {chat.member_count} {t('pm.members', { count: chat.member_count })}
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>

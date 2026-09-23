@@ -20,6 +20,7 @@ interface Chat {
   name?: string;
   member_count: number;
   created_at: string;
+  member_names?: string[];
 }
 
 interface Message {
