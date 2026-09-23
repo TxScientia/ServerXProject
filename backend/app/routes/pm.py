@@ -12,6 +12,7 @@ from ..crud import (
     get_message,
     get_system_message,
     list_chats_for_character,
+    list_chats_for_account,
     list_messages,
     list_system_messages,
     respond_to_system_message,
@@ -77,11 +78,11 @@ def create_group_chat_endpoint(
 
 @router.get("/chats", response_model=List[ChatRead])
 def list_chats_endpoint(
-    character: Character = Depends(get_current_character),
+    current_user: Account = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    """List all chats the acting character is a member of."""
-    chats = list_chats_for_character(db, character.id)
+    """List all chats for all characters in this account."""
+    chats = list_chats_for_account(db, current_user.id)
     return [
         ChatRead(
             id=c.id,

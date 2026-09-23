@@ -69,6 +69,27 @@ def list_chats_for_character(db: Session, character_id: uuid.UUID) -> List[Chat]
     )
 
 
+def list_chats_for_account(db: Session, account_id: uuid.UUID) -> List[Chat]:
+    """All chats for any character in this account, sorted by latest message."""
+    from ..models import Character
+
+    # Get all character IDs for this account
+    character_ids = [c.id for c in db.query(Character.id).filter(Character.account_id == account_id).all()]
+
+    if not character_ids:
+        return []
+
+    # Get all chats where any of these characters is a member
+    return (
+        db.query(Chat)
+        .distinct()
+        .join(ChatMember)
+        .filter(ChatMember.character_id.in_(character_ids))
+        .order_by(Chat.created_at.desc())
+        .all()
+    )
+
+
 def send_message(
     db: Session, chat_id: uuid.UUID, from_character_id: uuid.UUID, body: dict
 ) -> Message:
