@@ -63,14 +63,18 @@ export default function PM() {
 
   const fetchChats = useCallback(async () => {
     try {
+      console.log('Fetching chats with headers:', authHeaders());
       const res = await fetch(apiUrl('/pm/chats'), {
         headers: authHeaders(),
       });
+      console.log('Fetch chats response status:', res.status);
       if (res.ok) {
         const data = await res.json();
+        console.log('Chats fetched:', data);
         setChats(data);
       } else {
-        console.error('Failed to fetch chats:', res.status);
+        const error = await res.json().catch(() => ({}));
+        console.error('Failed to fetch chats:', res.status, error);
       }
     } catch (error) {
       console.error('Failed to fetch chats:', error);
@@ -110,12 +114,18 @@ export default function PM() {
   };
 
   const handleCreateChat = (characterId: string) => {
+    console.log('handleCreateChat called with:', characterId);
     setPendingChatCharacterId(characterId);
     setShowCharacterPicker(true);
   };
 
   const handleConfirmCharacterAndCreate = async (actingCharacterId: string) => {
-    if (!pendingChatCharacterId) return;
+    console.log('handleConfirmCharacterAndCreate called', { actingCharacterId, pendingChatCharacterId });
+    if (!pendingChatCharacterId) {
+      console.error('No pending chat character ID set!');
+      alert('Fehler: Kein Charakter zum Chatten ausgewählt');
+      return;
+    }
 
     try {
       console.log('Creating direct chat with character ID:', pendingChatCharacterId);
@@ -129,12 +139,15 @@ export default function PM() {
         body: JSON.stringify({ character_id: pendingChatCharacterId }),
       });
 
+      console.log('Create chat response:', res.status);
       if (res.ok) {
         console.log('Chat created successfully');
         setShowCharacterPicker(false);
         setPendingChatCharacterId(null);
         localStorage.setItem('characterId', actingCharacterId);
-        fetchChats();
+        console.log('About to fetch chats...');
+        await fetchChats();
+        console.log('Chats fetched successfully');
       } else {
         const error = await res.json().catch(() => ({ detail: 'Unknown error' }));
         console.error('Failed to create chat:', res.status, error);
@@ -146,10 +159,10 @@ export default function PM() {
             errorMsg = error.detail;
           }
         }
-        alert(`Fehler: ${errorMsg}`);
+        alert(`Fehler beim Erstellen: ${errorMsg}`);
       }
     } catch (error) {
-      console.error('Failed to create chat:', error);
+      console.error('Exception in handleConfirmCharacterAndCreate:', error);
       alert(t('scene.saveError'));
     }
   };
