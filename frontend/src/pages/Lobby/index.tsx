@@ -11,6 +11,7 @@ export default function Lobby() {
   const [characters, setCharacters] = useState<Character[]>([]);
   const [showModal, setShowModal] = useState(false);
   const [form, setForm] = useState({ name: '', race: '', spec: '', gender: 'Männlich' });
+  const [pmUnreadCount, setPmUnreadCount] = useState(0);
   const navigate = useNavigate();
 
   const fetchCharacters = useCallback(() => {
@@ -27,9 +28,23 @@ export default function Lobby() {
       .catch(() => navigate('/'));
   }, [navigate]);
 
+  const fetchPmUnreadCount = useCallback(() => {
+    fetch(apiUrl('/pm/chats'), { headers: authHeaders() })
+      .then((res) => {
+        if (!res.ok) throw new Error();
+        return res.json();
+      })
+      .then((chats: any[]) => {
+        const total = chats.reduce((sum, chat) => sum + (chat.unread_count || 0), 0);
+        setPmUnreadCount(total);
+      })
+      .catch(() => {});
+  }, []);
+
   useEffect(() => {
     fetchCharacters();
-  }, [fetchCharacters]);
+    fetchPmUnreadCount();
+  }, [fetchCharacters, fetchPmUnreadCount]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -60,7 +75,7 @@ export default function Lobby() {
   };
 
   return (
-    <LobbyLayout>
+    <LobbyLayout pmUnreadCount={pmUnreadCount}>
       <h1 className={styles.heading}>{t('lobby.chooseCharacter')}</h1>
       <p className={styles.subheading}>{t('lobby.chooseCharacterSub')}</p>
       <div className={styles.actions}>

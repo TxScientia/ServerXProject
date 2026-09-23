@@ -20,6 +20,12 @@
   display: flex;
   flex-wrap: wrap;
   gap: clamp(1rem, 2vw, 2rem);
+  align-items: center;
+}
+
+.navItemWrapper {
+  position: relative;
+  display: inline-flex;
 }
 
 .right {

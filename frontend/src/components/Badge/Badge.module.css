@@ -2,29 +2,30 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 20px;
-  height: 20px;
-  padding: 0 4px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 3px;
   background: #ff6b6b;
   color: white;
   border-radius: 50%;
-  font-size: 0.7rem;
+  font-size: 0.65rem;
   font-weight: 700;
   line-height: 1;
 }
 
 /* Tab variant: inline next to tab text */
 .badge.tab {
-  margin-left: 6px;
+  margin-left: 8px;
 }
 
 /* Nav variant: positioned at bottom right corner */
 .badge.nav {
   position: absolute;
-  bottom: -4px;
-  right: -8px;
-  min-width: 22px;
-  height: 22px;
-  font-size: 0.65rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  bottom: -6px;
+  right: -6px;
+  min-width: 18px;
+  height: 18px;
+  font-size: 0.6rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  border: 2px solid #10131a;
 }
