@@ -155,8 +155,14 @@ export default function ThreadView({ chat, onBack, onRefresh }: ThreadViewProps)
             ))}
           </select>
         )}
-        <RichTextEditor value={body} onChange={setBody} />
-        <button className={styles.sendBtn} onClick={handleSendMessage} disabled={sending}>
+        <div className={styles.editorContainer}>
+          <RichTextEditor value={body} onChange={setBody} />
+        </div>
+        <button
+          className={styles.sendBtn}
+          onClick={handleSendMessage}
+          disabled={sending || !body.content || body.content.length === 0}
+        >
           {sending ? t('pm.sending') : t('pm.send')}
         </button>
       </div>

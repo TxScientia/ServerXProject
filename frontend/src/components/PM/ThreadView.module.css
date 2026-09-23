@@ -186,6 +186,7 @@
   cursor: pointer;
   transition: all 0.2s ease;
   min-width: 120px;
+  flex-shrink: 0;
 }
 
 .charSelector:hover {
@@ -198,9 +199,10 @@
   box-shadow: 0 0 0 2px rgba(100, 181, 246, 0.1);
 }
 
-.composer > div:nth-child(2) {
+.editorContainer {
   flex: 1;
   min-width: 200px;
+  display: flex;
 }
 
 .sendBtn {
