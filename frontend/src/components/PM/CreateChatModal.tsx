@@ -122,12 +122,6 @@ export default function CreateChatModal({
               onClick={() => handleSelectCharacter(char.id)}
               type="button"
             >
-              <input
-                type="checkbox"
-                checked={selectedIds.includes(char.id)}
-                readOnly
-                className={styles.checkbox}
-              />
               <span>{char.name}</span>
             </button>
           ))
