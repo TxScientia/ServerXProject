@@ -173,10 +173,34 @@
   gap: 12px;
   align-items: flex-end;
   box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.2);
+  flex-wrap: wrap;
 }
 
-.composer > div:first-child {
+.charSelector {
+  padding: 10px 12px;
+  background: var(--bg-secondary);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 6px;
+  color: var(--color-text);
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 120px;
+}
+
+.charSelector:hover {
+  border-color: #64b5f6;
+}
+
+.charSelector:focus {
+  outline: none;
+  border-color: #64b5f6;
+  box-shadow: 0 0 0 2px rgba(100, 181, 246, 0.1);
+}
+
+.composer > div:nth-child(2) {
   flex: 1;
+  min-width: 200px;
 }
 
 .sendBtn {

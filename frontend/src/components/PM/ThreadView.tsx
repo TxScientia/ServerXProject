@@ -31,13 +31,34 @@ interface ThreadViewProps {
   onRefresh: () => void;
 }
 
+interface Character {
+  id: string;
+  name: string;
+}
+
 export default function ThreadView({ chat, onBack, onRefresh }: ThreadViewProps) {
   const { t } = useTranslation();
-  const characterId = localStorage.getItem('characterId');
+  const [characterId, setCharacterId] = useState(localStorage.getItem('characterId') || '');
+  const [characters, setCharacters] = useState<Character[]>([]);
   const [messages, setMessages] = useState(chat.messages || []);
   const [body, setBody] = useState(EMPTY_DOC);
   const [sending, setSending] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    // Fetch all characters to filter those in the chat
+    fetch(apiUrl('/characters'), { headers: authHeaders() })
+      .then((res) => {
+        if (!res.ok) throw new Error();
+        return res.json();
+      })
+      .then((data: Character[]) => {
+        // Filter to only characters that are in this chat
+        const chatChars = data.filter((c) => chat.member_names?.includes(c.name));
+        setCharacters(chatChars);
+      })
+      .catch(() => {});
+  }, [chat.member_names]);
 
   useEffect(() => {
     scrollToBottom();
@@ -61,7 +82,7 @@ export default function ThreadView({ chat, onBack, onRefresh }: ThreadViewProps)
         headers: {
           'Content-Type': 'application/json',
           ...authHeaders(),
-          ...characterHeaders(),
+          'X-Character-Id': characterId,
         },
         body: JSON.stringify({ body }),
       });
@@ -118,6 +139,22 @@ export default function ThreadView({ chat, onBack, onRefresh }: ThreadViewProps)
       </div>
 
       <div className={styles.composer}>
+        {characters.length > 1 && (
+          <select
+            value={characterId}
+            onChange={(e) => {
+              setCharacterId(e.target.value);
+              localStorage.setItem('characterId', e.target.value);
+            }}
+            className={styles.charSelector}
+          >
+            {characters.map((char) => (
+              <option key={char.id} value={char.id}>
+                {char.name}
+              </option>
+            ))}
+          </select>
+        )}
         <RichTextEditor value={body} onChange={setBody} />
         <button className={styles.sendBtn} onClick={handleSendMessage} disabled={sending}>
           {sending ? t('pm.sending') : t('pm.send')}
