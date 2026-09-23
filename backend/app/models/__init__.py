@@ -6,7 +6,9 @@ Importing this package registers every table on ``Base.metadata`` — required f
 """
 from .account import Account
 from .character import Character
+from .chat import Chat, ChatMember
 from .membership import Membership
+from .message import Message, SystemMessage
 from .place import Place
 from .post import Post
 from .rank import Rank
@@ -17,7 +19,10 @@ from .tag import SpaceTag, Tag
 __all__ = [
     "Account",
     "Character",
+    "Chat",
+    "ChatMember",
     "Membership",
+    "Message",
     "Place",
     "Post",
     "Rank",
@@ -25,5 +30,6 @@ __all__ = [
     "Space",
     "StorybookDetail",
     "SpaceTag",
+    "SystemMessage",
     "Tag",
 ]

@@ -22,3 +22,9 @@ class Account(Base):
     characters = relationship(
         "Character", back_populates="account", cascade="all, delete-orphan"
     )
+    system_messages_sent = relationship(
+        "SystemMessage", foreign_keys="SystemMessage.from_account_id", back_populates="from_account"
+    )
+    system_messages_received = relationship(
+        "SystemMessage", foreign_keys="SystemMessage.to_account_id", back_populates="to_account"
+    )
