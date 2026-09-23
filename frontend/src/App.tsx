@@ -13,6 +13,7 @@ import StoryBookNewsPage from './pages/StoryBookNews';
 import GesuchePage from './pages/Gesuche';
 import StoryBookGesuchePage from './pages/StoryBookGesuche';
 import AdminPage from './pages/Admin';
+import CharacterEditorPage from './pages/CharacterEditorPage';
 
 export default function App() {
   return (
@@ -32,6 +33,7 @@ export default function App() {
           <Route path="/storybooks/:id/news" element={<StoryBookNewsPage />} />
           <Route path="/storybooks/:id/gesuche" element={<StoryBookGesuchePage />} />
           <Route path="/storybooks/:id/settings" element={<PlotSettings />} />
+          <Route path="/characters/:characterId/editor" element={<CharacterEditorPage />} />
         </Routes>
       </WebSocketProvider>
     </BrowserRouter>
