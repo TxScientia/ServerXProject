@@ -5,6 +5,19 @@ from .account import (
     get_account_by_login_name,
 )
 from .character import create_character, list_all_characters
+from .chat import (
+    create_direct_chat,
+    create_group_chat,
+    get_chat,
+    get_message,
+    get_system_message,
+    list_chats_for_character,
+    list_messages,
+    list_system_messages,
+    respond_to_system_message,
+    send_message,
+    send_system_message,
+)
 from .place import (
     create_place,
     delete_place,
@@ -44,6 +57,17 @@ __all__ = [
     "get_account_by_login_name",
     "create_character",
     "list_all_characters",
+    "create_direct_chat",
+    "create_group_chat",
+    "get_chat",
+    "get_message",
+    "get_system_message",
+    "list_chats_for_character",
+    "list_messages",
+    "list_system_messages",
+    "respond_to_system_message",
+    "send_message",
+    "send_system_message",
     "create_place",
     "delete_place",
     "get_place",
