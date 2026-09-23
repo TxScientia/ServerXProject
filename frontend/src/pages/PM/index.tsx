@@ -245,7 +245,6 @@ export default function PM() {
               loading={loading}
               onSelectChat={handleSelectChat}
               onRefresh={handleRefresh}
-              onCreateChat={handleCreateChat}
             />
           )}
         </div>
