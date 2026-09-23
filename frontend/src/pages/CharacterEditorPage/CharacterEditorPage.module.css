@@ -1,0 +1,32 @@
+.page {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: clamp(1rem, 4vw, 4.5rem);
+  isolation: isolate;
+  background: #050707;
+}
+
+.page::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    linear-gradient(rgba(5, 7, 7, 0.42), rgba(5, 7, 7, 0.72)),
+    url('/pictures/rosesbackgroundWWC.webp');
+  background-position: center top;
+  background-size: cover;
+  transform: translateZ(0);
+}
+
+.loading,
+.error {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  color: var(--color-text);
+}

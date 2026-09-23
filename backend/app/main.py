@@ -35,9 +35,12 @@ def init_db():
         try:
             Base.metadata.create_all(bind=engine)
             inspector = inspect(engine)
+            account_columns = {column["name"] for column in inspector.get_columns("accounts")}
             character_columns = {column["name"] for column in inspector.get_columns("characters")}
-            if "editor_data" not in character_columns:
-                with engine.begin() as conn:
+            with engine.begin() as conn:
+                if "is_global_admin" not in account_columns:
+                    conn.execute(text("ALTER TABLE accounts ADD COLUMN is_global_admin BOOLEAN NOT NULL DEFAULT 0"))
+                if "editor_data" not in character_columns:
                     conn.execute(text("ALTER TABLE characters ADD COLUMN editor_data TEXT"))
             return
         except OperationalError:
