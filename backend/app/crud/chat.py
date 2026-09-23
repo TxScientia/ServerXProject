@@ -1,7 +1,7 @@
 import uuid
 from typing import List, Optional
 
-from sqlalchemy import and_, or_
+from sqlalchemy import and_, or_, func, case
 from sqlalchemy.orm import Session
 
 from ..models import Chat, ChatMember, Message, SystemMessage, Character
@@ -18,9 +18,9 @@ def create_direct_chat(db: Session, character_id_1: uuid.UUID, character_id_2: u
         .group_by(Chat.id)
         .having(
             and_(
-                db.func.count(ChatMember.id) == 2,
-                db.func.sum(
-                    db.case(
+                func.count(ChatMember.id) == 2,
+                func.sum(
+                    case(
                         (ChatMember.character_id == character_id_1, 1),
                         else_=0,
                     )
