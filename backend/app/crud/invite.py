@@ -1,8 +1,9 @@
 from datetime import datetime
+from typing import List, Optional
 
 from sqlalchemy.orm import Session
 
-from ..models import CharacterInvite, PlotLink
+from ..models import CharacterInvite, Membership, PlotLink
 
 
 def create_character_invite(
@@ -21,14 +22,14 @@ def create_character_invite(
     return invite
 
 
-def get_character_invite(db: Session, invite_id: str) -> CharacterInvite | None:
+def get_character_invite(db: Session, invite_id: str) -> Optional[CharacterInvite]:
     """Get a character invite by ID."""
     return db.query(CharacterInvite).filter(CharacterInvite.id == invite_id).first()
 
 
 def get_pending_character_invites_for_character(
     db: Session, character_id: str
-) -> list[CharacterInvite]:
+) -> List[CharacterInvite]:
     """Get all pending character invites for a character."""
     return (
         db.query(CharacterInvite)
@@ -70,12 +71,12 @@ def create_plot_link(db: Session, source_space_id: str, target_space_id: str, cr
     return link
 
 
-def get_plot_link(db: Session, link_id: str) -> PlotLink | None:
+def get_plot_link(db: Session, link_id: str) -> Optional[PlotLink]:
     """Get a plot link by ID."""
     return db.query(PlotLink).filter(PlotLink.id == link_id).first()
 
 
-def get_pending_plot_links_for_space(db: Session, space_id: str) -> list[PlotLink]:
+def get_pending_plot_links_for_space(db: Session, space_id: str) -> List[PlotLink]:
     """Get all pending plot links where this space is the target (invitations sent to it)."""
     return (
         db.query(PlotLink)
@@ -84,7 +85,7 @@ def get_pending_plot_links_for_space(db: Session, space_id: str) -> list[PlotLin
     )
 
 
-def get_accepted_linked_spaces(db: Session, space_id: str) -> list[str]:
+def get_accepted_linked_spaces(db: Session, space_id: str) -> List[str]:
     """Get all spaces linked to this one (bidirectional)."""
     linked = (
         db.query(PlotLink)
@@ -120,3 +121,53 @@ def decline_plot_link(db: Session, link_id: str) -> None:
     if link:
         db.delete(link)
         db.commit()
+
+
+def handle_invite_response(db: Session, message, action: str) -> None:
+    """Perform the domain side-effect for an accepted/declined invite system message.
+
+    Called after the generic system-message response is recorded. Looks at the
+    message type + data to accept/decline the underlying CharacterInvite or PlotLink.
+    Accept → create membership / mark link accepted. Decline → delete the record.
+    """
+    data = message.data or {}
+    accept = action == "accept"
+
+    if message.type == "invite":
+        invite_id = data.get("invite_id")
+        if not invite_id:
+            return
+        invite = get_character_invite(db, invite_id)
+        if not invite:
+            return
+        if accept:
+            accept_character_invite(db, invite_id)
+            # Avoid a duplicate membership if one somehow already exists.
+            existing = (
+                db.query(Membership)
+                .filter_by(space_id=invite.space_id, character_id=invite.character_id)
+                .first()
+            )
+            if not existing:
+                db.add(
+                    Membership(
+                        space_id=invite.space_id,
+                        character_id=invite.character_id,
+                        role="member",
+                    )
+                )
+                db.commit()
+        else:
+            decline_character_invite(db, invite_id)
+
+    elif message.type == "plot_link":
+        link_id = data.get("link_id")
+        if not link_id:
+            return
+        link = get_plot_link(db, link_id)
+        if not link:
+            return
+        if accept:
+            accept_plot_link(db, link_id)
+        else:
+            decline_plot_link(db, link_id)

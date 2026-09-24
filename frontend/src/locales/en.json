@@ -142,7 +142,19 @@
     "rankLoadError": "Could not load ranks.",
     "rankSaveError": "Error while saving rank.",
     "rankDeleteError": "Error while deleting rank.",
-    "backToPlot": "← To plot"
+    "backToPlot": "← To plot",
+    "members": "Members",
+    "linkedPlots": "Linked Worlds",
+    "inviteCharacter": "Invite character",
+    "invitePlot": "Link world",
+    "noMembers": "No members yet.",
+    "noLinkedPlots": "No linked worlds yet.",
+    "pendingLinks": "Pending requests",
+    "pending": "Pending",
+    "inviteSent": "Invite sent",
+    "inviteError": "Failed to send invite.",
+    "membersLoadError": "Failed to load members.",
+    "linkedLoadError": "Failed to load linked worlds."
   },
   "editor": {
     "toolbar": "Formatting",

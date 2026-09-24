@@ -38,8 +38,12 @@ export default function InviteModal({
         return res.json();
       })
       .then((data) => {
-        const filtered = data.filter((item: Item) => !excludeIds.includes(item.id));
-        setItems(filtered);
+        // Plots expose `title`; characters expose `name`. Normalize to `name` for display.
+        const normalized: Item[] = data.map((item: any) => ({
+          id: String(item.id),
+          name: item.name ?? item.title ?? '',
+        }));
+        setItems(normalized.filter((item) => !excludeIds.includes(item.id)));
       })
       .catch(() => {})
       .finally(() => setLoading(false));

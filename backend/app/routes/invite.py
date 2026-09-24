@@ -1,263 +1,179 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+import uuid
+
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
+from ..auth import get_current_character
 from ..crud import (
-    accept_character_invite,
-    accept_plot_link,
     can_edit_space,
     create_character_invite,
     create_plot_link,
-    decline_character_invite,
-    decline_plot_link,
     get_accepted_linked_spaces,
-    get_character_invite,
-    get_plot_link,
-    get_pending_character_invites_for_character,
+    get_membership,
     get_pending_plot_links_for_space,
+    get_space_creator,
     get_storybook,
+    is_member,
+    list_members,
     send_system_message,
 )
 from ..database import get_db
+from ..models import Character
 from ..schemas import (
-    CharacterInviteAction,
     CharacterInviteCreate,
     CharacterInviteRead,
-    PlotLinkAction,
     PlotLinkCreate,
     PlotLinkRead,
 )
-from ..security import get_current_character, get_current_user
 
 router = APIRouter()
+
+
+# ===== MEMBERS =====
+
+
+@router.get("/storybooks/{space_id}/members")
+def get_members(
+    space_id: str,
+    character: Character = Depends(get_current_character),
+    db: Session = Depends(get_db),
+):
+    """List members of a storybook. Any member may view."""
+    space = get_storybook(db, space_id)
+    if not space:
+        raise HTTPException(status_code=404, detail="Storybook not found")
+    if not is_member(db, space_id, character.id):
+        raise HTTPException(status_code=403, detail="Not a member of this plot")
+
+    return [
+        {
+            "character_id": str(m.character_id),
+            "name": m.character.name,
+            "role": m.role,
+        }
+        for m in list_members(db, space_id)
+    ]
 
 
 # ===== CHARACTER INVITES =====
 
 
 @router.post("/storybooks/{space_id}/invites/characters", response_model=CharacterInviteRead)
-async def invite_character(
+def invite_character(
     space_id: str,
     invite_data: CharacterInviteCreate,
-    character: dict = Depends(get_current_character),
+    character: Character = Depends(get_current_character),
     db: Session = Depends(get_db),
 ):
-    """Invite a character to join a storybook. Requires admin/creator role."""
+    """Invite a character to join a storybook. Requires creator/editor role."""
     space = get_storybook(db, space_id)
     if not space:
         raise HTTPException(status_code=404, detail="Storybook not found")
-
-    if not can_edit_space(db, space_id, character["id"]):
+    if not can_edit_space(db, space_id, character.id):
         raise HTTPException(status_code=403, detail="Not authorized to invite members")
 
-    # Check if character already a member
-    from .space import get_membership
-
-    existing = get_membership(db, space_id, invite_data.character_id)
-    if existing:
+    target = db.query(Character).filter(Character.id == invite_data.character_id).first()
+    if not target:
+        raise HTTPException(status_code=404, detail="Character not found")
+    if get_membership(db, space_id, invite_data.character_id):
         raise HTTPException(status_code=400, detail="Character is already a member")
 
-    # Create the invite
-    invite = create_character_invite(
-        db, invite_data.character_id, space_id, character["id"]
-    )
+    invite = create_character_invite(db, invite_data.character_id, space_id, character.id)
 
-    # Send system message to the invited character
+    # Notify the invited character's account via the system-message inbox.
     send_system_message(
         db,
-        invite_data.character_id,
-        f"You are invited to join {space.title}",
-        system_type="character_invite",
-        metadata={"invite_id": str(invite.id), "space_id": space_id},
+        from_account_id=character.account_id,
+        to_account_id=target.account_id,
+        type_="invite",
+        content=f"{character.name} lädt {target.name} ein, '{space.title}' beizutreten.",
+        data={"invite_id": str(invite.id), "space_id": str(space_id)},
+        action_required=True,
     )
-
     return invite
-
-
-@router.get("/invites/characters/pending", response_model=list[CharacterInviteRead])
-async def get_pending_character_invites(
-    character: dict = Depends(get_current_character),
-    db: Session = Depends(get_db),
-):
-    """Get all pending character invites for the current character."""
-    return get_pending_character_invites_for_character(db, character["id"])
-
-
-@router.post("/invites/characters/{invite_id}/accept")
-async def accept_character_invite_endpoint(
-    invite_id: str,
-    character: dict = Depends(get_current_character),
-    db: Session = Depends(get_db),
-):
-    """Accept a character invite to join a storybook."""
-    invite = get_character_invite(db, invite_id)
-    if not invite:
-        raise HTTPException(status_code=404, detail="Invite not found")
-
-    if invite.character_id != character["id"]:
-        raise HTTPException(status_code=403, detail="This invite is not for you")
-
-    # Accept the invite
-    invite = accept_character_invite(db, invite_id)
-
-    # Create membership
-    from ..models import Membership
-
-    membership = Membership(
-        space_id=invite.space_id, character_id=invite.character_id, role="member"
-    )
-    db.add(membership)
-    db.commit()
-
-    return {"status": "accepted"}
-
-
-@router.post("/invites/characters/{invite_id}/decline")
-async def decline_character_invite_endpoint(
-    invite_id: str,
-    character: dict = Depends(get_current_character),
-    db: Session = Depends(get_db),
-):
-    """Decline and delete a character invite."""
-    invite = get_character_invite(db, invite_id)
-    if not invite:
-        raise HTTPException(status_code=404, detail="Invite not found")
-
-    if invite.character_id != character["id"]:
-        raise HTTPException(status_code=403, detail="This invite is not for you")
-
-    decline_character_invite(db, invite_id)
-    return {"status": "declined"}
 
 
 # ===== PLOT LINKS =====
 
 
 @router.post("/storybooks/{space_id}/linked-plots/invite", response_model=PlotLinkRead)
-async def invite_plot_to_link(
+def invite_plot_to_link(
     space_id: str,
     link_data: PlotLinkCreate,
-    character: dict = Depends(get_current_character),
+    character: Character = Depends(get_current_character),
     db: Session = Depends(get_db),
 ):
-    """Invite another plot to link worlds. Requires admin/creator role."""
+    """Invite another plot to link worlds. Requires creator/editor role on the source."""
     source_space = get_storybook(db, space_id)
     if not source_space:
         raise HTTPException(status_code=404, detail="Source storybook not found")
-
-    if not can_edit_space(db, space_id, character["id"]):
+    if not can_edit_space(db, space_id, character.id):
         raise HTTPException(status_code=403, detail="Not authorized to link plots")
 
     target_space = get_storybook(db, link_data.target_space_id)
     if not target_space:
         raise HTTPException(status_code=404, detail="Target storybook not found")
-
-    if space_id == link_data.target_space_id:
+    if str(space_id) == str(link_data.target_space_id):
         raise HTTPException(status_code=400, detail="Cannot link a plot to itself")
 
-    # Create the plot link
-    link = create_plot_link(db, space_id, link_data.target_space_id, character["id"])
+    link = create_plot_link(db, space_id, link_data.target_space_id, character.id)
 
-    # Send system message to the target plot creator
-    # Find the creator of the target plot
-    from ..crud import get_membership
-
-    creator_member = (
-        db.query(get_membership)
-        .filter_by(space_id=link_data.target_space_id, role="creator")
-        .first()
-    )
-    if creator_member:
-        send_system_message(
-            db,
-            creator_member.character_id,
-            f"Plot '{source_space.title}' wants to link with your world '{target_space.title}'",
-            system_type="plot_link",
-            metadata={"link_id": str(link.id), "source_space_id": space_id},
+    # The link invite goes to the TARGET plot's creator.
+    creator = get_space_creator(db, link_data.target_space_id)
+    if creator:
+        creator_char = (
+            db.query(Character).filter(Character.id == creator.character_id).first()
         )
-
+        if creator_char:
+            send_system_message(
+                db,
+                from_account_id=character.account_id,
+                to_account_id=creator_char.account_id,
+                type_="plot_link",
+                content=(
+                    f"'{source_space.title}' möchte sich mit deiner Welt "
+                    f"'{target_space.title}' verbinden."
+                ),
+                data={"link_id": str(link.id), "source_space_id": str(space_id)},
+                action_required=True,
+            )
     return link
 
 
 @router.get("/storybooks/{space_id}/linked-plots")
-async def get_plot_links(
+def get_plot_links(
     space_id: str,
-    character: dict = Depends(get_current_character),
+    character: Character = Depends(get_current_character),
     db: Session = Depends(get_db),
 ):
-    """Get linked plots and pending plot link invitations."""
+    """Accepted linked plots + pending link invitations for this space."""
     space = get_storybook(db, space_id)
     if not space:
         raise HTTPException(status_code=404, detail="Storybook not found")
-
-    # Check membership
-    from ..crud import is_member
-
-    if not is_member(db, space_id, character["id"]):
+    if not is_member(db, space_id, character.id):
         raise HTTPException(status_code=403, detail="Not a member of this plot")
 
-    linked_space_ids = get_accepted_linked_spaces(db, space_id)
-    pending_links = get_pending_plot_links_for_space(db, space_id)
-
-    # Fetch linked space details
     linked_spaces = []
-    for linked_id in linked_space_ids:
-        linked_space = get_storybook(db, linked_id)
-        if linked_space:
+    for linked_id in get_accepted_linked_spaces(db, space_id):
+        linked = get_storybook(db, linked_id)
+        if linked:
             linked_spaces.append(
                 {
-                    "id": linked_space.id,
-                    "title": linked_space.title,
-                    "description": linked_space.description,
+                    "id": str(linked.id),
+                    "title": linked.title,
+                    "description": linked.description,
                 }
             )
 
-    return {
-        "linked_spaces": linked_spaces,
-        "pending_invitations": [
+    pending = []
+    for link in get_pending_plot_links_for_space(db, space_id):
+        source = get_storybook(db, link.source_space_id)
+        pending.append(
             {
-                "id": link.id,
-                "source_space_id": link.source_space_id,
-                "source_title": get_storybook(db, link.source_space_id).title,
-                "status": link.status,
+                "id": str(link.id),
+                "source_space_id": str(link.source_space_id),
+                "source_title": source.title if source else "?",
             }
-            for link in pending_links
-        ],
-    }
+        )
 
-
-@router.post("/linked-plots/{link_id}/accept")
-async def accept_plot_link_endpoint(
-    link_id: str,
-    character: dict = Depends(get_current_character),
-    db: Session = Depends(get_db),
-):
-    """Accept a plot link invitation."""
-    link = get_plot_link(db, link_id)
-    if not link:
-        raise HTTPException(status_code=404, detail="Plot link not found")
-
-    # Verify the character is the creator of the target space
-    if not can_edit_space(db, link.target_space_id, character["id"]):
-        raise HTTPException(status_code=403, detail="Not authorized to accept this link")
-
-    accept_plot_link(db, link_id)
-    return {"status": "accepted"}
-
-
-@router.post("/linked-plots/{link_id}/decline")
-async def decline_plot_link_endpoint(
-    link_id: str,
-    character: dict = Depends(get_current_character),
-    db: Session = Depends(get_db),
-):
-    """Decline and delete a plot link invitation."""
-    link = get_plot_link(db, link_id)
-    if not link:
-        raise HTTPException(status_code=404, detail="Plot link not found")
-
-    # Verify the character is the creator of the target space
-    if not can_edit_space(db, link.target_space_id, character["id"]):
-        raise HTTPException(status_code=403, detail="Not authorized to decline this link")
-
-    decline_plot_link(db, link_id)
-    return {"status": "declined"}
+    return {"linked_spaces": linked_spaces, "pending_invitations": pending}

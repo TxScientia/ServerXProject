@@ -12,6 +12,7 @@ from ..crud import (
     get_message,
     get_system_message,
     get_unread_count_for_account,
+    handle_invite_response,
     list_chats_for_character,
     list_chats_for_account,
     list_messages,
@@ -217,6 +218,10 @@ def respond_to_system_message_endpoint(
     if not message.action_required or message.action_required == "false":
         raise HTTPException(status_code=400, detail="Keine Antwort erforderlich")
     respond_to_system_message(db, message_id, data.action)
+    # Perform the domain side-effect for invite/plot_link messages (create membership,
+    # accept link, or delete the declined record).
+    if message.type in ("invite", "plot_link"):
+        handle_invite_response(db, message, data.action)
     return {"ok": True}
 
 
