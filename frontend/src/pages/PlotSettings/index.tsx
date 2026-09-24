@@ -31,7 +31,7 @@ type RankDraft = {
   weight: number;
 };
 
-type SettingsSection = 'general' | 'tree' | 'ranks';
+type SettingsSection = 'general' | 'tree' | 'ranks' | 'members' | 'linked-plots';
 
 type StatusMessage = {
   kind: 'ok' | 'error';
@@ -246,6 +246,18 @@ export default function PlotSettings() {
       >
         {t('plotSettings.ranks')}
       </button>
+      <button
+        className={`${styles.sideItem} ${section === 'members' ? styles.active : ''}`.trim()}
+        onClick={() => setSection('members')}
+      >
+        {t('plotSettings.members')}
+      </button>
+      <button
+        className={`${styles.sideItem} ${section === 'linked-plots' ? styles.active : ''}`.trim()}
+        onClick={() => setSection('linked-plots')}
+      >
+        {t('plotSettings.linkedPlots')}
+      </button>
       <hr className={styles.divider} />
       {['nav.mitglieder', 'nav.news'].map((key) => (
         <button key={key} className={styles.sideItem} disabled title={t('common.comingSoon')}>
@@ -360,6 +372,16 @@ export default function PlotSettings() {
           places={storybook.places}
           onChanged={fetchStorybook}
         />
+      ) : section === 'members' ? (
+        <div className={styles.membersSection}>
+          <h2>{t('plotSettings.members')}</h2>
+          <p className={styles.muted}>Mitgliederverwaltung kommt bald...</p>
+        </div>
+      ) : section === 'linked-plots' ? (
+        <div className={styles.linkedPlotsSection}>
+          <h2>{t('plotSettings.linkedPlots')}</h2>
+          <p className={styles.muted}>Verlinkte Welten kommt bald...</p>
+        </div>
       ) : (
         <div className={styles.rankSection}>
           {ranks.length > 0 && (

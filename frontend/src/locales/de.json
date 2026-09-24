@@ -142,7 +142,9 @@
     "rankLoadError": "Ränge konnten nicht geladen werden.",
     "rankSaveError": "Fehler beim Speichern des Rangs.",
     "rankDeleteError": "Fehler beim Löschen des Rangs.",
-    "backToPlot": "← Zum Plot"
+    "backToPlot": "← Zum Plot",
+    "members": "Mitglieder",
+    "linkedPlots": "Verlinkte Welten"
   },
   "editor": {
     "toolbar": "Formatierung",
