@@ -4,7 +4,12 @@ import { apiUrl, authHeaders } from '../../api';
 import SystemMessageCard, { SystemMessage } from './SystemMessageCard/SystemMessageCard';
 import styles from './SystemMessagesTab.module.css';
 
-export default function SystemMessagesTab() {
+interface SystemMessagesTabProps {
+  /** Called after a message is answered, so the parent can refresh the unread badge. */
+  onResponded?: () => void;
+}
+
+export default function SystemMessagesTab({ onResponded }: SystemMessagesTabProps) {
   const { t } = useTranslation();
   const [messages, setMessages] = useState<SystemMessage[]>([]);
   const [loading, setLoading] = useState(true);
@@ -39,6 +44,7 @@ export default function SystemMessagesTab() {
 
       if (res.ok) {
         fetchSystemMessages();
+        onResponded?.();
       }
     } catch (error) {
       console.error('Failed to respond to system message:', error);

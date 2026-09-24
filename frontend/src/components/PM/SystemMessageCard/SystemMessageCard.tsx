@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next';
+import Card from '../../Card';
 import styles from './SystemMessageCard.module.css';
 
 export interface SystemMessage {
@@ -54,35 +55,37 @@ export default function SystemMessageCard({ msg, onRespond }: SystemMessageCardP
   const showActions = msg.action_required && !msg.response && buttons.length > 0;
 
   return (
-    <div className={styles.card}>
-      <div className={styles.header}>
-        <span className={styles.type}>{t(TYPE_LABEL_KEYS[msg.type] ?? msg.type)}</span>
-        <span className={styles.timestamp}>
-          {new Date(msg.created_at).toLocaleString('de-CH')}
-        </span>
-      </div>
-
-      <p className={styles.content}>{msg.content}</p>
-
-      {showActions && (
-        <div className={styles.actions}>
-          {buttons.map((btn) => (
-            <button
-              key={btn.action}
-              className={`${styles.actionBtn} ${btn.primary ? styles.primary : ''}`.trim()}
-              onClick={() => onRespond(msg.id, btn.action)}
-            >
-              {t(btn.labelKey)}
-            </button>
-          ))}
+    <div className={styles.wrapper}>
+      <Card>
+        <div className={styles.header}>
+          <span className={styles.type}>{t(TYPE_LABEL_KEYS[msg.type] ?? msg.type)}</span>
+          <span className={styles.timestamp}>
+            {new Date(msg.created_at).toLocaleString('de-CH')}
+          </span>
         </div>
-      )}
 
-      {msg.response && (
-        <div className={styles.responded}>
-          {t('pm.answered', { action: msg.response.action })}
-        </div>
-      )}
+        <p className={styles.content}>{msg.content}</p>
+
+        {showActions && (
+          <div className={styles.actions}>
+            {buttons.map((btn) => (
+              <button
+                key={btn.action}
+                className={`${styles.actionBtn} ${btn.primary ? styles.primary : ''}`.trim()}
+                onClick={() => onRespond(msg.id, btn.action)}
+              >
+                {t(btn.labelKey)}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {msg.response && (
+          <div className={styles.responded}>
+            {t('pm.answered', { action: msg.response.action })}
+          </div>
+        )}
+      </Card>
     </div>
   );
 }

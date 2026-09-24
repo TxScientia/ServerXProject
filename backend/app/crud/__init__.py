@@ -6,6 +6,7 @@ from .account import (
 )
 from .character import create_character, list_all_characters
 from .chat import (
+    count_unread_system_messages,
     create_direct_chat,
     create_group_chat,
     get_chat,
@@ -73,6 +74,7 @@ from .space import (
 __all__ = [
     "accept_character_invite",
     "accept_plot_link",
+    "count_unread_system_messages",
     "create_account",
     "create_character",
     "create_character_invite",

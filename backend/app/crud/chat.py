@@ -165,6 +165,24 @@ def list_system_messages(
     return query.order_by(SystemMessage.created_at.desc()).all()
 
 
+def count_unread_system_messages(db: Session, account_id: uuid.UUID) -> int:
+    """Count system messages received by the account that still need attention.
+
+    Unread = sent TO this account, action-required, and not yet responded to.
+    (System messages have no per-message read flag; a pending action is the
+    meaningful 'new/unread' signal for the badge.)
+    """
+    return (
+        db.query(SystemMessage)
+        .filter(
+            SystemMessage.to_account_id == account_id,
+            SystemMessage.action_required == "true",
+            SystemMessage.response.is_(None),
+        )
+        .count()
+    )
+
+
 def respond_to_system_message(
     db: Session, message_id: uuid.UUID, action: str
 ) -> SystemMessage:
