@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import RichTextEditor from '../RichTextEditor';
 import RichText from '../RichTextEditor/RichText';
 import { EMPTY_DOC, isEmptyDoc } from '../RichTextEditor/schema';
-import { apiUrl, authHeaders, characterHeaders } from '../../api';
+import { apiUrl, authHeaders } from '../../api';
 import styles from './ThreadView.module.css';
 
 interface Message {

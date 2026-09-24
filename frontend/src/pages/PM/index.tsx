@@ -151,7 +151,6 @@ export default function PM() {
         // Automatically select and enter the new chat
         await handleSelectChat(newChat);
       } else {
-        const error = await res.json().catch(() => ({ detail: 'Unknown error' }));
         alert('Fehler beim Erstellen des Chats');
       }
     } catch (error) {
@@ -179,7 +178,6 @@ export default function PM() {
         // Automatically select and enter the new chat
         await handleSelectChat(newChat);
       } else {
-        const error = await res.json().catch(() => ({ detail: 'Unknown error' }));
         alert('Fehler beim Erstellen der Gruppe');
       }
     } catch (error) {

@@ -124,7 +124,8 @@ export default function ChatList({
       ) : (
         <div className={styles.chatList}>
           {chats.map((chat) => {
-            const displayName = chat.type === 'group' ? chat.name : chat.member_names?.join(' & ') || t('pm.tabDirect');
+            const displayName =
+              (chat.type === 'group' ? chat.name : chat.member_names?.join(' & ')) || t('pm.tabDirect');
             return (
               <ChatCard
                 key={chat.id}
