@@ -19,6 +19,7 @@ from .crud import (
 )
 from .routes.accounts import router as accounts_router
 from .routes.characters import router as characters_router
+from .routes.invite import router as invite_router
 from .routes.pm import router as pm_router
 from .routes.residents import router as residents_router
 from .routes.storybooks import router as storybooks_router
@@ -81,6 +82,7 @@ app.add_middleware(
 
 app.include_router(router=accounts_router)
 app.include_router(router=characters_router)
+app.include_router(router=invite_router)
 app.include_router(router=pm_router)
 app.include_router(router=residents_router)
 app.include_router(router=storybooks_router)
