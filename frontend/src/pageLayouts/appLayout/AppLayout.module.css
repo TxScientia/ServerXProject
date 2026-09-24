@@ -1,9 +1,10 @@
 .shell {
-  min-height: 100vh;
+  height: 100vh;
   display: flex;
   flex-direction: column;
   background: #070808;
   color: var(--color-text);
+  overflow: hidden;
 }
 
 /* --- top navbar --- */
@@ -100,6 +101,7 @@
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: var(--radius-md);
   overflow: auto;
+  min-height: 0;
 }
 
 /* --- character sidebar --- */

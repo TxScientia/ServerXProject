@@ -89,6 +89,11 @@ export default function PM() {
     fetchChats();
   }, []);
 
+  const handleTabChange = (tab: TabType) => {
+    setActiveTab(tab);
+    setSelectedChat(null);
+  };
+
   const handleSelectChat = async (chat: Chat) => {
     try {
       // Immediately mark this chat as read in local state
@@ -102,7 +107,7 @@ export default function PM() {
         setSelectedChat(detail);
 
         // Auto-select first character from chat that belongs to this account
-        if (chat.member_names && chat.member_names.length > 0 && !localStorage.getItem('characterId')) {
+        if (chat.member_names && chat.member_names.length > 0) {
           const firstCharId = characters.find(c => chat.member_names?.includes(c.name))?.id;
           if (firstCharId) {
             localStorage.setItem('characterId', firstCharId);
@@ -127,21 +132,14 @@ export default function PM() {
     }
   };
 
-  const handleCreateDirectChat = async (characterId: string) => {
+  const handleCreateDirectChat = async (characterId: string, creatorCharacterId: string) => {
     try {
-      // Use first character from account as the sender
-      const firstChar = characters[0];
-      if (!firstChar) {
-        alert('Fehler: Kein Charakter verfügbar');
-        return;
-      }
-
       const res = await fetch(apiUrl('/pm/chats/direct'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           ...authHeaders(),
-          'X-Character-Id': firstChar.id,
+          'X-Character-Id': creatorCharacterId,
         },
         body: JSON.stringify({ character_id: characterId }),
       });
@@ -149,7 +147,7 @@ export default function PM() {
       if (res.ok) {
         const newChat = await res.json();
         setShowCreateChatModal(false);
-        localStorage.setItem('characterId', firstChar.id);
+        localStorage.setItem('characterId', creatorCharacterId);
         // Automatically select and enter the new chat
         await handleSelectChat(newChat);
       } else {
@@ -162,21 +160,14 @@ export default function PM() {
     }
   };
 
-  const handleCreateGroupChat = async (characterIds: string[], groupName: string) => {
+  const handleCreateGroupChat = async (characterIds: string[], groupName: string, creatorCharacterId: string) => {
     try {
-      // Use first character from account as the creator
-      const firstChar = characters[0];
-      if (!firstChar) {
-        alert('Fehler: Kein Charakter verfügbar');
-        return;
-      }
-
       const res = await fetch(apiUrl('/pm/chats/group'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           ...authHeaders(),
-          'X-Character-Id': firstChar.id,
+          'X-Character-Id': creatorCharacterId,
         },
         body: JSON.stringify({ name: groupName, character_ids: characterIds }),
       });
@@ -184,7 +175,7 @@ export default function PM() {
       if (res.ok) {
         const newChat = await res.json();
         setShowCreateChatModal(false);
-        localStorage.setItem('characterId', firstChar.id);
+        localStorage.setItem('characterId', creatorCharacterId);
         // Automatically select and enter the new chat
         await handleSelectChat(newChat);
       } else {
@@ -217,7 +208,7 @@ export default function PM() {
   const leftNav = (
     <PMNavigation
       activeTab={activeTab}
-      onTabChange={setActiveTab}
+      onTabChange={handleTabChange}
       groupsUnread={groupsUnread}
       directUnread={directUnread}
       systemUnread={systemUnread}
@@ -259,6 +250,7 @@ export default function PM() {
             onCreateDirect={handleCreateDirectChat}
             onCreateGroup={handleCreateGroupChat}
             excludeCharacterIds={[]}
+            accountCharacters={characters}
           />
         )}
       </div>

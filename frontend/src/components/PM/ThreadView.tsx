@@ -132,7 +132,7 @@ export default function ThreadView({ chat, onBack, onRefresh }: ThreadViewProps)
                 {new Date(msg.created_at).toLocaleString('de-CH')}
               </span>
             </div>
-            <RichText value={msg.body} />
+            <RichText value={msg.body} className={styles.messageContent} />
           </div>
         ))}
         <div ref={messagesEndRef} />

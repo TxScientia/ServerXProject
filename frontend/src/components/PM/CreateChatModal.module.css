@@ -1,3 +1,38 @@
+.creatorSection {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.creatorSelect {
+  padding: 10px 12px;
+  background: var(--bg-secondary);
+  border: 2px solid rgba(100, 181, 246, 0.3);
+  border-radius: 6px;
+  color: var(--color-text);
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.creatorSelect:hover {
+  border-color: #64b5f6;
+}
+
+.creatorSelect:focus {
+  outline: none;
+  border-color: #64b5f6;
+  box-shadow: 0 0 0 3px rgba(100, 181, 246, 0.15);
+}
+
 .selectedChars {
   display: flex;
   flex-wrap: wrap;

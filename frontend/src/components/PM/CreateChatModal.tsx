@@ -11,9 +11,10 @@ interface Character {
 
 interface CreateChatModalProps {
   onClose: () => void;
-  onCreateDirect: (characterId: string) => void;
-  onCreateGroup: (characterIds: string[], name: string) => void;
+  onCreateDirect: (characterId: string, creatorCharacterId: string) => void;
+  onCreateGroup: (characterIds: string[], name: string, creatorCharacterId: string) => void;
   excludeCharacterIds?: string[];
+  accountCharacters?: Character[];
 }
 
 export default function CreateChatModal({
@@ -21,12 +22,14 @@ export default function CreateChatModal({
   onCreateDirect,
   onCreateGroup,
   excludeCharacterIds = [],
+  accountCharacters = [],
 }: CreateChatModalProps) {
   const { t } = useTranslation();
   const [characters, setCharacters] = useState<Character[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [groupName, setGroupName] = useState('');
+  const [creatorCharacterId, setCreatorCharacterId] = useState<string>(accountCharacters[0]?.id || '');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -60,13 +63,13 @@ export default function CreateChatModal({
   };
 
   const handleCreate = () => {
-    if (selectedIds.length === 0) return;
+    if (selectedIds.length === 0 || !creatorCharacterId) return;
 
     if (selectedIds.length === 1) {
-      onCreateDirect(selectedIds[0]);
+      onCreateDirect(selectedIds[0], creatorCharacterId);
     } else {
       const name = groupName.trim() || selectedIds.map((id) => characters.find((c) => c.id === id)?.name).join(', ');
-      onCreateGroup(selectedIds, name);
+      onCreateGroup(selectedIds, name, creatorCharacterId);
     }
   };
 
@@ -74,6 +77,23 @@ export default function CreateChatModal({
 
   return (
     <Modal title="Neuer Chat">
+      {accountCharacters.length > 1 && (
+        <div className={styles.creatorSection}>
+          <label className={styles.label}>Mit welchem Charakter?</label>
+          <select
+            value={creatorCharacterId}
+            onChange={(e) => setCreatorCharacterId(e.target.value)}
+            className={styles.creatorSelect}
+          >
+            {accountCharacters.map((char) => (
+              <option key={char.id} value={char.id}>
+                {char.name}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
+
       <div className={styles.selectedChars}>
         {selectedCharacters.map((char) => (
           <div key={char.id} className={styles.chip}>
