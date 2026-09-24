@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import { Modal, ModalActions, ModalSpacer } from '../Modal';
 import { apiUrl, authHeaders } from '../../api';
 import styles from './CreateChatModal.module.css';
@@ -24,7 +23,6 @@ export default function CreateChatModal({
   excludeCharacterIds = [],
   accountCharacters = [],
 }: CreateChatModalProps) {
-  const { t } = useTranslation();
   const [characters, setCharacters] = useState<Character[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedIds, setSelectedIds] = useState<string[]>([]);

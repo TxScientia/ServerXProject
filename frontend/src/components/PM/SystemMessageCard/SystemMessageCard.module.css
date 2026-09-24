@@ -1,0 +1,81 @@
+.wrapper {
+  margin-bottom: 12px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.type {
+  font-weight: 600;
+  color: var(--accent-color);
+  font-size: 0.9rem;
+}
+
+.timestamp {
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+}
+
+.content {
+  color: var(--text-primary);
+  margin: 12px 0;
+  line-height: 1.5;
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.actionBtn {
+  flex: 1;
+  padding: 10px 16px;
+  background: transparent;
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+/* Secondary (decline / free): subtle ghost that hints danger on hover. */
+.actionBtn:hover {
+  border-color: #e57373;
+  color: #e57373;
+  background: rgba(229, 115, 115, 0.08);
+}
+
+/* Primary (accept / keep): filled teal, matching the composer send button. */
+.actionBtn.primary {
+  background: linear-gradient(135deg, #00897b 0%, #00695c 100%);
+  border-color: transparent;
+  color: #ffffff;
+  box-shadow: 0 2px 6px rgba(0, 137, 123, 0.3);
+}
+
+.actionBtn.primary:hover {
+  background: linear-gradient(135deg, #00897b 0%, #00695c 100%);
+  color: #ffffff;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 137, 123, 0.4);
+}
+
+.actionBtn.primary:active {
+  transform: translateY(0);
+}
+
+.responded {
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  padding: 8px;
+  background: var(--bg-primary);
+  border-radius: 4px;
+  margin-top: 12px;
+}

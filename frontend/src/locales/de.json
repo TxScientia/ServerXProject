@@ -81,6 +81,7 @@
     "back": "← Zurück",
     "enterWorld": "Welt betreten",
     "places": "Orte",
+    "linkedWorlds": "Verlinkte Welten",
     "noPlaces": "Noch keine Orte.",
     "worldBioPlaceholder": "Weltbeschreibung – bald über die StoryBook-Einstellungen bearbeitbar.",
     "worldNoPlaces": "Diese Welt hat noch keine Orte.",
@@ -142,7 +143,19 @@
     "rankLoadError": "Ränge konnten nicht geladen werden.",
     "rankSaveError": "Fehler beim Speichern des Rangs.",
     "rankDeleteError": "Fehler beim Löschen des Rangs.",
-    "backToPlot": "← Zum Plot"
+    "backToPlot": "← Zum Plot",
+    "members": "Mitglieder",
+    "linkedPlots": "Verlinkte Welten",
+    "inviteCharacter": "Charakter einladen",
+    "invitePlot": "Welt verlinken",
+    "noMembers": "Noch keine Mitglieder.",
+    "noLinkedPlots": "Noch keine verlinkten Welten.",
+    "pendingLinks": "Ausstehende Anfragen",
+    "pending": "Ausstehend",
+    "inviteSent": "Einladung gesendet",
+    "inviteError": "Fehler beim Senden der Einladung.",
+    "membersLoadError": "Mitglieder konnten nicht geladen werden.",
+    "linkedLoadError": "Verlinkte Welten konnten nicht geladen werden."
   },
   "editor": {
     "toolbar": "Formatierung",

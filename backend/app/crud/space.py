@@ -49,6 +49,25 @@ def get_membership(db: Session, space_id, character_id):
     )
 
 
+def list_members(db: Session, space_id):
+    """All memberships in a space, joined to their character for name display."""
+    return (
+        db.query(Membership)
+        .filter(Membership.space_id == space_id)
+        .join(Character, Membership.character_id == Character.id)
+        .all()
+    )
+
+
+def get_space_creator(db: Session, space_id):
+    """The creator Membership of a space (the owner), or None."""
+    return (
+        db.query(Membership)
+        .filter_by(space_id=space_id, role="creator")
+        .first()
+    )
+
+
 def can_edit_space(db: Session, space_id, character_id) -> bool:
     """True if the character is creator or editor of the space."""
     membership = get_membership(db, space_id, character_id)

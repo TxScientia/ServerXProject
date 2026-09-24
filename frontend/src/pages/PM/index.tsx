@@ -47,6 +47,7 @@ export default function PM() {
   const [loading, setLoading] = useState(true);
   const [characters, setCharacters] = useState<Character[]>([]);
   const [showCreateChatModal, setShowCreateChatModal] = useState(false);
+  const [systemUnread, setSystemUnread] = useState(0);
 
   const fetchCharacters = useCallback(async () => {
     try {
@@ -84,9 +85,24 @@ export default function PM() {
     }
   }, []);
 
+  const fetchSystemUnread = useCallback(async () => {
+    try {
+      const res = await fetch(apiUrl('/pm/system-messages/unread-count'), {
+        headers: authHeaders(),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setSystemUnread(data.count ?? 0);
+      }
+    } catch (error) {
+      console.error('Failed to fetch system unread count:', error);
+    }
+  }, []);
+
   useEffect(() => {
     fetchCharacters();
     fetchChats();
+    fetchSystemUnread();
   }, []);
 
   const handleTabChange = (tab: TabType) => {
@@ -151,7 +167,6 @@ export default function PM() {
         // Automatically select and enter the new chat
         await handleSelectChat(newChat);
       } else {
-        const error = await res.json().catch(() => ({ detail: 'Unknown error' }));
         alert('Fehler beim Erstellen des Chats');
       }
     } catch (error) {
@@ -179,7 +194,6 @@ export default function PM() {
         // Automatically select and enter the new chat
         await handleSelectChat(newChat);
       } else {
-        const error = await res.json().catch(() => ({ detail: 'Unknown error' }));
         alert('Fehler beim Erstellen der Gruppe');
       }
     } catch (error) {
@@ -202,7 +216,6 @@ export default function PM() {
 
   const groupsUnread = getUnreadCount('groups');
   const directUnread = getUnreadCount('direct');
-  const systemUnread = 0; // TODO: implement system message unread count
   const totalUnread = groupsUnread + directUnread + systemUnread;
 
   const leftNav = (
@@ -227,7 +240,7 @@ export default function PM() {
 
         <div className={styles.content}>
           {activeTab === 'system' ? (
-            <SystemMessagesTab />
+            <SystemMessagesTab onResponded={fetchSystemUnread} />
           ) : selectedChat ? (
             <ThreadView
               chat={selectedChat}

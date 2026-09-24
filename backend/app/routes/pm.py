@@ -6,12 +6,14 @@ from sqlalchemy.orm import Session
 
 from ..auth import get_current_character, get_current_user
 from ..crud import (
+    count_unread_system_messages,
     create_direct_chat,
     create_group_chat,
     get_chat,
     get_message,
     get_system_message,
     get_unread_count_for_account,
+    handle_invite_response,
     list_chats_for_character,
     list_chats_for_account,
     list_messages,
@@ -178,6 +180,15 @@ def send_message_endpoint(
     )
 
 
+@router.get("/system-messages/unread-count")
+def system_messages_unread_count(
+    current_user: Account = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Number of action-required system messages awaiting a response (for the badge)."""
+    return {"count": count_unread_system_messages(db, current_user.id)}
+
+
 @router.get("/system-messages", response_model=List[SystemMessageRead])
 def list_system_messages_endpoint(
     current_user: Account = Depends(get_current_user),
@@ -217,6 +228,10 @@ def respond_to_system_message_endpoint(
     if not message.action_required or message.action_required == "false":
         raise HTTPException(status_code=400, detail="Keine Antwort erforderlich")
     respond_to_system_message(db, message_id, data.action)
+    # Perform the domain side-effect for invite/plot_link messages (create membership,
+    # accept link, or delete the declined record).
+    if message.type in ("invite", "plot_link"):
+        handle_invite_response(db, message, data.action)
     return {"ok": True}
 
 

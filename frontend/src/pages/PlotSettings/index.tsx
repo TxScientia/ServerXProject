@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import AppLayout from '../../pageLayouts/appLayout/AppLayout';
 import { Modal, ModalActions, ModalSpacer } from '../../components/Modal';
+import InviteModal from '../../components/InviteModal/InviteModal';
 import PlaceTreeEditor, { Place } from '../../components/PlaceTreeEditor';
 import { apiUrl, authHeaders, characterHeaders } from '../../api';
 import styles from './PlotSettings.module.css';
@@ -25,13 +26,31 @@ type Rank = {
   created_at: string;
 };
 
+type Member = {
+  character_id: string;
+  name: string;
+  role: string;
+};
+
+type LinkedSpace = {
+  id: string;
+  title: string;
+  description: string | null;
+};
+
+type PendingLink = {
+  id: string;
+  source_space_id: string;
+  source_title: string;
+};
+
 type RankDraft = {
   id?: string;
   name: string;
   weight: number;
 };
 
-type SettingsSection = 'general' | 'tree' | 'ranks';
+type SettingsSection = 'general' | 'tree' | 'ranks' | 'members' | 'linked-plots';
 
 type StatusMessage = {
   kind: 'ok' | 'error';
@@ -67,6 +86,10 @@ export default function PlotSettings() {
   const [tags, setTags] = useState<string[]>([]);
   const [tagInput, setTagInput] = useState('');
   const [status, setStatus] = useState<StatusMessage | null>(null);
+  const [members, setMembers] = useState<Member[]>([]);
+  const [linkedSpaces, setLinkedSpaces] = useState<LinkedSpace[]>([]);
+  const [pendingLinks, setPendingLinks] = useState<PendingLink[]>([]);
+  const [inviteMode, setInviteMode] = useState<'character' | 'plot' | null>(null);
 
   const fetchStorybook = useCallback(() => {
     if (!localStorage.getItem('token')) {
@@ -109,13 +132,44 @@ export default function PlotSettings() {
       .catch(() => setStatus({ kind: 'error', msg: t('plotSettings.rankLoadError'), section: 'ranks' }));
   }, [id, t]);
 
+  const fetchMembers = useCallback(() => {
+    if (!id) return;
+    fetch(apiUrl(`/storybooks/${id}/members`), {
+      headers: { ...authHeaders(), ...characterHeaders() },
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error();
+        return res.json();
+      })
+      .then((items: Member[]) => setMembers(items))
+      .catch(() => setStatus({ kind: 'error', msg: t('plotSettings.membersLoadError'), section: 'members' }));
+  }, [id, t]);
+
+  const fetchLinkedPlots = useCallback(() => {
+    if (!id) return;
+    fetch(apiUrl(`/storybooks/${id}/linked-plots`), {
+      headers: { ...authHeaders(), ...characterHeaders() },
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error();
+        return res.json();
+      })
+      .then((data: { linked_spaces: LinkedSpace[]; pending_invitations: PendingLink[] }) => {
+        setLinkedSpaces(data.linked_spaces);
+        setPendingLinks(data.pending_invitations);
+      })
+      .catch(() => setStatus({ kind: 'error', msg: t('plotSettings.linkedLoadError'), section: 'linked-plots' }));
+  }, [id, t]);
+
   useEffect(() => {
     fetchStorybook();
   }, [fetchStorybook]);
 
   useEffect(() => {
     if (section === 'ranks') fetchRanks();
-  }, [section, fetchRanks]);
+    if (section === 'members') fetchMembers();
+    if (section === 'linked-plots') fetchLinkedPlots();
+  }, [section, fetchRanks, fetchMembers, fetchLinkedPlots]);
 
   useEffect(() => {
     if (!status) return;
@@ -185,6 +239,41 @@ export default function PlotSettings() {
       .catch(() => setStatus({ kind: 'error', msg: t('plotSettings.rankDeleteError'), section: 'ranks' }));
   };
 
+  const handleInviteCharacter = (characterId: string) => {
+    fetch(apiUrl(`/storybooks/${id}/invites/characters`), {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...authHeaders(), ...characterHeaders() },
+      body: JSON.stringify({ character_id: characterId, space_id: id }),
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error();
+        return res.json();
+      })
+      .then(() => {
+        setInviteMode(null);
+        setStatus({ kind: 'ok', msg: t('plotSettings.inviteSent'), section: 'members' });
+      })
+      .catch(() => setStatus({ kind: 'error', msg: t('plotSettings.inviteError'), section: 'members' }));
+  };
+
+  const handleInvitePlot = (targetSpaceId: string) => {
+    fetch(apiUrl(`/storybooks/${id}/linked-plots/invite`), {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...authHeaders(), ...characterHeaders() },
+      body: JSON.stringify({ target_space_id: targetSpaceId }),
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error();
+        return res.json();
+      })
+      .then(() => {
+        setInviteMode(null);
+        setStatus({ kind: 'ok', msg: t('plotSettings.inviteSent'), section: 'linked-plots' });
+        fetchLinkedPlots();
+      })
+      .catch(() => setStatus({ kind: 'error', msg: t('plotSettings.inviteError'), section: 'linked-plots' }));
+  };
+
   const rankOverlay = rankDraft && (
     <Modal title={rankDraft.id ? t('plotSettings.editRank') : t('plotSettings.addRank')}>
       <label>
@@ -245,6 +334,18 @@ export default function PlotSettings() {
         onClick={() => setSection('ranks')}
       >
         {t('plotSettings.ranks')}
+      </button>
+      <button
+        className={`${styles.sideItem} ${section === 'members' ? styles.active : ''}`.trim()}
+        onClick={() => setSection('members')}
+      >
+        {t('plotSettings.members')}
+      </button>
+      <button
+        className={`${styles.sideItem} ${section === 'linked-plots' ? styles.active : ''}`.trim()}
+        onClick={() => setSection('linked-plots')}
+      >
+        {t('plotSettings.linkedPlots')}
       </button>
       <hr className={styles.divider} />
       {['nav.mitglieder', 'nav.news'].map((key) => (
@@ -360,6 +461,63 @@ export default function PlotSettings() {
           places={storybook.places}
           onChanged={fetchStorybook}
         />
+      ) : section === 'members' ? (
+        <div className={styles.listSection}>
+          <div className={styles.listHeader}>
+            <h2>{t('plotSettings.members')}</h2>
+            <button className="button" onClick={() => setInviteMode('character')}>
+              {t('plotSettings.inviteCharacter')}
+            </button>
+          </div>
+          {members.length === 0 ? (
+            <p className={styles.muted}>{t('plotSettings.noMembers')}</p>
+          ) : (
+            <div className={styles.list}>
+              {members.map((m) => (
+                <div key={m.character_id} className={styles.listCard}>
+                  <strong>{m.name}</strong>
+                  <span className={styles.roleBadge}>{m.role}</span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      ) : section === 'linked-plots' ? (
+        <div className={styles.listSection}>
+          <div className={styles.listHeader}>
+            <h2>{t('plotSettings.linkedPlots')}</h2>
+            <button className="button" onClick={() => setInviteMode('plot')}>
+              {t('plotSettings.invitePlot')}
+            </button>
+          </div>
+
+          {pendingLinks.length > 0 && (
+            <div className={styles.pendingBlock}>
+              <h3 className={styles.muted}>{t('plotSettings.pendingLinks')}</h3>
+              {pendingLinks.map((p) => (
+                <div key={p.id} className={styles.listCard}>
+                  <span>{p.source_title}</span>
+                  <span className={styles.roleBadge}>{t('plotSettings.pending')}</span>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {linkedSpaces.length === 0 ? (
+            <p className={styles.muted}>{t('plotSettings.noLinkedPlots')}</p>
+          ) : (
+            <div className={styles.list}>
+              {linkedSpaces.map((s) => (
+                <div key={s.id} className={styles.listCard}>
+                  <div>
+                    <strong>{s.title}</strong>
+                    {s.description && <div className={styles.muted}>{s.description}</div>}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       ) : (
         <div className={styles.rankSection}>
           {ranks.length > 0 && (
@@ -383,6 +541,27 @@ export default function PlotSettings() {
         </div>
       )}
       {rankOverlay}
+      {inviteMode === 'character' && (
+        <InviteModal
+          title={t('plotSettings.inviteCharacter')}
+          type="character"
+          onClose={() => setInviteMode(null)}
+          onSelect={handleInviteCharacter}
+          excludeIds={members.map((m) => m.character_id)}
+        />
+      )}
+      {inviteMode === 'plot' && (
+        <InviteModal
+          title={t('plotSettings.invitePlot')}
+          type="plot"
+          onClose={() => setInviteMode(null)}
+          onSelect={handleInvitePlot}
+          excludeIds={[
+            ...(storybook ? [storybook.id] : []),
+            ...linkedSpaces.map((s) => s.id),
+          ]}
+        />
+      )}
     </AppLayout>
   );
 }
