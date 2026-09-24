@@ -81,6 +81,7 @@
     "back": "← Back",
     "enterWorld": "Enter world",
     "places": "Places",
+    "linkedWorlds": "Linked worlds",
     "noPlaces": "No places yet.",
     "worldBioPlaceholder": "World description – editable soon via StoryBook settings.",
     "worldNoPlaces": "This world has no places yet.",

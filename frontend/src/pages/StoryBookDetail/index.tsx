@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import AppLayout from '../../pageLayouts/appLayout/AppLayout';
 import Scene from '../../components/Scene';
@@ -24,6 +24,12 @@ type Storybook = {
   owner_character_id: string;
   created_at: string;
   places: Place[];
+};
+
+type LinkedSpace = {
+  id: string;
+  title: string;
+  description: string | null;
 };
 
 // Plot-scoped nav items from the wireframe — placeholders until built (own branches).
@@ -71,11 +77,13 @@ function PlaceNode({
 export default function StoryBookDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { t } = useTranslation();
   const [storybook, setStorybook] = useState<Storybook | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [enteredWorld, setEnteredWorld] = useState(false);
   const [selectedPlaceId, setSelectedPlaceId] = useState<string | null>(null);
+  const [linkedSpaces, setLinkedSpaces] = useState<LinkedSpace[]>([]);
 
   const fetchStorybook = useCallback(() => {
     if (!localStorage.getItem('token')) {
@@ -91,6 +99,16 @@ export default function StoryBookDetail() {
       .catch(() => setError(t('plot.loadError')));
   }, [id, navigate, t]);
 
+  const fetchLinkedPlots = useCallback(() => {
+    if (!id) return;
+    fetch(apiUrl(`/storybooks/${id}/linked-plots`), {
+      headers: { ...authHeaders(), 'X-Character-Id': localStorage.getItem('characterId') || '' },
+    })
+      .then((res) => (res.ok ? res.json() : { linked_spaces: [] }))
+      .then((data: { linked_spaces: LinkedSpace[] }) => setLinkedSpaces(data.linked_spaces ?? []))
+      .catch(() => setLinkedSpaces([]));
+  }, [id]);
+
   useEffect(() => {
     fetchStorybook();
   }, [fetchStorybook]);
@@ -102,9 +120,26 @@ export default function StoryBookDetail() {
   const canEditSettings =
     storybook != null && localStorage.getItem('characterId') === storybook.owner_character_id;
 
-  const enterWorld = () => {
+  const enterWorld = useCallback(() => {
     setEnteredWorld(true);
     setSelectedPlaceId((prev) => prev ?? topLevel[0]?.id ?? null);
+    fetchLinkedPlots();
+  }, [topLevel, fetchLinkedPlots]);
+
+  // Auto-enter the world when arriving via a linked-plot jump (?enter=1).
+  useEffect(() => {
+    if (storybook && searchParams.get('enter') === '1' && !enteredWorld) {
+      enterWorld();
+      searchParams.delete('enter');
+      setSearchParams(searchParams, { replace: true });
+    }
+  }, [storybook, searchParams, enteredWorld, enterWorld, setSearchParams]);
+
+  const goToLinkedPlot = (linkedId: string) => {
+    // Reset local state and jump straight into the linked world's place tree.
+    setEnteredWorld(false);
+    setSelectedPlaceId(null);
+    navigate(`/storybooks/${linkedId}?enter=1`);
   };
 
   // --- left nav: plot home vs. entered-world (places) ---
@@ -173,6 +208,21 @@ export default function StoryBookDetail() {
               />
             ))}
           </ul>
+        )}
+        {linkedSpaces.length > 0 && (
+          <>
+            <hr className={styles.divider} />
+            <div className={styles.filterTitle}>{t('plot.linkedWorlds')}</div>
+            {linkedSpaces.map((s) => (
+              <button
+                key={s.id}
+                className={styles.sideItem}
+                onClick={() => goToLinkedPlot(s.id)}
+              >
+                {s.title}
+              </button>
+            ))}
+          </>
         )}
       </div>
     );
