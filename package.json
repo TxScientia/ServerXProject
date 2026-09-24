@@ -12,7 +12,7 @@
   },
   "name": "serverxproject",
   "private": true,
-  "packageManager": "npm@10.9.8",
+  "packageManager": "npm@12.1.0",
   "engines": {
     "node": ">=20",
     "npm": ">=10"
