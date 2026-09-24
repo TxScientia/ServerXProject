@@ -95,12 +95,15 @@ def get_accepted_linked_spaces(db: Session, space_id: str) -> List[str]:
         )
         .all()
     )
+    # space_id arrives as a str (URL param) while the ORM columns are UUID objects;
+    # compare as strings so the direction check is correct.
+    key = str(space_id)
     linked_ids = set()
     for link in linked:
-        if link.source_space_id == space_id:
-            linked_ids.add(link.target_space_id)
+        if str(link.source_space_id) == key:
+            linked_ids.add(str(link.target_space_id))
         else:
-            linked_ids.add(link.source_space_id)
+            linked_ids.add(str(link.source_space_id))
     return list(linked_ids)
 
 
