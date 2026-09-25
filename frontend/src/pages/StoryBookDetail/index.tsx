@@ -3,6 +3,7 @@ import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import AppLayout from '../../pageLayouts/appLayout/AppLayout';
 import Badge from '../../components/Badge/Badge';
+import MemberRankTables, { type MemberRank, type RankedMember } from '../../components/MemberRankTables';
 import { OOCChannel } from '../../components/OOC';
 import Scene from '../../components/Scene';
 import { apiUrl, authHeaders } from '../../api';
@@ -33,6 +34,8 @@ type LinkedSpace = {
   title: string;
   description: string | null;
 };
+
+type Rank = MemberRank & { created_at: string };
 
 // Plot-scoped nav items from the wireframe — placeholders until built (own branches).
 const PLOT_NAV = ['nav.oocChat', 'nav.news', 'nav.home', 'nav.gesuche', 'nav.mitglieder', 'nav.plotSettings'];
@@ -87,7 +90,9 @@ export default function StoryBookDetail() {
   const [selectedPlaceId, setSelectedPlaceId] = useState<string | null>(null);
   const [linkedSpaces, setLinkedSpaces] = useState<LinkedSpace[]>([]);
   const [plotNewsUnread, setPlotNewsUnread] = useState(0);
-  const [plotPanel, setPlotPanel] = useState<'home' | 'ooc'>('home');
+  const [members, setMembers] = useState<RankedMember[]>([]);
+  const [ranks, setRanks] = useState<Rank[]>([]);
+  const [plotPanel, setPlotPanel] = useState<'home' | 'ooc' | 'members'>('home');
 
   const fetchStorybook = useCallback(() => {
     if (!localStorage.getItem('token')) {
@@ -111,6 +116,24 @@ export default function StoryBookDetail() {
       .catch(() => setPlotNewsUnread(0));
   }, [id]);
 
+  const fetchMembers = useCallback(() => {
+    if (!id || !localStorage.getItem('characterId')) return;
+    fetch(apiUrl(`/storybooks/${id}/members`), {
+      headers: { ...authHeaders(), 'X-Character-Id': localStorage.getItem('characterId') || '' },
+    })
+      .then((res) => (res.ok ? res.json() : []))
+      .then((items: RankedMember[]) => setMembers(items))
+      .catch(() => setMembers([]));
+  }, [id]);
+
+  const fetchRanks = useCallback(() => {
+    if (!id) return;
+    fetch(apiUrl(`/storybooks/${id}/ranks`), { headers: authHeaders() })
+      .then((res) => (res.ok ? res.json() : []))
+      .then((items: Rank[]) => setRanks([...items].sort((a, b) => a.weight - b.weight || a.name.localeCompare(b.name))))
+      .catch(() => setRanks([]));
+  }, [id]);
+
   const fetchLinkedPlots = useCallback(() => {
     if (!id) return;
     fetch(apiUrl(`/storybooks/${id}/linked-plots`), {
@@ -124,7 +147,9 @@ export default function StoryBookDetail() {
   useEffect(() => {
     fetchStorybook();
     fetchPlotNewsUnread();
-  }, [fetchStorybook, fetchPlotNewsUnread]);
+    fetchMembers();
+    fetchRanks();
+  }, [fetchStorybook, fetchPlotNewsUnread, fetchMembers, fetchRanks]);
 
   const places = storybook?.places ?? [];
   const topLevel = places.filter((p) => !p.parent_place_id);
@@ -211,6 +236,18 @@ export default function StoryBookDetail() {
             );
           }
 
+          if (key === 'nav.mitglieder') {
+            return (
+              <button
+                key={key}
+                className={`${styles.sideItem} ${plotPanel === 'members' ? styles.placeItemActive : ''}`.trim()}
+                onClick={() => setPlotPanel('members')}
+              >
+                {t(key)}
+              </button>
+            );
+          }
+
           if (key === 'nav.news') {
             return (
               <div key={key} className={styles.sideItemWrapper}>
@@ -286,6 +323,13 @@ export default function StoryBookDetail() {
         <div>
           <h1 className={styles.title}>{t('ooc.plotTitle', { title: storybook.title })}</h1>
           <OOCChannel scope={{ type: 'storybook', storybookId: storybook.id }} />
+        </div>
+      );
+    } else if (plotPanel === 'members') {
+      center = (
+        <div>
+          <h1 className={styles.title}>{t('members.title')}</h1>
+          <MemberRankTables members={members} ranks={ranks} />
         </div>
       );
     } else {

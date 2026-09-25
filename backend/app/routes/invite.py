@@ -18,10 +18,11 @@ from ..crud import (
     send_system_message,
 )
 from ..database import get_db
-from ..models import Character
+from ..models import Character, MembershipRank, Rank
 from ..schemas import (
     CharacterInviteCreate,
     CharacterInviteRead,
+    MemberRankUpdate,
     PlotLinkCreate,
     PlotLinkRead,
 )
@@ -45,14 +46,60 @@ def get_members(
     if not is_member(db, space_id, character.id):
         raise HTTPException(status_code=403, detail="Not a member of this plot")
 
-    return [
-        {
-            "character_id": str(m.character_id),
-            "name": m.character.name,
-            "role": m.role,
-        }
-        for m in list_members(db, space_id)
-    ]
+    rows = []
+    for m in list_members(db, space_id):
+        assigned = (
+            db.query(MembershipRank)
+            .filter_by(space_id=space_id, character_id=m.character_id)
+            .first()
+        )
+        rank = assigned.rank if assigned else None
+        rows.append(
+            {
+                "character_id": str(m.character_id),
+                "name": m.character.name,
+                "role": m.role,
+                "rank_id": str(rank.id) if rank else None,
+                "rank_name": rank.name if rank else None,
+                "rank_weight": rank.weight if rank else None,
+            }
+        )
+    return rows
+
+
+@router.patch("/storybooks/{space_id}/members/{character_id}/rank")
+def update_member_rank(
+    space_id: str,
+    character_id: uuid.UUID,
+    data: MemberRankUpdate,
+    character: Character = Depends(get_current_character),
+    db: Session = Depends(get_db),
+):
+    """Assign or clear a member's display rank. Requires creator/editor role."""
+    space = get_storybook(db, space_id)
+    if not space:
+        raise HTTPException(status_code=404, detail="Storybook not found")
+    if not can_edit_space(db, space_id, character.id):
+        raise HTTPException(status_code=403, detail="Not authorized to edit members")
+    if not get_membership(db, space_id, character_id):
+        raise HTTPException(status_code=404, detail="Member not found")
+
+    assigned = db.query(MembershipRank).filter_by(space_id=space_id, character_id=character_id).first()
+    if data.rank_id is None:
+        if assigned:
+            db.delete(assigned)
+            db.commit()
+        return {"ok": True}
+
+    rank = db.query(Rank).filter(Rank.id == data.rank_id, Rank.space_id == space_id).first()
+    if rank is None:
+        raise HTTPException(status_code=404, detail="Rank not found")
+    if assigned:
+        assigned.rank_id = rank.id
+    else:
+        db.add(MembershipRank(space_id=space_id, character_id=character_id, rank_id=rank.id))
+    db.commit()
+    return {"ok": True}
 
 
 # ===== CHARACTER INVITES =====
