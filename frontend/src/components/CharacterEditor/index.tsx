@@ -15,9 +15,13 @@ export type CharacterEditorData = {
   era: string;
   biography: string;
   imageSettings: string;
+  frameImageUrl: string;
+  portraitImageUrl: string;
+  headerBackgroundUrl: string;
   colorCodes: string;
   characterText: string;
   abilities: string;
+  customFields: string[];
 };
 
 export type EditableCharacter = {
@@ -41,11 +45,23 @@ type EditorSection = 'charId' | 'biography' | 'imageSettings' | 'colorCodes';
 type EditorTab = 'charId' | 'character' | 'abilities';
 type BuilderTab = Exclude<EditorTab, 'charId'>;
 
+type ExpertiseLevel = 'Amateur/Beginner' | 'Intermediate' | 'Expert' | 'Master' | 'Grandmaster' | 'Paragon/One Above All';
+
 type TabBuilderItem =
   | { type: 'headline'; value: string }
   | { type: 'bullet'; size: 'small' | 'large'; values: [string, string] }
   | { type: 'textarea'; size: 'small' | 'large'; value: string }
-  | { type: 'image'; size: 'small' | 'large'; url: string };
+  | { type: 'image'; size: 'small' | 'large'; url: string }
+  | { type: 'skill'; name: string; expertise: ExpertiseLevel };
+
+const expertiseLevels: ExpertiseLevel[] = [
+  'Amateur/Beginner',
+  'Intermediate',
+  'Expert',
+  'Master',
+  'Grandmaster',
+  'Paragon/One Above All',
+];
 
 const emptyEditorData: CharacterEditorData = {
   displayName: '',
@@ -61,9 +77,13 @@ const emptyEditorData: CharacterEditorData = {
   era: '',
   biography: '',
   imageSettings: '',
+  frameImageUrl: '',
+  portraitImageUrl: '',
+  headerBackgroundUrl: '',
   colorCodes: '',
   characterText: '',
   abilities: '',
+  customFields: ['', ''],
 };
 
 const mergeEditorData = (data?: Partial<CharacterEditorData>): CharacterEditorData => ({
@@ -107,7 +127,7 @@ export const payloadFromForm = (form: CharacterForm): CharacterForm => {
 type CharacterEditorProps = {
   character: EditableCharacter;
   fullPage?: boolean;
-  onSave: (payload: CharacterForm) => void;
+  onSave: (payload: CharacterForm) => void | Promise<void>;
   onCancel?: () => void;
 };
 
@@ -116,7 +136,11 @@ export default function CharacterEditor({ character, fullPage = false, onSave, o
   const [activeTab, setActiveTab] = useState<EditorTab>('charId');
   const [form, setForm] = useState<CharacterForm>(() => formFromCharacter(character));
   const [showCancelConfirm, setShowCancelConfirm] = useState(false);
-  const [customFields, setCustomFields] = useState<string[]>(['', '']);
+  const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
+  const [customFields, setCustomFields] = useState<string[]>(() => {
+    const fields = formFromCharacter(character).editorData.customFields;
+    return fields.length >= 2 ? fields : ['', ''];
+  });
   const [tabBuilderContent, setTabBuilderContent] = useState<Record<BuilderTab, TabBuilderItem[]>>({
     character: [],
     abilities: [],
@@ -201,7 +225,16 @@ export default function CharacterEditor({ character, fullPage = false, onSave, o
     }));
   };
 
-  const countTabInputs = (items: TabBuilderItem[]) => items.reduce((count, item) => count + (item.type === 'bullet' ? 2 : 1), 0);
+  const handleTabSkillChange = (tab: BuilderTab, itemIndex: number, field: 'name' | 'expertise', value: string) => {
+    setTabBuilderContent((currentContent) => ({
+      ...currentContent,
+      [tab]: currentContent[tab].map((item, index) => (
+        index === itemIndex && item.type === 'skill' ? { ...item, [field]: value } : item
+      )),
+    }));
+  };
+
+  const countTabInputs = (items: TabBuilderItem[]) => items.reduce((count, item) => count + (item.type === 'bullet' || item.type === 'skill' ? 2 : 1), 0);
 
   const addTabItem = (tab: BuilderTab, item: TabBuilderItem) => {
     setTabBuilderContent((currentContent) => {
@@ -221,8 +254,40 @@ export default function CharacterEditor({ character, fullPage = false, onSave, o
     }));
   };
 
+  const moveTabItem = (tab: BuilderTab, itemIndex: number, direction: -1 | 1) => {
+    setTabBuilderContent((currentContent) => {
+      const nextIndex = itemIndex + direction;
+      if (nextIndex < 0 || nextIndex >= currentContent[tab].length) return currentContent;
+
+      const nextItems = [...currentContent[tab]];
+      [nextItems[itemIndex], nextItems[nextIndex]] = [nextItems[nextIndex], nextItems[itemIndex]];
+
+      return {
+        ...currentContent,
+        [tab]: nextItems,
+      };
+    });
+  };
+
+  const formWithCustomFields = useMemo(
+    () => ({ ...form, editorData: { ...form.editorData, customFields } }),
+    [customFields, form],
+  );
+
+  const handleSaveClick = async () => {
+    setSaveStatus('saving');
+    try {
+      await onSave(payloadFromForm(formWithCustomFields));
+      setSaveStatus('saved');
+      window.setTimeout(() => setSaveStatus('idle'), 3000);
+    } catch {
+      setSaveStatus('error');
+    }
+  };
+
   const showSteckbrief = activeSection === 'charId' && activeTab === 'charId';
   const showTabBuilder = activeSection === 'charId' && activeTab !== 'charId';
+  const showImageSettings = activeSection === 'imageSettings';
   const blankTitle = activeSection !== 'charId'
     ? activeSection
     : activeTab;
@@ -354,23 +419,66 @@ export default function CharacterEditor({ character, fullPage = false, onSave, o
               </div>
             </section>
           </>
+        ) : showImageSettings ? (
+          <section className={styles.formGrid}>
+            <label className={styles.fullWidth}>
+              <span>Linkes Fensterbild</span>
+              <small>URL für das große, fensterartige Bild links im Profil</small>
+              <input name="frameImageUrl" placeholder="https://…" value={form.editorData.frameImageUrl} onChange={handleEditorDataChange} />
+            </label>
+            <label className={styles.fullWidth}>
+              <span>Quadratisches Profilbild</span>
+              <small>URL für den quadratischen Rahmen in der ersten Profilseite</small>
+              <input name="portraitImageUrl" placeholder="https://…" value={form.editorData.portraitImageUrl} onChange={handleEditorDataChange} />
+            </label>
+            <label className={styles.fullWidth}>
+              <span>Hintergrund unter der Navigation</span>
+              <small>URL für den Hintergrundbereich unter der oberen Profilnavigation</small>
+              <input name="headerBackgroundUrl" placeholder="https://…" value={form.editorData.headerBackgroundUrl} onChange={handleEditorDataChange} />
+            </label>
+          </section>
         ) : showTabBuilder ? (
           <section className={styles.tabBuilder}>
             <div className={styles.tabBuilderItems}>
               {tabBuilderContent[activeTab as BuilderTab].map((item, itemIndex) => {
-                const itemClassName = `${styles.tabBuilderItem} ${item.type === 'headline' || item.size === 'large' ? styles.tabBuilderItemLarge : styles.tabBuilderItemSmall}`;
+                const builderTab = activeTab as BuilderTab;
+                const isLargeItem = item.type === 'headline' || item.type === 'skill' || item.size === 'large';
+                const itemClassName = `${styles.tabBuilderItem} ${isLargeItem ? styles.tabBuilderItemLarge : styles.tabBuilderItemSmall}`;
+                const blockControls = (
+                  <div className={styles.blockControls}>
+                    <button
+                      type="button"
+                      className={styles.moveBlockButton}
+                      onClick={() => moveTabItem(builderTab, itemIndex, -1)}
+                      disabled={itemIndex === 0}
+                      aria-label="Baustein nach oben verschieben"
+                    >
+                      ↑
+                    </button>
+                    <button
+                      type="button"
+                      className={styles.moveBlockButton}
+                      onClick={() => moveTabItem(builderTab, itemIndex, 1)}
+                      disabled={itemIndex === tabBuilderContent[builderTab].length - 1}
+                      aria-label="Baustein nach unten verschieben"
+                    >
+                      ↓
+                    </button>
+                    <button
+                      type="button"
+                      className={styles.deleteBlockButton}
+                      onClick={() => deleteTabItem(builderTab, itemIndex)}
+                      aria-label="Baustein löschen"
+                    >
+                      ×
+                    </button>
+                  </div>
+                );
 
                 if (item.type === 'headline') {
                   return (
                     <div key={`headline-${itemIndex}`} className={`${itemClassName} ${styles.builderBlock}`}>
-                      <button
-                        type="button"
-                        className={styles.deleteBlockButton}
-                        onClick={() => deleteTabItem(activeTab as BuilderTab, itemIndex)}
-                        aria-label="Baustein löschen"
-                      >
-                        ×
-                      </button>
+                      {blockControls}
                       <input
                         className={`${styles.customInput} ${styles.headlineInput}`}
                         placeholder="Überschrift"
@@ -384,14 +492,7 @@ export default function CharacterEditor({ character, fullPage = false, onSave, o
                 if (item.type === 'bullet') {
                   return (
                     <div key={`bullet-${itemIndex}`} className={`${itemClassName} ${styles.builderBlock}`}>
-                      <button
-                        type="button"
-                        className={styles.deleteBlockButton}
-                        onClick={() => deleteTabItem(activeTab as BuilderTab, itemIndex)}
-                        aria-label="Baustein löschen"
-                      >
-                        ×
-                      </button>
+                      {blockControls}
                       <div className={styles.customFieldGroup}>
                         <input
                           className={`${styles.customInput} ${styles.customTitleInput}`}
@@ -413,14 +514,7 @@ export default function CharacterEditor({ character, fullPage = false, onSave, o
                 if (item.type === 'image') {
                   return (
                     <div key={`image-${itemIndex}`} className={`${itemClassName} ${styles.builderBlock} ${styles.imageBlock}`}>
-                      <button
-                        type="button"
-                        className={styles.deleteBlockButton}
-                        onClick={() => deleteTabItem(activeTab as BuilderTab, itemIndex)}
-                        aria-label="Baustein löschen"
-                      >
-                        ×
-                      </button>
+                      {blockControls}
                       <input
                         className={styles.customInput}
                         placeholder="Bild-URL"
@@ -432,16 +526,34 @@ export default function CharacterEditor({ character, fullPage = false, onSave, o
                   );
                 }
 
+                if (item.type === 'skill') {
+                  return (
+                    <div key={`skill-${itemIndex}`} className={`${itemClassName} ${styles.builderBlock}`}>
+                      {blockControls}
+                      <div className={styles.skillFields}>
+                        <input
+                          className={styles.customInput}
+                          placeholder="Skillname"
+                          value={item.name}
+                          onChange={(event) => handleTabSkillChange(activeTab as BuilderTab, itemIndex, 'name', event.target.value)}
+                        />
+                        <select
+                          className={styles.customInput}
+                          value={item.expertise}
+                          onChange={(event) => handleTabSkillChange(activeTab as BuilderTab, itemIndex, 'expertise', event.target.value)}
+                        >
+                          {expertiseLevels.map((expertise) => (
+                            <option key={expertise} value={expertise}>{expertise}</option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+                  );
+                }
+
                 return (
                   <div key={`textarea-${itemIndex}`} className={`${itemClassName} ${styles.builderBlock}`}>
-                    <button
-                      type="button"
-                      className={styles.deleteBlockButton}
-                      onClick={() => deleteTabItem(activeTab as BuilderTab, itemIndex)}
-                      aria-label="Baustein löschen"
-                    >
-                      ×
-                    </button>
+                    {blockControls}
                     <textarea
                       className={styles.customInput}
                       rows={item.size === 'large' ? 6 : 4}
@@ -511,6 +623,16 @@ export default function CharacterEditor({ character, fullPage = false, onSave, o
               >
                 Kleines Bild hinzufügen
               </button>
+              {activeTab === 'abilities' && (
+                <button
+                  type="button"
+                  className={styles.addCategoryButton}
+                  onClick={() => addTabItem('abilities', { type: 'skill', name: '', expertise: 'Amateur/Beginner' })}
+                  disabled={countTabInputs(tabBuilderContent.abilities) > 18}
+                >
+                  Skill hinzufügen
+                </button>
+              )}
             </div>
           </section>
         ) : (
@@ -518,7 +640,12 @@ export default function CharacterEditor({ character, fullPage = false, onSave, o
         )}
 
         <div className={styles.actions}>
-          <button className="button" onClick={() => onSave(payloadFromForm(form))}>Speichern</button>
+          <div className={styles.saveFeedback} aria-live="polite">
+            {saveStatus === 'saving' && 'Speichert…'}
+            {saveStatus === 'saved' && '✓ Gespeichert'}
+            {saveStatus === 'error' && 'Speichern fehlgeschlagen'}
+          </div>
+          <button className="button" onClick={handleSaveClick} disabled={saveStatus === 'saving'}>Speichern</button>
           {onCancel && <button className="button button--ghost" onClick={() => setShowCancelConfirm(true)}>Abbrechen</button>}
         </div>
       </section>

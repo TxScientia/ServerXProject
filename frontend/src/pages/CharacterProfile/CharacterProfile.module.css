@@ -1,0 +1,257 @@
+.status {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  background: #141616;
+  color: #c2c7bc;
+}
+
+.page {
+  min-height: 100vh;
+  padding: 2rem 0 0;
+  background:
+    linear-gradient(rgba(10, 12, 12, 0.36), rgba(10, 12, 12, 0.36)),
+    var(--profile-bg-image) center top / cover fixed no-repeat;
+  color: #babdb6;
+}
+
+.profile {
+  position: relative;
+  width: min(90vw, 1420px);
+  min-height: 82vh;
+  margin: 0 auto;
+  overflow: hidden;
+  border: 1px solid rgba(145, 158, 144, 0.45);
+  background: rgba(24, 27, 27, 0.28);
+}
+
+.profile::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 25%;
+  bottom: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: rgba(226, 229, 224, 0.22);
+  mix-blend-mode: screen;
+}
+
+.profile::after {
+  content: '';
+  position: absolute;
+  inset: 25% 0 0;
+  z-index: 0;
+  pointer-events: none;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.10), rgba(255, 255, 255, 0.04));
+}
+
+.topPicture {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 34px;
+  height: calc(25% - 34px);
+  z-index: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(rgba(18, 20, 20, 0.62), rgba(18, 20, 20, 0.62)),
+    var(--profile-bg-image) center center / cover no-repeat;
+}
+
+.nav {
+  position: relative;
+  z-index: 2;
+  min-height: 34px;
+  display: flex;
+  justify-content: center;
+  gap: clamp(1.4rem, 3.2vw, 3.2rem);
+  padding: 0.5rem 0.8rem;
+  background: #a0a49c;
+}
+
+.nav button {
+  border: 0;
+  background: transparent;
+  color: #58364c;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.82rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.hero {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 290px minmax(0, 1fr);
+  gap: 2.2rem;
+  padding: 1.6rem 2.4rem 3rem;
+}
+
+.windowFrame {
+  width: 250px;
+  height: 335px;
+  margin: 0 auto;
+  overflow: hidden;
+  border: 2px solid rgba(151, 166, 146, 0.8);
+  border-radius: 50% 50% 0 0 / 42% 42% 0 0;
+  background: #020303;
+}
+
+.windowFrame img,
+.portraitFrame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.card {
+  --corner-size: 26px;
+  position: relative;
+  margin-top: 5.4rem;
+  min-height: 560px;
+  padding: 2.3rem 3rem 2.7rem;
+  border: 0;
+  background: #121414;
+  -webkit-mask:
+    radial-gradient(circle at 0 0, transparent 0 var(--corner-size), #000 calc(var(--corner-size) + 1px)) top left / 51% 51% no-repeat,
+    radial-gradient(circle at 100% 0, transparent 0 var(--corner-size), #000 calc(var(--corner-size) + 1px)) top right / 51% 51% no-repeat,
+    radial-gradient(circle at 0 100%, transparent 0 var(--corner-size), #000 calc(var(--corner-size) + 1px)) bottom left / 51% 51% no-repeat,
+    radial-gradient(circle at 100% 100%, transparent 0 var(--corner-size), #000 calc(var(--corner-size) + 1px)) bottom right / 51% 51% no-repeat;
+  mask:
+    radial-gradient(circle at 0 0, transparent 0 var(--corner-size), #000 calc(var(--corner-size) + 1px)) top left / 51% 51% no-repeat,
+    radial-gradient(circle at 100% 0, transparent 0 var(--corner-size), #000 calc(var(--corner-size) + 1px)) top right / 51% 51% no-repeat,
+    radial-gradient(circle at 0 100%, transparent 0 var(--corner-size), #000 calc(var(--corner-size) + 1px)) bottom left / 51% 51% no-repeat,
+    radial-gradient(circle at 100% 100%, transparent 0 var(--corner-size), #000 calc(var(--corner-size) + 1px)) bottom right / 51% 51% no-repeat;
+}
+
+.card::before,
+.card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.card::before {
+  background:
+    linear-gradient(rgba(151, 166, 146, 0.8), rgba(151, 166, 146, 0.8)) top var(--corner-size) left 0 / 1px calc(100% - (var(--corner-size) * 2)) no-repeat,
+    linear-gradient(rgba(151, 166, 146, 0.8), rgba(151, 166, 146, 0.8)) top var(--corner-size) right 0 / 1px calc(100% - (var(--corner-size) * 2)) no-repeat,
+    linear-gradient(rgba(151, 166, 146, 0.8), rgba(151, 166, 146, 0.8)) top 0 left var(--corner-size) / calc(100% - (var(--corner-size) * 2)) 1px no-repeat,
+    linear-gradient(rgba(151, 166, 146, 0.8), rgba(151, 166, 146, 0.8)) bottom 0 left var(--corner-size) / calc(100% - (var(--corner-size) * 2)) 1px no-repeat;
+}
+
+.card::after {
+  background:
+    radial-gradient(circle at 0 0, transparent 0 var(--corner-size), rgba(151, 166, 146, 0.8) var(--corner-size) calc(var(--corner-size) + 1px), transparent calc(var(--corner-size) + 2px)) top left / 50% 50% no-repeat,
+    radial-gradient(circle at 100% 0, transparent 0 var(--corner-size), rgba(151, 166, 146, 0.8) var(--corner-size) calc(var(--corner-size) + 1px), transparent calc(var(--corner-size) + 2px)) top right / 50% 50% no-repeat,
+    radial-gradient(circle at 0 100%, transparent 0 var(--corner-size), rgba(151, 166, 146, 0.8) var(--corner-size) calc(var(--corner-size) + 1px), transparent calc(var(--corner-size) + 2px)) bottom left / 50% 50% no-repeat,
+    radial-gradient(circle at 100% 100%, transparent 0 var(--corner-size), rgba(151, 166, 146, 0.8) var(--corner-size) calc(var(--corner-size) + 1px), transparent calc(var(--corner-size) + 2px)) bottom right / 50% 50% no-repeat;
+}
+
+.factGrid {
+  width: calc(100% - 260px);
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.15rem 2.2rem;
+}
+
+.fact {
+  min-height: 44px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.fact h2,
+.plotSection h2,
+.knowledge h2 {
+  margin: 0 0 0.45rem;
+  color: #6d5365;
+  font-size: 0.92rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+.fact p,
+.plotSection div {
+  margin: 0;
+  color: #b7b9b3;
+  font-size: 0.8rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.portraitFrame {
+  position: absolute;
+  top: 3rem;
+  right: 3rem;
+  width: 230px;
+  aspect-ratio: 1;
+  border: 2px solid rgba(151, 166, 146, 0.8);
+  background: #050606;
+}
+
+.plotSection {
+  margin-top: 3.7rem;
+  padding-top: 1.7rem;
+  border-top: 1px solid rgba(190, 190, 184, 0.55);
+  display: grid;
+  grid-template-columns: 1.2fr 0.5fr 0.5fr 1fr;
+  gap: 1.5rem;
+}
+
+.plotSection h2 {
+  grid-column: 4;
+  color: #9aa794;
+}
+
+.knowledge {
+  margin-top: 5rem;
+}
+
+.knowledge header {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.knowledge header span {
+  height: 1px;
+  flex: 1;
+  background: rgba(190, 190, 184, 0.55);
+}
+
+.knowledge h2 {
+  color: #9aa794;
+}
+
+.customGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.1rem 2.2rem;
+  margin-top: 1.5rem;
+}
+
+.empty {
+  color: #8f918d;
+}
+
+@media (max-width: 1100px) {
+  .hero { grid-template-columns: 1fr; padding: 1.5rem; }
+  .card { margin-top: 0; padding: 2rem; }
+  .factGrid { width: 100%; }
+  .portraitFrame { position: static; margin: 2rem 0; width: min(100%, 300px); }
+  .plotSection { grid-template-columns: 1fr; }
+  .plotSection h2 { grid-column: auto; }
+}
+
+@media (max-width: 700px) {
+  .nav { gap: 1rem; overflow-x: auto; justify-content: flex-start; }
+  .windowFrame { width: 250px; height: 340px; }
+  .factGrid,
+  .customGrid { grid-template-columns: 1fr; }
+}

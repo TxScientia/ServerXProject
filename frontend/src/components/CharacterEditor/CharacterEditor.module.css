@@ -297,11 +297,17 @@
   padding-top: 1.15rem;
 }
 
-.deleteBlockButton {
+.blockControls {
   position: absolute;
   top: 0;
   right: 0;
   z-index: 2;
+  display: flex;
+  gap: 0.25rem;
+}
+
+.deleteBlockButton,
+.moveBlockButton {
   width: 1.65rem;
   height: 1.65rem;
   border: 1px solid rgba(190, 190, 184, 0.34);
@@ -312,10 +318,21 @@
   line-height: 1;
 }
 
+.moveBlockButton {
+  font-size: 0.95rem;
+}
+
 .deleteBlockButton:hover,
-.deleteBlockButton:focus-visible {
+.deleteBlockButton:focus-visible,
+.moveBlockButton:hover,
+.moveBlockButton:focus-visible {
   border-color: rgba(132, 163, 132, 0.85);
   color: #d7ddd4;
+}
+
+.moveBlockButton:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
 }
 
 .tabBuilderItemLarge {
@@ -349,6 +366,12 @@
   gap: 1rem;
 }
 
+.skillFields {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(12rem, 0.65fr);
+  gap: 0.75rem;
+}
+
 .tabBuilderItems textarea {
   min-height: 9rem;
   resize: vertical;
@@ -372,9 +395,23 @@
 .actions {
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
   justify-content: flex-end;
   gap: var(--space-3);
   margin-top: 3rem;
+}
+
+.saveFeedback {
+  min-height: 1.3em;
+  margin-right: auto;
+  color: #9fbd9f;
+  font-family: var(--font-display);
+  font-variant: small-caps;
+  letter-spacing: 0.08em;
+}
+
+.saveFeedback:empty {
+  display: none;
 }
 
 .confirmOverlay {
@@ -442,5 +479,9 @@
   .tabBuilderItemLarge,
   .tabBuilderItemSmall {
     grid-column: 1;
+  }
+
+  .skillFields {
+    grid-template-columns: 1fr;
   }
 }
