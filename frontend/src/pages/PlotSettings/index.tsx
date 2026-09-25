@@ -5,6 +5,7 @@ import AppLayout from '../../pageLayouts/appLayout/AppLayout';
 import { Modal, ModalActions, ModalSpacer } from '../../components/Modal';
 import InviteModal from '../../components/InviteModal/InviteModal';
 import PlaceTreeEditor, { Place } from '../../components/PlaceTreeEditor';
+import MemberRankTables, { type MemberRank, type RankedMember } from '../../components/MemberRankTables';
 import NewsComposer from '../../components/News/NewsComposer';
 import NewsList from '../../components/News/NewsList';
 import { apiUrl, authHeaders, characterHeaders } from '../../api';
@@ -21,18 +22,9 @@ type Storybook = {
   places: Place[];
 };
 
-type Rank = {
-  id: string;
-  name: string;
-  weight: number;
-  created_at: string;
-};
+type Rank = MemberRank & { created_at: string };
 
-type Member = {
-  character_id: string;
-  name: string;
-  role: string;
-};
+type Member = RankedMember;
 
 type LinkedSpace = {
   id: string;
@@ -170,7 +162,10 @@ export default function PlotSettings() {
 
   useEffect(() => {
     if (section === 'ranks') fetchRanks();
-    if (section === 'members') fetchMembers();
+    if (section === 'members') {
+      fetchMembers();
+      fetchRanks();
+    }
     if (section === 'linked-plots') fetchLinkedPlots();
   }, [section, fetchRanks, fetchMembers, fetchLinkedPlots]);
 
@@ -257,6 +252,22 @@ export default function PlotSettings() {
         setStatus({ kind: 'ok', msg: t('plotSettings.inviteSent'), section: 'members' });
       })
       .catch(() => setStatus({ kind: 'error', msg: t('plotSettings.inviteError'), section: 'members' }));
+  };
+
+  const updateMemberRank = (characterId: string, rankId: string) => {
+    fetch(apiUrl(`/storybooks/${id}/members/${characterId}/rank`), {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json', ...authHeaders(), ...characterHeaders() },
+      body: JSON.stringify({ rank_id: rankId || null }),
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error();
+      })
+      .then(() => {
+        setStatus({ kind: 'ok', msg: t('plotSettings.memberRankSaved'), section: 'members' });
+        fetchMembers();
+      })
+      .catch(() => setStatus({ kind: 'error', msg: t('plotSettings.memberRankError'), section: 'members' }));
   };
 
   const handleInvitePlot = (targetSpaceId: string) => {
@@ -475,14 +486,30 @@ export default function PlotSettings() {
           {members.length === 0 ? (
             <p className={styles.muted}>{t('plotSettings.noMembers')}</p>
           ) : (
-            <div className={styles.list}>
-              {members.map((m) => (
-                <div key={m.character_id} className={styles.listCard}>
-                  <strong>{m.name}</strong>
-                  <span className={styles.roleBadge}>{m.role}</span>
-                </div>
-              ))}
-            </div>
+            <>
+              <div className={styles.list}>
+                {members.map((m) => (
+                  <div key={m.character_id} className={styles.listCard}>
+                    <div>
+                      <strong>{m.name}</strong>
+                      <span className={styles.roleBadge}>{m.role}</span>
+                    </div>
+                    <select
+                      className="select-input"
+                      value={m.rank_id ?? ''}
+                      onChange={(e) => updateMemberRank(m.character_id, e.target.value)}
+                    >
+                      <option value="">{t('members.unranked')}</option>
+                      {ranks.map((rank) => (
+                        <option key={rank.id} value={rank.id}>{rank.name}</option>
+                      ))}
+                    </select>
+                  </div>
+                ))}
+              </div>
+              <h3>{t('members.preview')}</h3>
+              <MemberRankTables members={members} ranks={ranks} emptyText={t('plotSettings.noMembers')} />
+            </>
           )}
         </div>
       ) : section === 'linked-plots' ? (

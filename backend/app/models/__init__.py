@@ -9,6 +9,7 @@ from .character import Character
 from .chat import Chat, ChatMember
 from .invite import CharacterInvite, PlotLink
 from .membership import Membership
+from .member_rank import MembershipRank
 from .message import Message, MessageRead, SystemMessage
 from .news import NewsItem
 from .news_read import NewsItemRead
@@ -27,6 +28,7 @@ __all__ = [
     "Chat",
     "ChatMember",
     "Membership",
+    "MembershipRank",
     "Message",
     "MessageRead",
     "NewsItem",

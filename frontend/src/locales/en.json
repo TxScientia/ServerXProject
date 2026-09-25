@@ -24,6 +24,16 @@
     "mitglieder": "Members",
     "plotSettings": "Plot Settings"
   },
+  "members": {
+    "title": "Members",
+    "character": "Character",
+    "role": "Role",
+    "unranked": "Member",
+    "unknownRank": "Unknown rank",
+    "noMembersForRank": "No members in this rank.",
+    "preview": "Member list preview",
+    "empty": "No members yet."
+  },
   "theme": {
     "label": "Theme",
     "dark": "Dark",
@@ -165,6 +175,8 @@
     "inviteSent": "Invite sent",
     "inviteError": "Failed to send invite.",
     "membersLoadError": "Failed to load members.",
+    "memberRankSaved": "Member rank saved.",
+    "memberRankError": "Failed to save member rank.",
     "linkedLoadError": "Failed to load linked worlds."
   },
   "admin": {

@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 
-from ..models import Rank
+from ..models import MembershipRank, Rank
 
 
 def list_ranks(db: Session, space_id):
@@ -35,5 +35,6 @@ def update_rank(db: Session, rank: Rank, *, name=None, weight=None):
 
 
 def delete_rank(db: Session, rank: Rank):
+    db.query(MembershipRank).filter(MembershipRank.rank_id == rank.id).delete()
     db.delete(rank)
     db.commit()

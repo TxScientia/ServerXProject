@@ -24,6 +24,16 @@
     "mitglieder": "Mitglieder",
     "plotSettings": "Plot Settings"
   },
+  "members": {
+    "title": "Mitglieder",
+    "character": "Charakter",
+    "role": "Rolle",
+    "unranked": "Member",
+    "unknownRank": "Unbekannter Rang",
+    "noMembersForRank": "Keine Mitglieder in diesem Rang.",
+    "preview": "Vorschau der Mitgliederliste",
+    "empty": "Noch keine Mitglieder."
+  },
   "theme": {
     "label": "Design",
     "dark": "Dunkel",
@@ -165,6 +175,8 @@
     "inviteSent": "Einladung gesendet",
     "inviteError": "Fehler beim Senden der Einladung.",
     "membersLoadError": "Mitglieder konnten nicht geladen werden.",
+    "memberRankSaved": "Mitgliederrang gespeichert.",
+    "memberRankError": "Mitgliederrang konnte nicht gespeichert werden.",
     "linkedLoadError": "Verlinkte Welten konnten nicht geladen werden."
   },
   "admin": {

@@ -20,6 +20,7 @@ from .invite import (
     PlotLinkCreate,
     PlotLinkRead,
 )
+from .member import MemberRankUpdate
 from .news import NewsCreate, NewsRead
 from .ooc import OOCMessageCreate, OOCMessageRead
 from .place import PlaceCreate, PlaceRead, PlaceReorder, PlaceUpdate
@@ -46,6 +47,7 @@ __all__ = [
     "CreateGroupChatRequest",
     "MessageCreate",
     "MessageRead",
+    "MemberRankUpdate",
     "PlotLinkAction",
     "PlotLinkCreate",
     "PlotLinkRead",
