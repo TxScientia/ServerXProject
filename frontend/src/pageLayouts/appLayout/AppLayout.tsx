@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import Badge from '../../components/Badge/Badge';
 import LanguageSwitcher from '../../components/LanguageSwitcher';
+import { GlobalOOCOverlay } from '../../components/OOC';
 import { apiUrl, authHeaders } from '../../api';
 import styles from './AppLayout.module.css';
 
@@ -31,6 +32,7 @@ function TopNavbar({ pmUnreadCount }: TopNavbarProps) {
   const location = useLocation();
   const { t } = useTranslation();
   const [newsUnread, setNewsUnread] = useState(0);
+  const [showOOC, setShowOOC] = useState(false);
 
   useEffect(() => {
     if (!localStorage.getItem('token')) return;
@@ -44,8 +46,12 @@ function TopNavbar({ pmUnreadCount }: TopNavbarProps) {
       .catch(() => undefined);
   }, [location.pathname]);
 
-  const go = (path: string | null) => {
-    if (path) navigate(path);
+  const go = (item: { key: string; path: string | null }) => {
+    if (item.key === 'nav.oocChat') {
+      setShowOOC(true);
+      return;
+    }
+    if (item.path) navigate(item.path);
   };
 
   const logout = () => {
@@ -57,46 +63,49 @@ function TopNavbar({ pmUnreadCount }: TopNavbarProps) {
   };
 
   return (
-    <header className={styles.topbar}>
-      <nav className={styles.topLeft} aria-label="Global navigation">
-        {GLOBAL_NAV.map((item) => (
-          <div key={item.key} className={styles.navItemWrapper}>
+    <>
+      <header className={styles.topbar}>
+        <nav className={styles.topLeft} aria-label="Global navigation">
+          {GLOBAL_NAV.map((item) => (
+            <div key={item.key} className={styles.navItemWrapper}>
+              <button
+                type="button"
+                className={styles.navLink}
+                onClick={() => go(item)}
+                disabled={!item.path && item.key !== 'nav.oocChat'}
+                title={!item.path && item.key !== 'nav.oocChat' ? t('common.comingSoon') : undefined}
+              >
+                {t(item.key)}
+              </button>
+              {item.key === 'nav.pm' && <Badge count={pmUnreadCount || 0} variant="nav" />}
+              {item.key === 'nav.news' && <Badge count={newsUnread} variant="nav" />}
+            </div>
+          ))}
+        </nav>
+
+        <div className={styles.logo}>LOGO</div>
+
+        <nav className={styles.topRight} aria-label="Account navigation">
+          {RIGHT_NAV.map((item) => (
             <button
+              key={item.key}
               type="button"
               className={styles.navLink}
-              onClick={() => go(item.path)}
+              onClick={() => go(item)}
               disabled={!item.path}
               title={item.path ? undefined : t('common.comingSoon')}
             >
               {t(item.key)}
             </button>
-            {item.key === 'nav.pm' && <Badge count={pmUnreadCount || 0} variant="nav" />}
-            {item.key === 'nav.news' && <Badge count={newsUnread} variant="nav" />}
-          </div>
-        ))}
-      </nav>
-
-      <div className={styles.logo}>LOGO</div>
-
-      <nav className={styles.topRight} aria-label="Account navigation">
-        {RIGHT_NAV.map((item) => (
-          <button
-            key={item.key}
-            type="button"
-            className={styles.navLink}
-            onClick={() => go(item.path)}
-            disabled={!item.path}
-            title={item.path ? undefined : t('common.comingSoon')}
-          >
-            {t(item.key)}
+          ))}
+          <button type="button" className={styles.navLink} onClick={logout}>
+            {t('common.logout')}
           </button>
-        ))}
-        <button type="button" className={styles.navLink} onClick={logout}>
-          {t('common.logout')}
-        </button>
-        <LanguageSwitcher />
-      </nav>
-    </header>
+          <LanguageSwitcher />
+        </nav>
+      </header>
+      {showOOC && <GlobalOOCOverlay onClose={() => setShowOOC(false)} />}
+    </>
   );
 }
 

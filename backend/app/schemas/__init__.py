@@ -21,6 +21,7 @@ from .invite import (
     PlotLinkRead,
 )
 from .news import NewsCreate, NewsRead
+from .ooc import OOCMessageCreate, OOCMessageRead
 from .place import PlaceCreate, PlaceRead, PlaceReorder, PlaceUpdate
 from .post import PostCreate, PostRead, PostUpdate
 from .rank import RankCreate, RankRead, RankUpdate
@@ -53,6 +54,8 @@ __all__ = [
     "SystemMessageResponse",
     "NewsCreate",
     "NewsRead",
+    "OOCMessageCreate",
+    "OOCMessageRead",
     "PlaceCreate",
     "PlaceRead",
     "PlaceReorder",

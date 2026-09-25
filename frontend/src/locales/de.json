@@ -205,6 +205,17 @@
     "color": "Textfarbe",
     "clearColor": "Farbe entfernen"
   },
+  "ooc": {
+    "globalTitle": "Globaler OOC-Chat",
+    "plotTitle": "OOC: {{title}}",
+    "placeholder": "Schreibe eine OOC-Nachricht …",
+    "send": "Senden",
+    "empty": "Noch keine OOC-Nachrichten.",
+    "emptyMessage": "Die Nachricht darf nicht leer sein.",
+    "selectCharacter": "Wähle einen Charakter, um im OOC zu schreiben.",
+    "loadError": "OOC konnte nicht geladen werden.",
+    "saveError": "OOC-Nachricht konnte nicht gespeichert werden."
+  },
   "scene": {
     "participants": "Teilnehmer: {{count}}",
     "noActiveScene": "An diesem Ort läuft gerade keine Szene.",
