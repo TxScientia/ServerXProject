@@ -8,10 +8,13 @@ import styles from './LobbyLayout.module.css';
 
 // Account-scoped nav only — no character-scoped items. Items without a path are placeholders.
 const LOBBY_NAV: { key: string; path: string | null; adminOnly?: boolean }[] = [
-  { key: 'nav.myCharacters', path: '/lobby' },
   { key: 'nav.pm', path: '/pm' },
   { key: 'nav.news', path: '/news' },
   { key: 'nav.admin', path: '/admin', adminOnly: true },
+];
+
+const RIGHT_NAV: { key: string; path: string | null }[] = [
+  { key: 'nav.myCharacters', path: '/lobby' },
   { key: 'nav.settings', path: null },
   { key: 'nav.faq', path: null },
 ];
@@ -87,6 +90,18 @@ export default function LobbyLayout({ children, pmUnreadCount }: LobbyLayoutProp
         </nav>
         <div className={styles.logo}>LOGO</div>
         <nav className={styles.right} aria-label="Session">
+          {RIGHT_NAV.map((item) => (
+            <button
+              key={item.key}
+              type="button"
+              className={styles.navLink}
+              disabled={!item.path}
+              onClick={() => item.path && navigate(item.path)}
+              title={item.path ? undefined : t('common.comingSoon')}
+            >
+              {t(item.key)}
+            </button>
+          ))}
           <button type="button" className={styles.navLink} onClick={logout}>
             {t('common.logout')}
           </button>

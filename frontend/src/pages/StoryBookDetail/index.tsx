@@ -3,6 +3,7 @@ import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import AppLayout from '../../pageLayouts/appLayout/AppLayout';
 import Badge from '../../components/Badge/Badge';
+import { OOCChannel } from '../../components/OOC';
 import Scene from '../../components/Scene';
 import { apiUrl, authHeaders } from '../../api';
 import styles from './StoryBookDetail.module.css';
@@ -86,6 +87,7 @@ export default function StoryBookDetail() {
   const [selectedPlaceId, setSelectedPlaceId] = useState<string | null>(null);
   const [linkedSpaces, setLinkedSpaces] = useState<LinkedSpace[]>([]);
   const [plotNewsUnread, setPlotNewsUnread] = useState(0);
+  const [plotPanel, setPlotPanel] = useState<'home' | 'ooc'>('home');
 
   const fetchStorybook = useCallback(() => {
     if (!localStorage.getItem('token')) {
@@ -185,6 +187,30 @@ export default function StoryBookDetail() {
             );
           }
 
+          if (key === 'nav.oocChat') {
+            return (
+              <button
+                key={key}
+                className={`${styles.sideItem} ${plotPanel === 'ooc' ? styles.placeItemActive : ''}`.trim()}
+                onClick={() => setPlotPanel('ooc')}
+              >
+                {t(key)}
+              </button>
+            );
+          }
+
+          if (key === 'nav.home') {
+            return (
+              <button
+                key={key}
+                className={`${styles.sideItem} ${plotPanel === 'home' ? styles.placeItemActive : ''}`.trim()}
+                onClick={() => setPlotPanel('home')}
+              >
+                {t(key)}
+              </button>
+            );
+          }
+
           if (key === 'nav.news') {
             return (
               <div key={key} className={styles.sideItemWrapper}>
@@ -255,12 +281,21 @@ export default function StoryBookDetail() {
   if (!storybook) {
     center = <p className={error ? styles.error : undefined}>{error ?? t('common.loading')}</p>;
   } else if (!enteredWorld) {
-    // World "biography" (edited via Plot Settings). Plain text for now; BBCode later.
-    center = storybook.biography ? (
-      <div className={styles.biography}>{storybook.biography}</div>
-    ) : (
-      <p className={styles.muted}>{t('plot.worldBioPlaceholder')}</p>
-    );
+    if (plotPanel === 'ooc') {
+      center = (
+        <div>
+          <h1 className={styles.title}>{t('ooc.plotTitle', { title: storybook.title })}</h1>
+          <OOCChannel scope={{ type: 'storybook', storybookId: storybook.id }} />
+        </div>
+      );
+    } else {
+      // World "biography" (edited via Plot Settings). Plain text for now; BBCode later.
+      center = storybook.biography ? (
+        <div className={styles.biography}>{storybook.biography}</div>
+      ) : (
+        <p className={styles.muted}>{t('plot.worldBioPlaceholder')}</p>
+      );
+    }
   } else if (!selectedPlace) {
     center = <p className={styles.muted}>{t('plot.worldNoPlaces')}</p>;
   } else {

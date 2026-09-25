@@ -205,6 +205,17 @@
     "color": "Text color",
     "clearColor": "Remove color"
   },
+  "ooc": {
+    "globalTitle": "Global OOC Chat",
+    "plotTitle": "OOC: {{title}}",
+    "placeholder": "Write an OOC message …",
+    "send": "Send",
+    "empty": "No OOC messages yet.",
+    "emptyMessage": "The message cannot be empty.",
+    "selectCharacter": "Choose a character to write in OOC.",
+    "loadError": "Could not load OOC.",
+    "saveError": "Could not save OOC message."
+  },
   "scene": {
     "participants": "Participants: {{count}}",
     "noActiveScene": "No scene is currently running in this place.",

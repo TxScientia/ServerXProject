@@ -12,6 +12,7 @@ from .membership import Membership
 from .message import Message, MessageRead, SystemMessage
 from .news import NewsItem
 from .news_read import NewsItemRead
+from .ooc import OOCMessage
 from .place import Place
 from .post import Post
 from .rank import Rank
@@ -30,6 +31,7 @@ __all__ = [
     "MessageRead",
     "NewsItem",
     "NewsItemRead",
+    "OOCMessage",
     "Place",
     "PlotLink",
     "Post",

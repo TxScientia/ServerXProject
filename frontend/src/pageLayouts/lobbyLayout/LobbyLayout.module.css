@@ -31,6 +31,8 @@
 .right {
   display: flex;
   justify-content: flex-end;
+  align-items: center;
+  gap: clamp(1rem, 2vw, 2rem);
 }
 
 .logo {
