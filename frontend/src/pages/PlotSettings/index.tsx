@@ -5,6 +5,8 @@ import AppLayout from '../../pageLayouts/appLayout/AppLayout';
 import { Modal, ModalActions, ModalSpacer } from '../../components/Modal';
 import InviteModal from '../../components/InviteModal/InviteModal';
 import PlaceTreeEditor, { Place } from '../../components/PlaceTreeEditor';
+import NewsComposer from '../../components/News/NewsComposer';
+import NewsList from '../../components/News/NewsList';
 import { apiUrl, authHeaders, characterHeaders } from '../../api';
 import styles from './PlotSettings.module.css';
 
@@ -50,7 +52,7 @@ type RankDraft = {
   weight: number;
 };
 
-type SettingsSection = 'general' | 'tree' | 'ranks' | 'members' | 'linked-plots';
+type SettingsSection = 'general' | 'tree' | 'ranks' | 'members' | 'linked-plots' | 'news';
 
 type StatusMessage = {
   kind: 'ok' | 'error';
@@ -90,6 +92,7 @@ export default function PlotSettings() {
   const [linkedSpaces, setLinkedSpaces] = useState<LinkedSpace[]>([]);
   const [pendingLinks, setPendingLinks] = useState<PendingLink[]>([]);
   const [inviteMode, setInviteMode] = useState<'character' | 'plot' | null>(null);
+  const [newsRefreshKey, setNewsRefreshKey] = useState(0);
 
   const fetchStorybook = useCallback(() => {
     if (!localStorage.getItem('token')) {
@@ -347,12 +350,12 @@ export default function PlotSettings() {
       >
         {t('plotSettings.linkedPlots')}
       </button>
-      <hr className={styles.divider} />
-      {['nav.mitglieder', 'nav.news'].map((key) => (
-        <button key={key} className={styles.sideItem} disabled title={t('common.comingSoon')}>
-          {t(key)}
-        </button>
-      ))}
+      <button
+        className={`${styles.sideItem} ${section === 'news' ? styles.active : ''}`.trim()}
+        onClick={() => setSection('news')}
+      >
+        {t('plotSettings.news')}
+      </button>
     </div>
   );
 
@@ -517,6 +520,22 @@ export default function PlotSettings() {
               ))}
             </div>
           )}
+        </div>
+      ) : section === 'news' ? (
+        <div className={styles.listSection}>
+          <div className={styles.listHeader}>
+            <h2>{t('plotSettings.news')}</h2>
+          </div>
+          <NewsComposer
+            scope={{ type: 'storybook', storybookId: storybook.id }}
+            onCreated={() => setNewsRefreshKey((x) => x + 1)}
+          />
+          <h3>{t('news.latest')}</h3>
+          <NewsList
+            scope={{ type: 'storybook', storybookId: storybook.id }}
+            refreshKey={newsRefreshKey}
+            emptyText={t('news.emptyPlot')}
+          />
         </div>
       ) : (
         <div className={styles.rankSection}>

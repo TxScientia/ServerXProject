@@ -1,0 +1,45 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.sideNav {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.backItem,
+.sideItem {
+  text-align: left;
+  border: 0;
+  background: transparent;
+  color: var(--color-text);
+  font: inherit;
+  cursor: pointer;
+  padding: var(--space-2) 0;
+}
+
+.backItem {
+  color: #75b8ff;
+}
+
+.sideTitle {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  margin-bottom: var(--space-2);
+}
+
+.active {
+  color: #75b8ff;
+}
+
+.title {
+  margin: 0;
+}
+
+.subtitle,
+.muted {
+  color: rgba(238, 238, 238, 0.68);
+}

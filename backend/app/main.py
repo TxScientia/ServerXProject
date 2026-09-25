@@ -20,6 +20,7 @@ from .crud import (
 from .routes.accounts import router as accounts_router
 from .routes.characters import router as characters_router
 from .routes.invite import router as invite_router
+from .routes.news import router as news_router
 from .routes.pm import router as pm_router
 from .routes.residents import router as residents_router
 from .routes.storybooks import router as storybooks_router
@@ -44,6 +45,10 @@ def init_test_user():
         create_account(db, "test@example.com", "test", "1234")
     user = get_account_by_login_name(db, "test")
     if user:
+        # Local dev convenience: the primary test account may access /admin.
+        if not user.is_global_admin:
+            user.is_global_admin = True
+            db.commit()
         # Charaktere anlegen, falls noch nicht vorhanden
         if not db.query(Character).filter_by(name="Arthas", account_id=user.id).first():
             create_character(db, user.id, "Arthas", "Mensch", "Paladin", "Männlich")
@@ -83,6 +88,7 @@ app.add_middleware(
 app.include_router(router=accounts_router)
 app.include_router(router=characters_router)
 app.include_router(router=invite_router)
+app.include_router(router=news_router)
 app.include_router(router=pm_router)
 app.include_router(router=residents_router)
 app.include_router(router=storybooks_router)

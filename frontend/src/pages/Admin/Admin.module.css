@@ -1,0 +1,39 @@
+.sideNav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.sideItem {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.04);
+  color: inherit;
+  border-radius: 12px;
+  padding: 0.65rem 0.8rem;
+  text-align: left;
+  cursor: pointer;
+}
+
+.active {
+  border-color: rgba(120, 190, 255, 0.55);
+  background: rgba(120, 190, 255, 0.14);
+}
+
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.title {
+  margin: 0;
+}
+
+.subtitle,
+.muted {
+  color: rgba(238, 238, 238, 0.68);
+}
+
+.error {
+  color: #ff9d9d;
+}

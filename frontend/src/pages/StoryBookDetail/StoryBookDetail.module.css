@@ -21,6 +21,12 @@
   margin-bottom: var(--space-2);
 }
 
+.sideItemWrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
 .sideItem {
   text-align: left;
   border: 0;

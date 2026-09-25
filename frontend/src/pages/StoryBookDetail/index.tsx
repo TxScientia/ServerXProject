@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import AppLayout from '../../pageLayouts/appLayout/AppLayout';
+import Badge from '../../components/Badge/Badge';
 import Scene from '../../components/Scene';
 import { apiUrl, authHeaders } from '../../api';
 import styles from './StoryBookDetail.module.css';
@@ -84,6 +85,7 @@ export default function StoryBookDetail() {
   const [enteredWorld, setEnteredWorld] = useState(false);
   const [selectedPlaceId, setSelectedPlaceId] = useState<string | null>(null);
   const [linkedSpaces, setLinkedSpaces] = useState<LinkedSpace[]>([]);
+  const [plotNewsUnread, setPlotNewsUnread] = useState(0);
 
   const fetchStorybook = useCallback(() => {
     if (!localStorage.getItem('token')) {
@@ -99,6 +101,14 @@ export default function StoryBookDetail() {
       .catch(() => setError(t('plot.loadError')));
   }, [id, navigate, t]);
 
+  const fetchPlotNewsUnread = useCallback(() => {
+    if (!id || !localStorage.getItem('token')) return;
+    fetch(apiUrl(`/storybooks/${id}/news/unread-count`), { headers: authHeaders() })
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => setPlotNewsUnread(data?.count ?? 0))
+      .catch(() => setPlotNewsUnread(0));
+  }, [id]);
+
   const fetchLinkedPlots = useCallback(() => {
     if (!id) return;
     fetch(apiUrl(`/storybooks/${id}/linked-plots`), {
@@ -111,7 +121,8 @@ export default function StoryBookDetail() {
 
   useEffect(() => {
     fetchStorybook();
-  }, [fetchStorybook]);
+    fetchPlotNewsUnread();
+  }, [fetchStorybook, fetchPlotNewsUnread]);
 
   const places = storybook?.places ?? [];
   const topLevel = places.filter((p) => !p.parent_place_id);
@@ -171,6 +182,17 @@ export default function StoryBookDetail() {
               >
                 {t(key)}
               </button>
+            );
+          }
+
+          if (key === 'nav.news') {
+            return (
+              <div key={key} className={styles.sideItemWrapper}>
+                <button className={styles.sideItem} onClick={() => navigate(`/storybooks/${storybook!.id}/news`)}>
+                  {t(key)}
+                </button>
+                <Badge count={plotNewsUnread} variant="nav" />
+              </div>
             );
           }
 
