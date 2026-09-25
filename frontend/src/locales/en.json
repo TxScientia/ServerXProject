@@ -5,10 +5,11 @@
     "cancel": "Cancel",
     "create": "Create",
     "comingSoon": "Coming soon",
-    "loading": "Loading…"
+    "loading": "Loading…",
+    "saving": "Saving…"
   },
   "nav": {
-    "gesuche": "Requests",
+    "gesuche": "Wanted Ads",
     "oocChat": "OOC-Chat",
     "pm": "PM",
     "residents": "Residents",
@@ -18,6 +19,7 @@
     "faq": "FAQ",
     "systemNews": "System News",
     "news": "News",
+    "admin": "Admin",
     "home": "Home",
     "mitglieder": "Members",
     "plotSettings": "Plot Settings"
@@ -82,6 +84,8 @@
     "enterWorld": "Enter world",
     "places": "Places",
     "linkedWorlds": "Linked worlds",
+    "newsTitle": "News: {{title}}",
+    "newsSubtitle": "Announcements and updates for this plot.",
     "noPlaces": "No places yet.",
     "worldBioPlaceholder": "World description – editable soon via StoryBook settings.",
     "worldNoPlaces": "This world has no places yet.",
@@ -146,6 +150,7 @@
     "backToPlot": "← To plot",
     "members": "Members",
     "linkedPlots": "Linked Worlds",
+    "news": "Plot News",
     "inviteCharacter": "Invite character",
     "invitePlot": "Link world",
     "noMembers": "No members yet.",
@@ -156,6 +161,40 @@
     "inviteError": "Failed to send invite.",
     "membersLoadError": "Failed to load members.",
     "linkedLoadError": "Failed to load linked worlds."
+  },
+  "admin": {
+    "title": "Admin",
+    "subtitle": "System-wide settings and announcements.",
+    "systemNews": "System News",
+    "loadError": "Could not load admin area."
+  },
+  "news": {
+    "pageTitle": "News",
+    "pageSubtitle": "Announcements and updates for When Worlds Collide.",
+    "latest": "Latest news",
+    "title": "Title",
+    "titlePlaceholder": "News headline",
+    "body": "Message",
+    "bodyPlaceholder": "Write the news message …",
+    "kindLabel": "Category",
+    "pin": "Pin to top",
+    "publish": "Publish",
+    "preview": "Preview",
+    "previewAuthor": "Admin",
+    "systemAuthor": "System",
+    "pinned": "Pinned",
+    "saved": "News published.",
+    "saveError": "Could not save news.",
+    "loadError": "Could not load news.",
+    "empty": "No news yet.",
+    "emptyPlot": "No plot news yet.",
+    "byline": "by {{author}} · {{date}}",
+    "kind": {
+      "info": "Info",
+      "update": "Update",
+      "maintenance": "Maintenance",
+      "warning": "Warning"
+    }
   },
   "editor": {
     "toolbar": "Formatting",

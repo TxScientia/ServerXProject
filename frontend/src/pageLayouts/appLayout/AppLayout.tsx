@@ -1,8 +1,9 @@
-import { ReactNode } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { ReactNode, useEffect, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import Badge from '../../components/Badge/Badge';
 import LanguageSwitcher from '../../components/LanguageSwitcher';
+import { apiUrl, authHeaders } from '../../api';
 import styles from './AppLayout.module.css';
 
 // Global top-nav. Items without a path are placeholders for not-yet-built features.
@@ -10,6 +11,7 @@ const GLOBAL_NAV: { key: string; path: string | null }[] = [
   { key: 'nav.gesuche', path: null },
   { key: 'nav.oocChat', path: null },
   { key: 'nav.pm', path: '/pm' },
+  { key: 'nav.news', path: '/news' },
   { key: 'nav.residents', path: '/residents' },
   { key: 'nav.storybooks', path: '/storybooks' },
 ];
@@ -26,7 +28,21 @@ type TopNavbarProps = {
 
 function TopNavbar({ pmUnreadCount }: TopNavbarProps) {
   const navigate = useNavigate();
+  const location = useLocation();
   const { t } = useTranslation();
+  const [newsUnread, setNewsUnread] = useState(0);
+
+  useEffect(() => {
+    if (!localStorage.getItem('token')) return;
+    if (location.pathname === '/news') {
+      setNewsUnread(0);
+      return;
+    }
+    fetch(apiUrl('/news/unread-count'), { headers: authHeaders() })
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => setNewsUnread(data?.count ?? 0))
+      .catch(() => undefined);
+  }, [location.pathname]);
 
   const go = (path: string | null) => {
     if (path) navigate(path);
@@ -36,6 +52,7 @@ function TopNavbar({ pmUnreadCount }: TopNavbarProps) {
     localStorage.removeItem('token');
     localStorage.removeItem('characterId');
     localStorage.removeItem('characterName');
+    localStorage.removeItem('isGlobalAdmin');
     navigate('/');
   };
 
@@ -54,6 +71,7 @@ function TopNavbar({ pmUnreadCount }: TopNavbarProps) {
               {t(item.key)}
             </button>
             {item.key === 'nav.pm' && <Badge count={pmUnreadCount || 0} variant="nav" />}
+            {item.key === 'nav.news' && <Badge count={newsUnread} variant="nav" />}
           </div>
         ))}
       </nav>

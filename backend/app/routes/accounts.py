@@ -4,9 +4,11 @@ import bcrypt
 import jwt
 import datetime
 
+from ..auth import get_current_user
 from ..database import get_db
 from ..crud import get_account_by_login_name
-from ..schemas import LoginRequest
+from ..models import Account
+from ..schemas import AccountRead, LoginRequest
 from ..security import SECRET_KEY
 
 
@@ -28,4 +30,9 @@ def login(data: LoginRequest, db: Session = Depends(get_db)):
         + datetime.timedelta(hours=1),
     }
     token = jwt.encode(payload, SECRET_KEY, algorithm="HS256")
-    return {"token": token}
+    return {"token": token, "is_global_admin": user.is_global_admin, "login_name": user.login_name}
+
+
+@router.get("/me", response_model=AccountRead)
+def me(current_user: Account = Depends(get_current_user)):
+    return current_user

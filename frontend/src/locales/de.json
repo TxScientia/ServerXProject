@@ -5,7 +5,8 @@
     "cancel": "Abbrechen",
     "create": "Erstellen",
     "comingSoon": "Bald verfügbar",
-    "loading": "Lädt…"
+    "loading": "Lädt…",
+    "saving": "Speichert…"
   },
   "nav": {
     "gesuche": "Gesuche",
@@ -18,6 +19,7 @@
     "faq": "FAQ",
     "systemNews": "System News",
     "news": "News",
+    "admin": "Admin",
     "home": "Home",
     "mitglieder": "Mitglieder",
     "plotSettings": "Plot Settings"
@@ -82,6 +84,8 @@
     "enterWorld": "Welt betreten",
     "places": "Orte",
     "linkedWorlds": "Verlinkte Welten",
+    "newsTitle": "News: {{title}}",
+    "newsSubtitle": "Ankündigungen und Updates für diesen Plot.",
     "noPlaces": "Noch keine Orte.",
     "worldBioPlaceholder": "Weltbeschreibung – bald über die StoryBook-Einstellungen bearbeitbar.",
     "worldNoPlaces": "Diese Welt hat noch keine Orte.",
@@ -146,6 +150,7 @@
     "backToPlot": "← Zum Plot",
     "members": "Mitglieder",
     "linkedPlots": "Verlinkte Welten",
+    "news": "Plot-News",
     "inviteCharacter": "Charakter einladen",
     "invitePlot": "Welt verlinken",
     "noMembers": "Noch keine Mitglieder.",
@@ -156,6 +161,40 @@
     "inviteError": "Fehler beim Senden der Einladung.",
     "membersLoadError": "Mitglieder konnten nicht geladen werden.",
     "linkedLoadError": "Verlinkte Welten konnten nicht geladen werden."
+  },
+  "admin": {
+    "title": "Admin",
+    "subtitle": "Systemweite Einstellungen und Ankündigungen.",
+    "systemNews": "System-News",
+    "loadError": "Adminbereich konnte nicht geladen werden."
+  },
+  "news": {
+    "pageTitle": "News",
+    "pageSubtitle": "Ankündigungen und Updates für When Worlds Collide.",
+    "latest": "Neueste News",
+    "title": "Titel",
+    "titlePlaceholder": "Überschrift der Nachricht",
+    "body": "Nachricht",
+    "bodyPlaceholder": "Schreibe die News-Nachricht …",
+    "kindLabel": "Kategorie",
+    "pin": "Oben anpinnen",
+    "publish": "Veröffentlichen",
+    "preview": "Vorschau",
+    "previewAuthor": "Admin",
+    "systemAuthor": "System",
+    "pinned": "Angepinnt",
+    "saved": "News veröffentlicht.",
+    "saveError": "News konnte nicht gespeichert werden.",
+    "loadError": "News konnten nicht geladen werden.",
+    "empty": "Noch keine News vorhanden.",
+    "emptyPlot": "Noch keine Plot-News vorhanden.",
+    "byline": "von {{author}} · {{date}}",
+    "kind": {
+      "info": "Info",
+      "update": "Update",
+      "maintenance": "Wartung",
+      "warning": "Warnung"
+    }
   },
   "editor": {
     "toolbar": "Formatierung",

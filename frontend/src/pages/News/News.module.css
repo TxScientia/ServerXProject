@@ -1,0 +1,14 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.title {
+  margin: 0;
+}
+
+.subtitle {
+  color: rgba(238, 238, 238, 0.68);
+  margin: 0 0 0.4rem;
+}

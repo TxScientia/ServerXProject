@@ -41,6 +41,7 @@ export default function Home() {
 
       const data = await response.json();
       localStorage.setItem('token', data.token);
+      localStorage.setItem('isGlobalAdmin', data.is_global_admin ? '1' : '0');
       navigate('/lobby');
     } catch (loginError) {
       setError(t('home.loginError'));

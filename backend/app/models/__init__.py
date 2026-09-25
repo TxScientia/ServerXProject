@@ -10,6 +10,8 @@ from .chat import Chat, ChatMember
 from .invite import CharacterInvite, PlotLink
 from .membership import Membership
 from .message import Message, MessageRead, SystemMessage
+from .news import NewsItem
+from .news_read import NewsItemRead
 from .place import Place
 from .post import Post
 from .rank import Rank
@@ -26,6 +28,8 @@ __all__ = [
     "Membership",
     "Message",
     "MessageRead",
+    "NewsItem",
+    "NewsItemRead",
     "Place",
     "PlotLink",
     "Post",
