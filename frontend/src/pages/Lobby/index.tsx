@@ -71,6 +71,7 @@ export default function Lobby() {
         characters={characters}
         onSelect={enterServer}
         editorPageHref={(character) => `/characters/${character.id}/editor`}
+        profilePageHref={(character) => `/characters/${character.id}/profile`}
       />
 
       {showModal && (

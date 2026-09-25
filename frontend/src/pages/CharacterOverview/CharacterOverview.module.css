@@ -135,6 +135,17 @@
   line-height: 1;
 }
 
+.profileLink {
+  color: #c2c7bc;
+  text-decoration: none;
+}
+
+.profileLink:hover,
+.profileLink:focus-visible {
+  color: #9fbd9f;
+  text-decoration: underline;
+}
+
 .editButton {
   display: inline-flex;
   align-items: center;

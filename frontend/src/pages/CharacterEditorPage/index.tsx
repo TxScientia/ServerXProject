@@ -34,10 +34,10 @@ export default function CharacterEditorPage() {
     fetchCharacters();
   }, [fetchCharacters]);
 
-  const handleSave = (payload: CharacterForm) => {
+  const handleSave = async (payload: CharacterForm) => {
     if (!characterId) return;
 
-    fetch(apiUrl(`/characters/${characterId}`), {
+    return fetch(apiUrl(`/characters/${characterId}`), {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json', ...authHeaders() },
       body: JSON.stringify(payload),
@@ -47,7 +47,10 @@ export default function CharacterEditorPage() {
         return res.json();
       })
       .then(fetchCharacters)
-      .catch(() => setError('Charakter konnte nicht gespeichert werden.'));
+      .catch(() => {
+        setError('Charakter konnte nicht gespeichert werden.');
+        throw new Error('Charakter konnte nicht gespeichert werden.');
+      });
   };
 
   if (error) return <div className={styles.error}>{error}</div>;

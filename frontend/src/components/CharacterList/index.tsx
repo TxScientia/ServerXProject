@@ -15,13 +15,14 @@ type CharacterListProps = {
   /** When provided, each row is clickable (e.g. select-to-enter). */
   onSelect?: (character: Character) => void;
   editorPageHref?: (character: Character) => string;
+  profilePageHref?: (character: Character) => string;
 };
 
 /**
  * A table of characters. Shared by the Lobby (your own characters, selectable)
  * and Residents (all characters, browse-only).
  */
-export default function CharacterList({ characters, onSelect, editorPageHref }: CharacterListProps) {
+export default function CharacterList({ characters, onSelect, editorPageHref, profilePageHref }: CharacterListProps) {
   const { t } = useTranslation();
 
   return (
@@ -32,7 +33,7 @@ export default function CharacterList({ characters, onSelect, editorPageHref }: 
           <th>{t('characterList.colRace')}</th>
           <th>{t('characterList.colSpec')}</th>
           <th>{t('characterList.colGender')}</th>
-          {editorPageHref && <th>Editor</th>}
+          {(profilePageHref || editorPageHref) && <th>Aktionen</th>}
         </tr>
       </thead>
       <tbody>
@@ -47,19 +48,34 @@ export default function CharacterList({ characters, onSelect, editorPageHref }: 
             <td>{c.race}</td>
             <td>{c.spec}</td>
             <td>{c.gender}</td>
-            {editorPageHref && (
+            {(profilePageHref || editorPageHref) && (
               <td>
-                <a
-                  className={styles.iconButton}
-                  href={editorPageHref(c)}
-                  target="_blank"
-                  rel="noreferrer"
-                  onClick={(event) => event.stopPropagation()}
-                  aria-label={`${c.name} in neuem Tab bearbeiten`}
-                  title="Editor in neuem Tab öffnen"
-                >
-                  ↗
-                </a>
+                {profilePageHref && (
+                  <a
+                    className={styles.iconButton}
+                    href={profilePageHref(c)}
+                    target="_blank"
+                    rel="noreferrer"
+                    onClick={(event) => event.stopPropagation()}
+                    aria-label={`${c.name} Profil in neuem Tab öffnen`}
+                    title="Profil in neuem Tab öffnen"
+                  >
+                    👁
+                  </a>
+                )}
+                {editorPageHref && (
+                  <a
+                    className={styles.iconButton}
+                    href={editorPageHref(c)}
+                    target="_blank"
+                    rel="noreferrer"
+                    onClick={(event) => event.stopPropagation()}
+                    aria-label={`${c.name} in neuem Tab bearbeiten`}
+                    title="Editor in neuem Tab öffnen"
+                  >
+                    ↗
+                  </a>
+                )}
               </td>
             )}
           </tr>

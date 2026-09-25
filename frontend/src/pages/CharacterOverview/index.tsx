@@ -62,6 +62,7 @@ const CharacterOverview = () => {
             <th>Rasse</th>
             <th>Spezifikation</th>
             <th>Geschlecht</th>
+            <th>Profil</th>
             <th>Bearbeiten</th>
           </tr>
         </thead>
@@ -72,6 +73,18 @@ const CharacterOverview = () => {
               <td>{char.race}</td>
               <td>{char.spec}</td>
               <td>{char.gender}</td>
+              <td>
+                <a
+                  className={styles.editButton}
+                  href={`/characters/${char.id}/profile`}
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label={`${char.name} Profil in neuem Tab öffnen`}
+                  title="Profil in neuem Tab öffnen"
+                >
+                  👁
+                </a>
+              </td>
               <td>
                 <a
                   className={styles.editButton}
