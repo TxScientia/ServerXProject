@@ -82,7 +82,12 @@ export default function Lobby() {
         <button onClick={() => setShowModal(true)} className={`button ${styles.plusButton}`}>+</button>
       </div>
 
-      <CharacterList characters={characters} onSelect={enterServer} />
+      <CharacterList
+        characters={characters}
+        onSelect={enterServer}
+        editorPageHref={(character) => `/characters/${character.id}/editor`}
+        profilePageHref={(character) => `/characters/${character.id}/profile`}
+      />
 
       {showModal && (
         <div className={styles.modal}>

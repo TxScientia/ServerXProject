@@ -7,6 +7,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
+from sqlalchemy import inspect, text
 from sqlalchemy.exc import OperationalError
 
 from .database import engine, SessionLocal, Base
@@ -33,6 +34,14 @@ def init_db():
     for _ in range(10):
         try:
             Base.metadata.create_all(bind=engine)
+            inspector = inspect(engine)
+            account_columns = {column["name"] for column in inspector.get_columns("accounts")}
+            character_columns = {column["name"] for column in inspector.get_columns("characters")}
+            with engine.begin() as conn:
+                if "is_global_admin" not in account_columns:
+                    conn.execute(text("ALTER TABLE accounts ADD COLUMN is_global_admin BOOLEAN NOT NULL DEFAULT 0"))
+                if "editor_data" not in character_columns:
+                    conn.execute(text("ALTER TABLE characters ADD COLUMN editor_data TEXT"))
             return
         except OperationalError:
             print("Warte auf Datenbank...")

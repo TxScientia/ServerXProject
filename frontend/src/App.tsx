@@ -11,6 +11,9 @@ import StoryBookNewsPage from './pages/StoryBookNews';
 import GesuchePage from './pages/Gesuche';
 import StoryBookGesuchePage from './pages/StoryBookGesuche';
 import AdminPage from './pages/Admin';
+import CharacterEditorPage from './pages/CharacterEditorPage';
+import CharacterOverview from './pages/CharacterOverview';
+import CharacterProfile from './pages/CharacterProfile';
 
 export default function App() {
   return (
@@ -28,6 +31,9 @@ export default function App() {
         <Route path="/storybooks/:id/news" element={<StoryBookNewsPage />} />
         <Route path="/storybooks/:id/gesuche" element={<StoryBookGesuchePage />} />
         <Route path="/storybooks/:id/settings" element={<PlotSettings />} />
+        <Route path="/characters" element={<CharacterOverview />} />
+        <Route path="/characters/:characterId/editor" element={<CharacterEditorPage />} />
+        <Route path="/characters/:characterId/profile" element={<CharacterProfile />} />
       </Routes>
     </BrowserRouter>
   );
