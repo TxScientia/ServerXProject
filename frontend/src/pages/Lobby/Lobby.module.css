@@ -5,7 +5,7 @@
 
 .subheading {
   margin: 0 0 var(--space-4);
-  color: var(--color-text-muted, #b9c0c7);
+  color: var(--color-text-muted, var(--color-text-muted));
 }
 
 .actions {
@@ -28,7 +28,7 @@
   align-items: center;
   justify-content: center;
   padding: var(--space-4);
-  background: rgba(0, 0, 0, 0.55);
+  background: var(--color-overlay);
 }
 
 .modalContent {

@@ -5,13 +5,13 @@
   min-height: 0;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-sm);
-  background: #111414;
+  background: var(--color-input-bg);
   overflow: hidden;
 }
 
 .editor:focus-within {
   border-color: var(--color-accent);
-  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.12);
+  box-shadow: 0 0 0 3px var(--color-border-subtle);
 }
 
 .toolbar {
@@ -40,7 +40,7 @@
 }
 
 .toolBtn:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--color-surface-hover);
 }
 
 .toolBtn:disabled {
@@ -80,7 +80,7 @@
 }
 
 .colorBtn:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--color-surface-hover);
 }
 
 .colorSwatch {

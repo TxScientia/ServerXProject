@@ -10,7 +10,7 @@
   gap: var(--space-5);
   padding: var(--space-6);
   text-align: center;
-  color: #ffffff;
+  color: var(--color-text-strong);
   isolation: isolate;
   --hero-border-height: clamp(32px, 3.97vw, 102px);
   --hero-border-offset: clamp(56px, calc(84px - 1.2vw), 74px);

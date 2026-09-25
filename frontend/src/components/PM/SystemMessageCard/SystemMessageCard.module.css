@@ -56,13 +56,13 @@
 .actionBtn.primary {
   background: linear-gradient(135deg, #00897b 0%, #00695c 100%);
   border-color: transparent;
-  color: #ffffff;
+  color: var(--color-text-strong);
   box-shadow: 0 2px 6px rgba(0, 137, 123, 0.3);
 }
 
 .actionBtn.primary:hover {
   background: linear-gradient(135deg, #00897b 0%, #00695c 100%);
-  color: #ffffff;
+  color: var(--color-text-strong);
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0, 137, 123, 0.4);
 }

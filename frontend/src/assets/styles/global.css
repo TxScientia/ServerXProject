@@ -1,16 +1,52 @@
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap');
 
-:root {
+:root,
+:root[data-theme='dark'] {
+  color-scheme: dark;
+
+  /* Semantic colour tokens. Keep component CSS on these so designs can swap. */
   --color-bg: #151818;
+  --color-bg-shell: #070808;
   --color-bg-elevated: #1b2020;
+  --color-topbar: #10131a;
+  --color-topbar-text: #eeeeee;
+  --color-panel: #0b0e13;
+  --color-panel-strong: #08101f;
+  --color-input-bg: #111414;
   --color-surface: rgba(0, 0, 0, 0.42);
+  --color-surface-muted: rgba(255, 255, 255, 0.05);
+  --color-surface-hover: rgba(255, 255, 255, 0.1);
   --color-surface-strong: rgba(0, 0, 0, 0.68);
+  --color-card: rgba(9, 16, 30, 0.72);
+  --color-card-soft: rgba(9, 16, 30, 0.68);
+  --color-overlay: rgba(0, 0, 0, 0.68);
+
   --color-text: #eeeeee;
+  --color-text-strong: #ffffff;
   --color-text-muted: #b8b8b8;
+  --color-text-subtle: rgba(238, 238, 238, 0.68);
+  --color-text-faint: rgba(238, 238, 238, 0.5);
+
   --color-border: rgba(255, 255, 255, 0.42);
-  --color-accent: #ffffff;
-  --color-accent-contrast: #111111;
-  --color-danger: #d55;
+  --color-border-subtle: rgba(255, 255, 255, 0.12);
+  --color-border-faint: rgba(255, 255, 255, 0.08);
+
+  --color-accent: #75b8ff;
+  --color-accent-soft: rgba(117, 184, 255, 0.16);
+  --color-accent-strong: #9fd3ff;
+  --color-accent-contrast: #06111f;
+  --color-button-bg: #ffffff;
+  --color-button-text: #111111;
+  --color-button-hover-bg: #333333;
+  --color-button-hover-text: #ffffff;
+
+  --color-success: #7ee787;
+  --color-danger: #ff8080;
+  --color-danger-strong: #ff9d9d;
+  --color-warning: #ffd38f;
+  --color-pinned: #f0d36f;
+  --color-info: #9fd3ff;
+  --color-update: #a9f5bd;
 
   --font-display: 'Playfair Display', Georgia, serif;
   --font-body: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
@@ -25,8 +61,65 @@
 
   --radius-sm: 4px;
   --radius-md: 8px;
+  --radius-lg: 16px;
+  --radius-pill: 999px;
   --shadow-hero: 0 0 15px rgba(0, 0, 0, 0.7);
+  --shadow-card: 0 18px 45px rgba(0, 0, 0, 0.22);
+  --shadow-overlay: 0 24px 80px rgba(0, 0, 0, 0.45);
+  --focus-ring: 0 0 0 3px rgba(117, 184, 255, 0.18);
   --transition-fast: 180ms ease;
+}
+
+:root[data-theme='parchment'] {
+  color-scheme: light;
+
+  --color-bg: #efe3c7;
+  --color-bg-shell: #e6d4ad;
+  --color-bg-elevated: #f7ecd2;
+  --color-topbar: #5a3823;
+  --color-topbar-text: #fff8e8;
+  --color-panel: #f8eed9;
+  --color-panel-strong: #fbf2df;
+  --color-input-bg: #fff8e8;
+  --color-surface: rgba(91, 56, 35, 0.08);
+  --color-surface-muted: rgba(91, 56, 35, 0.07);
+  --color-surface-hover: rgba(91, 56, 35, 0.14);
+  --color-surface-strong: rgba(91, 56, 35, 0.18);
+  --color-card: rgba(255, 248, 232, 0.92);
+  --color-card-soft: rgba(255, 248, 232, 0.82);
+  --color-overlay: rgba(55, 35, 22, 0.55);
+
+  --color-text: #2f2117;
+  --color-text-strong: #1f150e;
+  --color-text-muted: #715943;
+  --color-text-subtle: rgba(47, 33, 23, 0.7);
+  --color-text-faint: rgba(47, 33, 23, 0.5);
+
+  --color-border: rgba(91, 56, 35, 0.38);
+  --color-border-subtle: rgba(91, 56, 35, 0.18);
+  --color-border-faint: rgba(91, 56, 35, 0.12);
+
+  --color-accent: #8d5326;
+  --color-accent-soft: rgba(141, 83, 38, 0.16);
+  --color-accent-strong: #6c3b1b;
+  --color-accent-contrast: #fff8e8;
+  --color-button-bg: #5a3823;
+  --color-button-text: #fff8e8;
+  --color-button-hover-bg: #8d5326;
+  --color-button-hover-text: #fff8e8;
+
+  --color-success: #2f7a3f;
+  --color-danger: #b23b36;
+  --color-danger-strong: #a12f2b;
+  --color-warning: #9b641f;
+  --color-pinned: #936f16;
+  --color-info: #2f6690;
+  --color-update: #2f7a3f;
+
+  --shadow-hero: 0 0 18px rgba(55, 35, 22, 0.45);
+  --shadow-card: 0 18px 45px rgba(91, 56, 35, 0.16);
+  --shadow-overlay: 0 24px 80px rgba(55, 35, 22, 0.35);
+  --focus-ring: 0 0 0 3px rgba(141, 83, 38, 0.18);
 }
 
 * {
@@ -98,7 +191,7 @@ a {
   padding: 0.8rem;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-sm);
-  background: #111414;
+  background: var(--color-input-bg);
   color: var(--color-text);
   transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
 }
@@ -107,7 +200,7 @@ a {
 .select-input:focus {
   outline: none;
   border-color: var(--color-accent);
-  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.12);
+  box-shadow: var(--focus-ring);
 }
 
 .button {
@@ -117,17 +210,17 @@ a {
   border: 1px solid transparent;
   border-radius: var(--radius-sm);
   padding: 0.8rem 1.2rem;
-  background: var(--color-accent);
-  color: var(--color-accent-contrast);
+  background: var(--color-button-bg);
+  color: var(--color-button-text);
   font-weight: 700;
   text-decoration: none;
   transition: background var(--transition-fast), color var(--transition-fast), border-color var(--transition-fast);
 }
 
 .button:hover:not(:disabled) {
-  background: #333333;
-  color: #ffffff;
-  border-color: #333333;
+  background: var(--color-button-hover-bg);
+  color: var(--color-button-hover-text);
+  border-color: var(--color-button-hover-bg);
 }
 
 .button:disabled {
@@ -138,7 +231,7 @@ a {
 .button--ghost {
   border-color: var(--color-border);
   background: var(--color-surface);
-  color: #ffffff;
+  color: var(--color-text-strong);
   text-transform: uppercase;
   letter-spacing: 0.1em;
   font-size: 0.85rem;
@@ -146,14 +239,14 @@ a {
 }
 
 .button--ghost:hover:not(:disabled) {
-  background: #ffffff;
-  color: #000000;
-  border-color: #ffffff;
+  background: var(--color-button-bg);
+  color: var(--color-button-text);
+  border-color: var(--color-button-bg);
 }
 
 .site-footer {
   margin: var(--space-8) 0 var(--space-6);
   text-align: center;
-  color: #888888;
+  color: var(--color-text-muted);
   font-size: 0.8rem;
 }

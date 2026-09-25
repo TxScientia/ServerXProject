@@ -11,7 +11,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 16px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  border-bottom: 1px solid var(--color-border-subtle);
   background: #1a1e27;
   position: sticky;
   top: 0;
@@ -22,8 +22,8 @@
 
 .backBtn {
   padding: 8px 12px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: var(--color-surface-muted);
+  border: 1px solid var(--color-border-subtle);
   color: var(--text-primary);
   cursor: pointer;
   border-radius: 6px;
@@ -32,8 +32,8 @@
 }
 
 .backBtn:hover {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: #64b5f6;
+  background: var(--color-surface-hover);
+  border-color: var(--color-accent);
 }
 
 .titleSection {
@@ -45,13 +45,13 @@
   margin: 0 0 4px 0;
   font-size: 1.05rem;
   font-weight: 600;
-  color: #e0e0e0;
+  color: var(--color-text);
 }
 
 .subtitle {
   margin: 0;
   font-size: 0.8rem;
-  color: #90a4ae;
+  color: var(--color-text-muted);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -59,8 +59,8 @@
 
 .refreshBtn {
   padding: 8px 12px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: var(--color-surface-muted);
+  border: 1px solid var(--color-border-subtle);
   color: var(--text-primary);
   cursor: pointer;
   border-radius: 6px;
@@ -70,8 +70,8 @@
 }
 
 .refreshBtn:hover {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: #64b5f6;
+  background: var(--color-surface-hover);
+  border-color: var(--color-accent);
 }
 
 .messages {
@@ -94,7 +94,7 @@
 }
 
 .messages::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--color-surface-hover);
   border-radius: 3px;
 }
 
@@ -112,7 +112,7 @@
   word-wrap: break-word;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
   animation: slideIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--color-border-faint);
   font-size: 0.95rem;
   line-height: 1.2;
 }
@@ -131,7 +131,7 @@
 .message.own {
   align-self: flex-end;
   background: linear-gradient(135deg, #00897b 0%, #00695c 100%);
-  color: #ffffff;
+  color: var(--color-text-strong);
   border: 1px solid rgba(0, 255, 200, 0.2);
   border-bottom-right-radius: 4px;
 }
@@ -159,7 +159,7 @@
 }
 
 .message.own .author {
-  color: #ffffff;
+  color: var(--color-text-strong);
 }
 
 .timestamp {
@@ -174,7 +174,7 @@
 
 .composer {
   padding: 12px 16px;
-  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  border-top: 1px solid var(--color-border-subtle);
   background: #1a1e27;
   display: flex;
   gap: 12px;
@@ -187,7 +187,7 @@
 .charSelector {
   padding: 10px 12px;
   background: var(--bg-secondary);
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  border: 1px solid var(--color-border-subtle);
   border-radius: 6px;
   color: var(--color-text);
   font-size: 0.9rem;
@@ -198,13 +198,13 @@
 }
 
 .charSelector:hover {
-  border-color: #64b5f6;
+  border-color: var(--color-accent);
 }
 
 .charSelector:focus {
   outline: none;
-  border-color: #64b5f6;
-  box-shadow: 0 0 0 2px rgba(100, 181, 246, 0.1);
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 2px var(--color-accent-soft);
 }
 
 .editorContainer {
