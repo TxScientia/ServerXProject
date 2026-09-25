@@ -222,6 +222,28 @@
     "color": "Text color",
     "clearColor": "Remove color"
   },
+  "gesuche": {
+    "pageTitle": "Wanted Ads",
+    "pageSubtitle": "Global RP wanted ads from all characters.",
+    "plotTitle": "Wanted Ads – {{title}}",
+    "plotSubtitle": "RP wanted ads within this plot.",
+    "new": "+ New wanted ad",
+    "create": "Create",
+    "titlePlaceholder": "Title",
+    "bodyPlaceholder": "Describe what you're looking for…",
+    "titleRequired": "Title must not be empty",
+    "bodyRequired": "Wanted ad must not be empty",
+    "by": "by {{author}}",
+    "message": "Message",
+    "delete": "Delete",
+    "deleteConfirm": "Really delete this wanted ad?",
+    "empty": "No wanted ads yet.",
+    "emptyPlot": "No wanted ads in this plot yet.",
+    "loadError": "Failed to load wanted ads.",
+    "saveError": "Failed to save the wanted ad.",
+    "deleteError": "Failed to delete the wanted ad.",
+    "messageError": "Could not start a chat."
+  },
   "ooc": {
     "globalTitle": "Global OOC Chat",
     "plotTitle": "OOC: {{title}}",

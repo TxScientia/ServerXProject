@@ -27,6 +27,7 @@ from .place import PlaceCreate, PlaceRead, PlaceReorder, PlaceUpdate
 from .post import PostCreate, PostRead, PostUpdate
 from .rank import RankCreate, RankRead, RankUpdate
 from .scene import SceneCreate, SceneRead, SceneWithPosts
+from .wanted_ad import WantedAdCreate, WantedAdRead
 from .space import (
     StorybookCreate,
     StorybookRead,
@@ -75,4 +76,6 @@ __all__ = [
     "StorybookRead",
     "StorybookUpdate",
     "StorybookWithPlaces",
+    "WantedAdCreate",
+    "WantedAdRead",
 ]

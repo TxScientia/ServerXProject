@@ -44,6 +44,7 @@ class Space(Base):
     ranks = relationship("Rank", back_populates="space", cascade="all, delete-orphan")
     news_items = relationship("NewsItem", back_populates="space", cascade="all, delete-orphan")
     ooc_messages = relationship("OOCMessage", back_populates="space", cascade="all, delete-orphan")
+    wanted_ads = relationship("WantedAd", back_populates="space", cascade="all, delete-orphan")
     tags = relationship("Tag", secondary="space_tags", back_populates="spaces")
 
     @property
