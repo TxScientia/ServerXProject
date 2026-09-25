@@ -20,6 +20,7 @@ from .rank import Rank
 from .scene import Scene
 from .space import Space, StorybookDetail
 from .tag import SpaceTag, Tag
+from .wanted_ad import WantedAd
 
 __all__ = [
     "Account",
@@ -44,4 +45,5 @@ __all__ = [
     "SpaceTag",
     "SystemMessage",
     "Tag",
+    "WantedAd",
 ]

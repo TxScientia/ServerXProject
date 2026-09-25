@@ -222,6 +222,28 @@
     "color": "Textfarbe",
     "clearColor": "Farbe entfernen"
   },
+  "gesuche": {
+    "pageTitle": "Gesuche",
+    "pageSubtitle": "Globale RP-Gesuche aller Charaktere.",
+    "plotTitle": "Gesuche – {{title}}",
+    "plotSubtitle": "RP-Gesuche innerhalb dieses Plots.",
+    "new": "+ Neues Gesuch",
+    "create": "Erstellen",
+    "titlePlaceholder": "Titel",
+    "bodyPlaceholder": "Beschreibe, wonach du suchst…",
+    "titleRequired": "Titel darf nicht leer sein",
+    "bodyRequired": "Gesuch darf nicht leer sein",
+    "by": "von {{author}}",
+    "message": "Nachricht",
+    "delete": "Löschen",
+    "deleteConfirm": "Dieses Gesuch wirklich löschen?",
+    "empty": "Noch keine Gesuche.",
+    "emptyPlot": "Noch keine Gesuche in diesem Plot.",
+    "loadError": "Gesuche konnten nicht geladen werden.",
+    "saveError": "Fehler beim Speichern des Gesuchs.",
+    "deleteError": "Fehler beim Löschen des Gesuchs.",
+    "messageError": "Chat konnte nicht gestartet werden."
+  },
   "ooc": {
     "globalTitle": "Globaler OOC-Chat",
     "plotTitle": "OOC: {{title}}",

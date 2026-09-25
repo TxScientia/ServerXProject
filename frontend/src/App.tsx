@@ -8,6 +8,8 @@ import PlotSettings from './pages/PlotSettings';
 import PM from './pages/PM';
 import NewsPage from './pages/News';
 import StoryBookNewsPage from './pages/StoryBookNews';
+import GesuchePage from './pages/Gesuche';
+import StoryBookGesuchePage from './pages/StoryBookGesuche';
 import AdminPage from './pages/Admin';
 
 export default function App() {
@@ -18,11 +20,13 @@ export default function App() {
         <Route path="/lobby" element={<Lobby />} />
         <Route path="/pm" element={<PM />} />
         <Route path="/news" element={<NewsPage />} />
+        <Route path="/gesuche" element={<GesuchePage />} />
         <Route path="/admin" element={<AdminPage />} />
         <Route path="/residents" element={<Residents />} />
         <Route path="/storybooks" element={<StoryBooks />} />
         <Route path="/storybooks/:id" element={<StoryBookDetail />} />
         <Route path="/storybooks/:id/news" element={<StoryBookNewsPage />} />
+        <Route path="/storybooks/:id/gesuche" element={<StoryBookGesuchePage />} />
         <Route path="/storybooks/:id/settings" element={<PlotSettings />} />
       </Routes>
     </BrowserRouter>

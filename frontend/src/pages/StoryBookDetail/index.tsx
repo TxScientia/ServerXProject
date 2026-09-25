@@ -259,6 +259,18 @@ export default function StoryBookDetail() {
             );
           }
 
+          if (key === 'nav.gesuche') {
+            return (
+              <button
+                key={key}
+                className={styles.sideItem}
+                onClick={() => navigate(`/storybooks/${storybook!.id}/gesuche`)}
+              >
+                {t(key)}
+              </button>
+            );
+          }
+
           return (
             <button key={key} className={styles.sideItem} disabled title={t('common.comingSoon')}>
               {t(key)}

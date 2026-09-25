@@ -9,7 +9,7 @@ import styles from './AppLayout.module.css';
 
 // Global top-nav. Items without a path are placeholders for not-yet-built features.
 const GLOBAL_NAV: { key: string; path: string | null }[] = [
-  { key: 'nav.gesuche', path: null },
+  { key: 'nav.gesuche', path: '/gesuche' },
   { key: 'nav.oocChat', path: null },
   { key: 'nav.pm', path: '/pm' },
   { key: 'nav.news', path: '/news' },

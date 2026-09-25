@@ -25,6 +25,7 @@ from .routes.ooc import router as ooc_router
 from .routes.pm import router as pm_router
 from .routes.residents import router as residents_router
 from .routes.storybooks import router as storybooks_router
+from .routes.wanted_ads import router as wanted_ads_router
 
 
 def init_db():
@@ -94,6 +95,7 @@ app.include_router(router=ooc_router)
 app.include_router(router=pm_router)
 app.include_router(router=residents_router)
 app.include_router(router=storybooks_router)
+app.include_router(router=wanted_ads_router)
 
 
 @app.get("/ping")
