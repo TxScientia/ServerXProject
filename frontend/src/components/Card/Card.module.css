@@ -16,6 +16,6 @@ button.card {
 }
 
 button.card:hover {
-  border-color: #75b8ff;
+  border-color: var(--color-accent);
   transform: translateY(-2px);
 }

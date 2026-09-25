@@ -6,6 +6,6 @@
 
 .description {
   margin: 0;
-  color: var(--color-text-muted, #b9c0c7);
+  color: var(--color-text-muted, var(--color-text-muted));
   font-size: 0.9rem;
 }

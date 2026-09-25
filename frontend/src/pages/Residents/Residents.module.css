@@ -9,11 +9,11 @@
 }
 
 .muted {
-  color: var(--color-text-muted, #b9c0c7);
+  color: var(--color-text-muted, var(--color-text-muted));
   opacity: 0.8;
   margin-bottom: var(--space-4);
 }
 
 .error {
-  color: #ff8080;
+  color: var(--color-danger);
 }

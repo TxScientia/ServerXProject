@@ -22,7 +22,7 @@
 }
 
 .backItem {
-  color: #75b8ff;
+  color: var(--color-accent);
 }
 
 .sideTitle {
@@ -32,7 +32,7 @@
 }
 
 .active {
-  color: #75b8ff;
+  color: var(--color-accent);
 }
 
 .title {
@@ -41,5 +41,5 @@
 
 .subtitle,
 .muted {
-  color: rgba(238, 238, 238, 0.68);
+  color: var(--color-text-subtle);
 }

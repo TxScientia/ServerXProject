@@ -9,7 +9,7 @@
   text-align: left;
   border: 0;
   background: transparent;
-  color: #75b8ff;
+  color: var(--color-accent);
   font: inherit;
   cursor: pointer;
   padding: var(--space-2) 0;
@@ -45,7 +45,7 @@
 .divider {
   width: 100%;
   border: 0;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  border-top: 1px solid var(--color-border-faint);
   margin: var(--space-3) 0;
 }
 
@@ -53,7 +53,7 @@
   text-align: left;
   border: 0;
   background: transparent;
-  color: #75b8ff;
+  color: var(--color-accent);
   font: inherit;
   font-weight: 600;
   cursor: pointer;
@@ -68,7 +68,7 @@
   font-size: 0.72rem;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: var(--color-text-muted, #8a929b);
+  color: var(--color-text-muted, var(--color-text-muted));
   margin-bottom: var(--space-2);
 }
 
@@ -96,12 +96,12 @@
 }
 
 .placeItem:hover {
-  color: #75b8ff;
+  color: var(--color-accent);
 }
 
 .placeItemActive {
-  border-left-color: #75b8ff;
-  color: #75b8ff;
+  border-left-color: var(--color-accent);
+  color: var(--color-accent);
 }
 
 /* --- center --- */
@@ -129,7 +129,7 @@
 
 .desc {
   margin: 0 0 var(--space-6);
-  color: var(--color-text-muted, #b9c0c7);
+  color: var(--color-text-muted, var(--color-text-muted));
 }
 
 .biography {
@@ -139,10 +139,10 @@
 }
 
 .muted {
-  color: var(--color-text-muted, #b9c0c7);
+  color: var(--color-text-muted, var(--color-text-muted));
   opacity: 0.8;
 }
 
 .error {
-  color: #ff8080;
+  color: var(--color-danger);
 }

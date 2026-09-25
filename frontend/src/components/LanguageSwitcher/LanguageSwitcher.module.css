@@ -5,7 +5,7 @@
 }
 
 .lang {
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  border: 1px solid var(--color-border-subtle);
   background: transparent;
   color: var(--color-text);
   font: inherit;
@@ -24,6 +24,6 @@
 
 .active {
   opacity: 1;
-  border-color: #75b8ff;
-  color: #75b8ff;
+  border-color: var(--color-accent);
+  color: var(--color-accent);
 }

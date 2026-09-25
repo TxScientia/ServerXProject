@@ -24,6 +24,11 @@
     "mitglieder": "Members",
     "plotSettings": "Plot Settings"
   },
+  "theme": {
+    "label": "Theme",
+    "dark": "Dark",
+    "parchment": "Parchment"
+  },
   "sidebar": {
     "noCharacter": "No character selected",
     "biografie": "Biography",

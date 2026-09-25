@@ -26,5 +26,5 @@
 }
 
 .clickable:hover {
-  background-color: color-mix(in srgb, #75b8ff 18%, transparent);
+  background-color: color-mix(in srgb, var(--color-accent) 18%, transparent);
 }

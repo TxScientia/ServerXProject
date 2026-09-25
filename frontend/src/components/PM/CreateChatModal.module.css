@@ -15,7 +15,7 @@
 .creatorSelect {
   padding: 10px 12px;
   background: var(--bg-secondary);
-  border: 2px solid rgba(100, 181, 246, 0.3);
+  border: 2px solid var(--color-accent-soft);
   border-radius: 6px;
   color: var(--color-text);
   font-size: 0.95rem;
@@ -24,13 +24,13 @@
 }
 
 .creatorSelect:hover {
-  border-color: #64b5f6;
+  border-color: var(--color-accent);
 }
 
 .creatorSelect:focus {
   outline: none;
-  border-color: #64b5f6;
-  box-shadow: 0 0 0 3px rgba(100, 181, 246, 0.15);
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px var(--color-accent-soft);
 }
 
 .selectedChars {
@@ -41,7 +41,7 @@
   padding: 8px;
   background: rgba(100, 181, 246, 0.05);
   border-radius: 6px;
-  border: 1px solid rgba(100, 181, 246, 0.2);
+  border: 1px solid var(--color-accent-soft);
 }
 
 .chip {
@@ -49,11 +49,11 @@
   align-items: center;
   gap: 8px;
   padding: 6px 12px;
-  background: rgba(100, 181, 246, 0.15);
-  border: 1px solid #64b5f6;
+  background: var(--color-accent-soft);
+  border: 1px solid var(--color-accent);
   border-radius: 20px;
   font-size: 0.9rem;
-  color: #e0e0e0;
+  color: var(--color-text);
 }
 
 .removeBtn {
@@ -65,7 +65,7 @@
   padding: 0;
   background: none;
   border: none;
-  color: #90a4ae;
+  color: var(--color-text-muted);
   cursor: pointer;
   font-size: 1.2rem;
   line-height: 1;
@@ -73,7 +73,7 @@
 }
 
 .removeBtn:hover {
-  color: #e0e0e0;
+  color: var(--color-text);
 }
 
 .searchInput {
@@ -90,8 +90,8 @@
 
 .searchInput:focus {
   outline: none;
-  border-color: #64b5f6;
-  box-shadow: 0 0 0 3px rgba(100, 181, 246, 0.15);
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px var(--color-accent-soft);
 }
 
 .groupNameInput {
@@ -108,7 +108,7 @@
 
 .groupNameInput:focus {
   outline: none;
-  border-color: #64b5f6;
+  border-color: var(--color-accent);
 }
 
 .characterList {
@@ -128,7 +128,7 @@
 }
 
 .characterList::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--color-surface-hover);
   border-radius: 3px;
 }
 
@@ -139,7 +139,7 @@
   padding: 12px 16px;
   background: none;
   border: none;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid var(--color-surface-muted);
   color: var(--color-text);
   font-size: 0.95rem;
   cursor: pointer;
@@ -152,15 +152,15 @@
 }
 
 .charItem:hover {
-  background: rgba(100, 181, 246, 0.1);
-  color: #64b5f6;
+  background: var(--color-accent-soft);
+  color: var(--color-accent);
 }
 
 .charItem.selected {
-  background: rgba(100, 181, 246, 0.2);
-  color: #64b5f6;
+  background: var(--color-accent-soft);
+  color: var(--color-accent);
   font-weight: 500;
-  border-left: 4px solid #64b5f6;
+  border-left: 4px solid var(--color-accent);
   padding-left: 12px;
 }
 

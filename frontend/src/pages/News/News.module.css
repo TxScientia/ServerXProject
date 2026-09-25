@@ -9,6 +9,6 @@
 }
 
 .subtitle {
-  color: rgba(238, 238, 238, 0.68);
+  color: var(--color-text-subtle);
   margin: 0 0 0.4rem;
 }

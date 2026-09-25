@@ -1,0 +1,20 @@
+.switcher {
+  display: inline-flex;
+  align-items: center;
+}
+
+.select {
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-pill);
+  background: var(--color-surface-muted);
+  color: var(--color-text);
+  padding: 0.35rem 0.55rem;
+  font: inherit;
+  font-size: 0.85rem;
+}
+
+.select:focus {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: var(--focus-ring);
+}
