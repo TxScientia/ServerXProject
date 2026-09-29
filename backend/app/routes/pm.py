@@ -1,6 +1,9 @@
+import asyncio
+import os
 import uuid
 from typing import List
 
+import jwt
 from fastapi import APIRouter, Depends, HTTPException, WebSocket, WebSocketDisconnect
 from sqlalchemy.orm import Session
 
@@ -10,6 +13,7 @@ from ..crud import (
     create_direct_chat,
     create_group_chat,
     get_chat,
+    get_member_account_ids,
     get_message,
     get_system_message,
     get_unread_count_for_account,
@@ -25,6 +29,8 @@ from ..crud import (
 )
 from ..database import get_db
 from ..models import Account, Character
+from ..realtime import manager as realtime_manager
+from ..security import SECRET_KEY
 from ..schemas import (
     ChatRead,
     ChatWithMessages,
@@ -170,7 +176,7 @@ def send_message_endpoint(
         raise HTTPException(status_code=403, detail="Keine Berechtigung")
     # TODO: validate body (Tiptap JSON whitelist, non-empty)
     message = send_message(db, chat_id, character.id, data.body)
-    return MessageRead(
+    result = MessageRead(
         id=message.id,
         chat_id=message.chat_id,
         from_character_id=message.from_character_id,
@@ -178,6 +184,12 @@ def send_message_endpoint(
         body=message.body,
         created_at=message.created_at,
     )
+    # Live delivery: push to every account in the chat (per-account inbox). The sender's
+    # own browser reconciles against its optimistic append.
+    payload = {"type": "new_message", "chat_id": str(chat_id), "message": result.model_dump(mode="json")}
+    for account_id in get_member_account_ids(db, chat_id):
+        manager.broadcast_threadsafe(account_id, payload)
+    return result
 
 
 @router.get("/system-messages/unread-count")
@@ -235,56 +247,75 @@ def respond_to_system_message_endpoint(
     return {"ok": True}
 
 
-# WebSocket connection manager (simple in-memory registry per account)
-class ConnectionManager:
-    def __init__(self):
-        self.active_connections: dict[uuid.UUID, list[WebSocket]] = {}
+# The per-account socket registry lives in app.realtime so any layer can push to it.
+manager = realtime_manager
 
-    async def connect(self, account_id: uuid.UUID, websocket: WebSocket):
-        await websocket.accept()
-        if account_id not in self.active_connections:
-            self.active_connections[account_id] = []
-        self.active_connections[account_id].append(websocket)
-
-    def disconnect(self, account_id: uuid.UUID, websocket: WebSocket):
-        if account_id in self.active_connections:
-            self.active_connections[account_id].remove(websocket)
-            if not self.active_connections[account_id]:
-                del self.active_connections[account_id]
-
-    async def broadcast_to_account(self, account_id: uuid.UUID, data: dict):
-        if account_id in self.active_connections:
-            for connection in self.active_connections[account_id]:
-                try:
-                    await connection.send_json(data)
-                except Exception:
-                    pass  # connection closed
+# WebSocket close codes (RFC 6455 application range 4000–4999).
+WS_UNAUTHORIZED = 4401
+WS_FORBIDDEN_ORIGIN = 4403
 
 
-manager = ConnectionManager()
+def _allowed_ws_origins() -> set[str]:
+    """Origin allowlist for the WS handshake (CSWSH protection).
+
+    Configured via ALLOWED_WS_ORIGINS (comma-separated). Defaults to the local dev
+    frontend so it works out of the box; production must set the env var.
+    """
+    raw = os.getenv("ALLOWED_WS_ORIGINS")
+    if raw:
+        return {o.strip() for o in raw.split(",") if o.strip()}
+    return {
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+    }
+
+
+def _account_from_token(token: str, db: Session):
+    """Resolve the Account behind a JWT, mirroring auth.get_current_user. None if invalid."""
+    if not token:
+        return None
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
+        user_id = payload["user_id"]
+    except Exception:  # noqa: BLE001
+        return None
+    return db.query(Account).filter(Account.id == user_id).first()
 
 
 @router.websocket("/ws")
 async def websocket_endpoint(
     websocket: WebSocket,
-    account_id: str = None,
+    token: str = "",
     db: Session = Depends(get_db),
 ):
-    """WebSocket connection for real-time message delivery."""
-    if not account_id:
-        await websocket.close(code=400, reason="account_id required")
-        return
-    try:
-        account_uuid = uuid.UUID(account_id)
-    except ValueError:
-        await websocket.close(code=400, reason="invalid account_id")
+    """Authenticated WebSocket for real-time message delivery.
+
+    The account is derived from the JWT (passed as a query param, since browsers can't
+    set headers on WebSocket) — never from a client-supplied account id. The Origin
+    header is checked to block cross-site WebSocket hijacking. Use over wss:// in prod.
+    """
+    # Origin check must happen before accept().
+    origin = websocket.headers.get("origin")
+    if origin is not None and origin not in _allowed_ws_origins():
+        await websocket.close(code=WS_FORBIDDEN_ORIGIN)
         return
 
-    await manager.connect(account_uuid, websocket)
+    account = _account_from_token(token, db)
+    # We only need the DB for auth; release the connection so idle sockets don't pin one.
+    db.close()
+    if account is None:
+        await websocket.close(code=WS_UNAUTHORIZED)
+        return
+
+    account_id = account.id
+    await manager.connect(account_id, websocket)
     try:
         while True:
-            data = await websocket.receive_json()
-            # Echo back or process (for now, just keep connection alive)
+            # We don't trust client input for delivery; just keep the socket alive and
+            # answer heartbeats.
+            await websocket.receive_json()
             await websocket.send_json({"type": "pong"})
     except WebSocketDisconnect:
-        manager.disconnect(account_uuid, websocket)
+        manager.disconnect(account_id, websocket)
+    except Exception:  # noqa: BLE001 — any receive error ends the connection cleanly
+        manager.disconnect(account_id, websocket)

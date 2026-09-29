@@ -7,6 +7,7 @@ import ThreadView from '../../components/PM/ThreadView';
 import SystemMessagesTab from '../../components/PM/SystemMessagesTab';
 import CreateChatModal from '../../components/PM/CreateChatModal';
 import { apiUrl, authHeaders } from '../../api';
+import { useWebSocket } from '../../realtime/WebSocketProvider';
 import styles from './PM.module.css';
 
 interface Character {
@@ -41,6 +42,7 @@ interface ChatDetail extends Chat {
 
 export default function PM() {
   const { t } = useTranslation();
+  const { subscribe, refreshPmUnread } = useWebSocket();
   const [activeTab, setActiveTab] = useState<TabType>('groups');
   const [chats, setChats] = useState<Chat[]>([]);
   const [selectedChat, setSelectedChat] = useState<ChatDetail | null>(null);
@@ -105,6 +107,32 @@ export default function PM() {
     fetchSystemUnread();
   }, []);
 
+  // Live updates: refresh the chat list / system badge when messages arrive for chats
+  // other than the one currently open (the open chat is handled inline by ThreadView).
+  useEffect(() => {
+    const unsub = subscribe((msg) => {
+      if (msg.type === 'new_message') {
+        if (selectedChat && selectedChat.id === msg.chat_id) return;
+        fetchChats();
+      } else if (msg.type === 'system_message') {
+        fetchSystemUnread();
+      }
+    });
+    return unsub;
+  }, [subscribe, selectedChat, fetchChats, fetchSystemUnread]);
+
+  // A live message landed in the open chat: mark it read server-side and refresh badges.
+  const handleIncomingForOpenChat = useCallback(() => {
+    if (!selectedChat) return;
+    const chatId = selectedChat.id;
+    fetch(apiUrl(`/pm/chats/${chatId}`), { headers: authHeaders() })
+      .catch(() => undefined)
+      .finally(() => {
+        refreshPmUnread();
+        fetchChats();
+      });
+  }, [selectedChat, refreshPmUnread, fetchChats]);
+
   const handleTabChange = (tab: TabType) => {
     setActiveTab(tab);
     setSelectedChat(null);
@@ -121,6 +149,7 @@ export default function PM() {
       if (res.ok) {
         const detail = await res.json();
         setSelectedChat(detail);
+        refreshPmUnread(); // chat was marked read server-side; sync the top-nav badge
 
         // Auto-select first character from chat that belongs to this account
         if (chat.member_names && chat.member_names.length > 0) {
@@ -246,6 +275,7 @@ export default function PM() {
               chat={selectedChat}
               onBack={handleBackToList}
               onRefresh={handleRefresh}
+              onIncoming={handleIncomingForOpenChat}
             />
           ) : (
             <ChatList

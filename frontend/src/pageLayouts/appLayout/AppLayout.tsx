@@ -4,7 +4,8 @@ import { useTranslation } from 'react-i18next';
 import Badge from '../../components/Badge/Badge';
 import LanguageSwitcher from '../../components/LanguageSwitcher';
 import { GlobalOOCOverlay } from '../../components/OOC';
-import { apiUrl, authHeaders } from '../../api';
+import { apiUrl, authHeaders, clearAuthToken } from '../../api';
+import { useWebSocket } from '../../realtime/WebSocketProvider';
 import styles from './AppLayout.module.css';
 
 // Global top-nav. Items without a path are placeholders for not-yet-built features.
@@ -31,8 +32,12 @@ function TopNavbar({ pmUnreadCount }: TopNavbarProps) {
   const navigate = useNavigate();
   const location = useLocation();
   const { t } = useTranslation();
+  const { pmUnread } = useWebSocket();
   const [newsUnread, setNewsUnread] = useState(0);
   const [showOOC, setShowOOC] = useState(false);
+  // The live, app-wide unread total from the WebSocket provider is authoritative; fall
+  // back to a page-supplied count only if the provider hasn't reported anything yet.
+  const pmBadge = pmUnread || pmUnreadCount || 0;
 
   useEffect(() => {
     if (!localStorage.getItem('token')) return;
@@ -55,10 +60,10 @@ function TopNavbar({ pmUnreadCount }: TopNavbarProps) {
   };
 
   const logout = () => {
-    localStorage.removeItem('token');
     localStorage.removeItem('characterId');
     localStorage.removeItem('characterName');
     localStorage.removeItem('isGlobalAdmin');
+    clearAuthToken(); // removes token + triggers the realtime WebSocket to disconnect
     navigate('/');
   };
 
@@ -77,7 +82,7 @@ function TopNavbar({ pmUnreadCount }: TopNavbarProps) {
               >
                 {t(item.key)}
               </button>
-              {item.key === 'nav.pm' && <Badge count={pmUnreadCount || 0} variant="nav" />}
+              {item.key === 'nav.pm' && <Badge count={pmBadge} variant="nav" />}
               {item.key === 'nav.news' && <Badge count={newsUnread} variant="nav" />}
             </div>
           ))}

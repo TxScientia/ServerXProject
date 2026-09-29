@@ -105,6 +105,22 @@ def get_message(db: Session, message_id: uuid.UUID) -> Optional[Message]:
     return db.query(Message).filter(Message.id == message_id).first()
 
 
+def get_member_account_ids(db: Session, chat_id: uuid.UUID) -> List[uuid.UUID]:
+    """Distinct account ids that own any character who is a member of the chat.
+
+    Used to route a real-time message delivery to every online account in the chat,
+    since delivery (and the unread badge) is per-account, not per-character.
+    """
+    rows = (
+        db.query(Character.account_id)
+        .join(ChatMember, ChatMember.character_id == Character.id)
+        .filter(ChatMember.chat_id == chat_id)
+        .distinct()
+        .all()
+    )
+    return [r[0] for r in rows]
+
+
 def list_messages(db: Session, chat_id: uuid.UUID, limit: int = 50) -> List[Message]:
     """Most recent messages in a chat (oldest first for display order)."""
     return (
@@ -137,6 +153,11 @@ def send_system_message(
     db.add(msg)
     db.commit()
     db.refresh(msg)
+    # Live signal so the recipient's system-message badge updates without a refresh.
+    # Lazy import keeps the crud layer free of a hard dependency on the realtime module.
+    from ..realtime import manager
+
+    manager.broadcast_threadsafe(to_account_id, {"type": "system_message"})
     return msg
 
 

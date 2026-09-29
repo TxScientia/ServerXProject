@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { apiUrl } from '../../api';
+import { apiUrl, setAuthToken } from '../../api';
 import styles from './Home.module.css';
 
 const HERO_IMAGE_URL = '/pictures/hero-background.webp';
@@ -40,8 +40,8 @@ export default function Home() {
       }
 
       const data = await response.json();
-      localStorage.setItem('token', data.token);
       localStorage.setItem('isGlobalAdmin', data.is_global_admin ? '1' : '0');
+      setAuthToken(data.token); // stores token + triggers the realtime WebSocket to connect
       navigate('/lobby');
     } catch (loginError) {
       setError(t('home.loginError'));

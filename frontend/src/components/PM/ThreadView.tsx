@@ -4,6 +4,7 @@ import RichTextEditor from '../RichTextEditor';
 import RichText from '../RichTextEditor/RichText';
 import { EMPTY_DOC, isEmptyDoc } from '../RichTextEditor/schema';
 import { apiUrl, authHeaders } from '../../api';
+import { useWebSocket } from '../../realtime/WebSocketProvider';
 import styles from './ThreadView.module.css';
 
 interface Message {
@@ -29,6 +30,9 @@ interface ThreadViewProps {
   chat: Chat;
   onBack: () => void;
   onRefresh: () => void;
+  /** Called when a live message arrives for this open chat, so the parent can mark it
+   *  read and refresh unread badges. */
+  onIncoming?: () => void;
 }
 
 interface Character {
@@ -36,14 +40,34 @@ interface Character {
   name: string;
 }
 
-export default function ThreadView({ chat, onBack, onRefresh }: ThreadViewProps) {
+export default function ThreadView({ chat, onBack, onRefresh, onIncoming }: ThreadViewProps) {
   const { t } = useTranslation();
+  const { subscribe } = useWebSocket();
   const [characterId, setCharacterId] = useState(localStorage.getItem('characterId') || '');
   const [characters, setCharacters] = useState<Character[]>([]);
   const [messages, setMessages] = useState(chat.messages || []);
   const [body, setBody] = useState(EMPTY_DOC);
   const [sending, setSending] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Reset the thread when switching to a different chat.
+  useEffect(() => {
+    setMessages(chat.messages || []);
+  }, [chat.id]);
+
+  // Live delivery: append messages pushed for this chat, de-duping the sender's own
+  // optimistic append (same id) and any echoes.
+  useEffect(() => {
+    const unsub = subscribe((msg) => {
+      if (msg.type === 'new_message' && msg.chat_id === chat.id && msg.message) {
+        setMessages((prev) =>
+          prev.some((m) => m.id === msg.message.id) ? prev : [...prev, msg.message]
+        );
+        onIncoming?.();
+      }
+    });
+    return unsub;
+  }, [subscribe, chat.id, onIncoming]);
 
   useEffect(() => {
     // Fetch all characters to filter those in the chat
@@ -89,7 +113,7 @@ export default function ThreadView({ chat, onBack, onRefresh }: ThreadViewProps)
 
       if (res.ok) {
         const msg = await res.json();
-        setMessages([...messages, msg]);
+        setMessages((prev) => (prev.some((m) => m.id === msg.id) ? prev : [...prev, msg]));
         setBody(EMPTY_DOC);
       } else {
         alert(t('scene.saveError'));
