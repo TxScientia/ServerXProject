@@ -22,6 +22,7 @@ const WebSocketContext = createContext<WebSocketContextValue | null>(null);
 
 const RECONNECT_DELAY_MS = 3000;
 const HEARTBEAT_MS = 25000;
+const REFRESH_DEBOUNCE_MS = 400;
 // Server-side rejection codes (see backend routes/pm.py) — don't retry these.
 const WS_UNAUTHORIZED = 4401;
 const WS_FORBIDDEN_ORIGIN = 4403;
@@ -33,10 +34,11 @@ export function WebSocketProvider({ children }: { children: ReactNode }) {
   const handlersRef = useRef<Set<(msg: RealtimeMessage) => void>>(new Set());
   const reconnectTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const heartbeatTimer = useRef<ReturnType<typeof setInterval> | null>(null);
+  const refreshTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   // Guards against reconnect attempts after the provider unmounts.
   const closedByUs = useRef(false);
 
-  const refreshPmUnread = useCallback(() => {
+  const doRefreshPmUnread = useCallback(() => {
     if (!localStorage.getItem('token')) {
       setPmUnread(0);
       return;
@@ -53,6 +55,13 @@ export function WebSocketProvider({ children }: { children: ReactNode }) {
     ]).then(([chatUnread, systemUnread]) => setPmUnread(chatUnread + systemUnread));
   }, []);
 
+  // Debounced so a burst of messages in a busy chat coalesces into one refetch pair
+  // instead of two HTTP requests per message.
+  const refreshPmUnread = useCallback(() => {
+    if (refreshTimer.current) clearTimeout(refreshTimer.current);
+    refreshTimer.current = setTimeout(doRefreshPmUnread, REFRESH_DEBOUNCE_MS);
+  }, [doRefreshPmUnread]);
+
   const clearTimers = () => {
     if (reconnectTimer.current) {
       clearTimeout(reconnectTimer.current);
@@ -61,6 +70,10 @@ export function WebSocketProvider({ children }: { children: ReactNode }) {
     if (heartbeatTimer.current) {
       clearInterval(heartbeatTimer.current);
       heartbeatTimer.current = null;
+    }
+    if (refreshTimer.current) {
+      clearTimeout(refreshTimer.current);
+      refreshTimer.current = null;
     }
   };
 
@@ -75,11 +88,11 @@ export function WebSocketProvider({ children }: { children: ReactNode }) {
     wsRef.current = ws;
 
     ws.onopen = () => {
-      refreshPmUnread();
       clearTimers();
       heartbeatTimer.current = setInterval(() => {
         if (ws.readyState === WebSocket.OPEN) ws.send(JSON.stringify({ type: 'ping' }));
       }, HEARTBEAT_MS);
+      refreshPmUnread();
     };
 
     ws.onmessage = (event) => {

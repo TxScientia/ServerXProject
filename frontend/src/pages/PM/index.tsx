@@ -245,7 +245,6 @@ export default function PM() {
 
   const groupsUnread = getUnreadCount('groups');
   const directUnread = getUnreadCount('direct');
-  const totalUnread = groupsUnread + directUnread + systemUnread;
 
   const leftNav = (
     <PMNavigation
@@ -258,7 +257,7 @@ export default function PM() {
   );
 
   return (
-    <AppLayout pmUnreadCount={totalUnread} leftNav={leftNav}>
+    <AppLayout leftNav={leftNav}>
       <div className={styles.pmContainer}>
         <div className={styles.header}>
           <h1 className={styles.title}>Nachrichten</h1>

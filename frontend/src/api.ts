@@ -8,9 +8,10 @@ export function apiUrl(path: string): string {
 /** WebSocket URL for the given path, deriving ws/wss from the API base or the page origin. */
 export function wsUrl(path: string): string {
   const normalizedPath = path.startsWith('/') ? path : `/${path}`;
-  // Resolve against API_BASE if set, otherwise the current page origin.
-  const httpBase = API_BASE || window.location.origin;
-  const url = new URL(`${httpBase}${normalizedPath}`);
+  // API_BASE may be '', an absolute URL, or a relative path (proxied deploys). Resolving
+  // against the page origin as the base handles all three: an absolute API_BASE ignores
+  // the base, a relative/empty one is resolved against the origin.
+  const url = new URL(`${API_BASE}${normalizedPath}`, window.location.origin);
   url.protocol = url.protocol === 'https:' ? 'wss:' : 'ws:';
   return url.toString();
 }

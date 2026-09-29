@@ -22,7 +22,6 @@ const RIGHT_NAV: { key: string; path: string | null }[] = [
 
 type LobbyLayoutProps = {
   children: ReactNode;
-  pmUnreadCount?: number;
 };
 
 /**
@@ -30,14 +29,13 @@ type LobbyLayoutProps = {
  * Minimal account-only top nav, no character sidebar. Picking a character (in the
  * page content) "enters the server" and moves to the full AppLayout.
  */
-export default function LobbyLayout({ children, pmUnreadCount }: LobbyLayoutProps) {
+export default function LobbyLayout({ children }: LobbyLayoutProps) {
   const navigate = useNavigate();
   const location = useLocation();
   const { t } = useTranslation();
   const { pmUnread } = useWebSocket();
   const [isAdmin, setIsAdmin] = useState(localStorage.getItem('isGlobalAdmin') === '1');
   const [newsUnread, setNewsUnread] = useState(0);
-  const pmBadge = pmUnread || pmUnreadCount || 0;
 
   useEffect(() => {
     if (!localStorage.getItem('token')) return;
@@ -86,7 +84,7 @@ export default function LobbyLayout({ children, pmUnreadCount }: LobbyLayoutProp
               >
                 {t(item.key)}
               </button>
-              {item.key === 'nav.pm' && <Badge count={pmBadge} variant="nav" />}
+              {item.key === 'nav.pm' && <Badge count={pmUnread} variant="nav" />}
               {item.key === 'nav.news' && <Badge count={newsUnread} variant="nav" />}
             </div>
           ))}

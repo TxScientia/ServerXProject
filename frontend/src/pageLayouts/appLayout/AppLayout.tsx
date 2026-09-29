@@ -24,20 +24,13 @@ const RIGHT_NAV: { key: string; path: string | null }[] = [
   { key: 'nav.faq', path: null },
 ];
 
-type TopNavbarProps = {
-  pmUnreadCount?: number;
-};
-
-function TopNavbar({ pmUnreadCount }: TopNavbarProps) {
+function TopNavbar() {
   const navigate = useNavigate();
   const location = useLocation();
   const { t } = useTranslation();
   const { pmUnread } = useWebSocket();
   const [newsUnread, setNewsUnread] = useState(0);
   const [showOOC, setShowOOC] = useState(false);
-  // The live, app-wide unread total from the WebSocket provider is authoritative; fall
-  // back to a page-supplied count only if the provider hasn't reported anything yet.
-  const pmBadge = pmUnread || pmUnreadCount || 0;
 
   useEffect(() => {
     if (!localStorage.getItem('token')) return;
@@ -82,7 +75,7 @@ function TopNavbar({ pmUnreadCount }: TopNavbarProps) {
               >
                 {t(item.key)}
               </button>
-              {item.key === 'nav.pm' && <Badge count={pmBadge} variant="nav" />}
+              {item.key === 'nav.pm' && <Badge count={pmUnread} variant="nav" />}
               {item.key === 'nav.news' && <Badge count={newsUnread} variant="nav" />}
             </div>
           ))}
@@ -140,17 +133,16 @@ function CharacterSidebar() {
 type AppLayoutProps = {
   leftNav?: ReactNode;
   children: ReactNode;
-  pmUnreadCount?: number;
 };
 
 /**
  * Shared page shell: top navbar (always), a context-specific left nav, the center
  * content, and the character sidebar (always). Every page renders inside this.
  */
-export default function AppLayout({ leftNav, children, pmUnreadCount }: AppLayoutProps) {
+export default function AppLayout({ leftNav, children }: AppLayoutProps) {
   return (
     <div className={styles.shell}>
-      <TopNavbar pmUnreadCount={pmUnreadCount} />
+      <TopNavbar />
       <div className={styles.body}>
         <nav className={styles.leftNav} aria-label="Section navigation">
           {leftNav}
