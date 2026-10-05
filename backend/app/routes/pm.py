@@ -2,6 +2,7 @@ import asyncio
 import os
 import uuid
 from typing import List
+from urllib.parse import urlparse
 
 import jwt
 from fastapi import APIRouter, Depends, HTTPException, WebSocket, WebSocketDisconnect
@@ -256,10 +257,12 @@ WS_FORBIDDEN_ORIGIN = 4403
 
 
 def _allowed_ws_origins() -> set[str]:
-    """Origin allowlist for the WS handshake (CSWSH protection).
+    """Extra cross-origin allowlist for the WS handshake (CSWSH protection).
 
-    Configured via ALLOWED_WS_ORIGINS (comma-separated). Defaults to the local dev
-    frontend so it works out of the box; production must set the env var.
+    Same-origin connections are always allowed (see ``_origin_allowed``); this set is
+    only for *additional* cross-origins (e.g. a frontend hosted on a different domain).
+    Configured via ALLOWED_WS_ORIGINS (comma-separated). Defaults to the local Vite dev
+    server so `npm run dev` on :3000 can talk to the backend on :8000.
     """
     raw = os.getenv("ALLOWED_WS_ORIGINS")
     if raw:
@@ -268,6 +271,23 @@ def _allowed_ws_origins() -> set[str]:
         "http://localhost:3000",
         "http://127.0.0.1:3000",
     }
+
+
+def _origin_allowed(websocket: WebSocket) -> bool:
+    """Whether the WS handshake's Origin is permitted (CSWSH guard).
+
+    Allows: (1) requests with no Origin (non-browser clients / tests); (2) same-origin —
+    the Origin host:port equals the server's own Host, which is always safe and covers
+    the common case of the SPA being served from the same origin as the API; (3) any
+    origin in the configured cross-origin allowlist.
+    """
+    origin = websocket.headers.get("origin")
+    if origin is None:
+        return True
+    host = websocket.headers.get("host")
+    if host and urlparse(origin).netloc == host:
+        return True
+    return origin in _allowed_ws_origins()
 
 
 def _account_from_token(token: str, db: Session):
@@ -295,8 +315,7 @@ async def websocket_endpoint(
     header is checked to block cross-site WebSocket hijacking. Use over wss:// in prod.
     """
     # Origin check must happen before accept().
-    origin = websocket.headers.get("origin")
-    if origin is not None and origin not in _allowed_ws_origins():
+    if not _origin_allowed(websocket):
         await websocket.close(code=WS_FORBIDDEN_ORIGIN)
         return
 

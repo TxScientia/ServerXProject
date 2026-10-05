@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next';
 import Card from '../Card';
 import { RichText } from '../RichTextEditor';
 import type { WantedAd } from './types';
+import { parseServerDate } from '../../utils/datetime';
 import styles from './WantedAds.module.css';
 
 interface WantedAdCardProps {
@@ -17,7 +18,7 @@ interface WantedAdCardProps {
 export default function WantedAdCard({ ad, canDelete, canMessage, onDelete, onMessage }: WantedAdCardProps) {
   const { t } = useTranslation();
   const author = ad.author_name ?? '???';
-  const timestamp = new Date(ad.created_at).toLocaleString('de-CH');
+  const timestamp = parseServerDate(ad.created_at).toLocaleString('de-CH');
 
   return (
     <Card className={styles.card}>

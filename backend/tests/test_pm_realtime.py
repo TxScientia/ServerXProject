@@ -108,6 +108,16 @@ def test_ws_accepts_valid_token(client, auth_headers):
         assert ws.receive_json() == {"type": "pong"}
 
 
+def test_ws_accepts_same_origin(client, auth_headers):
+    """An Origin matching the server's own Host is allowed (SPA served from the API origin)."""
+    with client.websocket_connect(
+        f"/pm/ws?token={_token(auth_headers)}",
+        headers={"origin": "http://testserver"},  # TestClient's Host is 'testserver'
+    ) as ws:
+        ws.send_json({"type": "ping"})
+        assert ws.receive_json() == {"type": "pong"}
+
+
 # --- WebSocket delivery ---------------------------------------------------------
 
 def test_ws_receives_broadcast_on_new_message(client, character, auth_headers, account, db_session):
