@@ -3,6 +3,12 @@ import time
 from contextlib import asynccontextmanager
 from pathlib import Path
 
+# Load .env before importing modules that read config at import time (security, crypto).
+# Existing env vars are not overridden, so tests and real deployments keep precedence.
+from dotenv import load_dotenv
+
+load_dotenv()
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse

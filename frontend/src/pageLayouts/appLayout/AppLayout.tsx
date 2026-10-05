@@ -4,7 +4,8 @@ import { useTranslation } from 'react-i18next';
 import Badge from '../../components/Badge/Badge';
 import LanguageSwitcher from '../../components/LanguageSwitcher';
 import { GlobalOOCOverlay } from '../../components/OOC';
-import { apiUrl, authHeaders } from '../../api';
+import { apiUrl, authHeaders, clearAuthToken } from '../../api';
+import { useWebSocket } from '../../realtime/WebSocketProvider';
 import styles from './AppLayout.module.css';
 
 // Global top-nav. Items without a path are placeholders for not-yet-built features.
@@ -23,14 +24,11 @@ const RIGHT_NAV: { key: string; path: string | null }[] = [
   { key: 'nav.faq', path: null },
 ];
 
-type TopNavbarProps = {
-  pmUnreadCount?: number;
-};
-
-function TopNavbar({ pmUnreadCount }: TopNavbarProps) {
+function TopNavbar() {
   const navigate = useNavigate();
   const location = useLocation();
   const { t } = useTranslation();
+  const { pmUnread } = useWebSocket();
   const [newsUnread, setNewsUnread] = useState(0);
   const [showOOC, setShowOOC] = useState(false);
 
@@ -55,10 +53,10 @@ function TopNavbar({ pmUnreadCount }: TopNavbarProps) {
   };
 
   const logout = () => {
-    localStorage.removeItem('token');
     localStorage.removeItem('characterId');
     localStorage.removeItem('characterName');
     localStorage.removeItem('isGlobalAdmin');
+    clearAuthToken(); // removes token + triggers the realtime WebSocket to disconnect
     navigate('/');
   };
 
@@ -77,7 +75,7 @@ function TopNavbar({ pmUnreadCount }: TopNavbarProps) {
               >
                 {t(item.key)}
               </button>
-              {item.key === 'nav.pm' && <Badge count={pmUnreadCount || 0} variant="nav" />}
+              {item.key === 'nav.pm' && <Badge count={pmUnread} variant="nav" />}
               {item.key === 'nav.news' && <Badge count={newsUnread} variant="nav" />}
             </div>
           ))}
@@ -135,17 +133,16 @@ function CharacterSidebar() {
 type AppLayoutProps = {
   leftNav?: ReactNode;
   children: ReactNode;
-  pmUnreadCount?: number;
 };
 
 /**
  * Shared page shell: top navbar (always), a context-specific left nav, the center
  * content, and the character sidebar (always). Every page renders inside this.
  */
-export default function AppLayout({ leftNav, children, pmUnreadCount }: AppLayoutProps) {
+export default function AppLayout({ leftNav, children }: AppLayoutProps) {
   return (
     <div className={styles.shell}>
-      <TopNavbar pmUnreadCount={pmUnreadCount} />
+      <TopNavbar />
       <div className={styles.body}>
         <nav className={styles.leftNav} aria-label="Section navigation">
           {leftNav}

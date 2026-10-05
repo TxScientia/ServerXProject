@@ -3,7 +3,8 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import Badge from '../../components/Badge/Badge';
 import LanguageSwitcher from '../../components/LanguageSwitcher';
-import { apiUrl, authHeaders } from '../../api';
+import { apiUrl, authHeaders, clearAuthToken } from '../../api';
+import { useWebSocket } from '../../realtime/WebSocketProvider';
 import styles from './LobbyLayout.module.css';
 
 // Account-scoped nav only — no character-scoped items. Items without a path are placeholders.
@@ -21,7 +22,6 @@ const RIGHT_NAV: { key: string; path: string | null }[] = [
 
 type LobbyLayoutProps = {
   children: ReactNode;
-  pmUnreadCount?: number;
 };
 
 /**
@@ -29,10 +29,11 @@ type LobbyLayoutProps = {
  * Minimal account-only top nav, no character sidebar. Picking a character (in the
  * page content) "enters the server" and moves to the full AppLayout.
  */
-export default function LobbyLayout({ children, pmUnreadCount }: LobbyLayoutProps) {
+export default function LobbyLayout({ children }: LobbyLayoutProps) {
   const navigate = useNavigate();
   const location = useLocation();
   const { t } = useTranslation();
+  const { pmUnread } = useWebSocket();
   const [isAdmin, setIsAdmin] = useState(localStorage.getItem('isGlobalAdmin') === '1');
   const [newsUnread, setNewsUnread] = useState(0);
 
@@ -61,10 +62,10 @@ export default function LobbyLayout({ children, pmUnreadCount }: LobbyLayoutProp
   }, [location.pathname]);
 
   const logout = () => {
-    localStorage.removeItem('token');
     localStorage.removeItem('characterId');
     localStorage.removeItem('characterName');
     localStorage.removeItem('isGlobalAdmin');
+    clearAuthToken(); // removes token + triggers the realtime WebSocket to disconnect
     navigate('/');
   };
 
@@ -83,7 +84,7 @@ export default function LobbyLayout({ children, pmUnreadCount }: LobbyLayoutProp
               >
                 {t(item.key)}
               </button>
-              {item.key === 'nav.pm' && <Badge count={pmUnreadCount || 0} variant="nav" />}
+              {item.key === 'nav.pm' && <Badge count={pmUnread} variant="nav" />}
               {item.key === 'nav.news' && <Badge count={newsUnread} variant="nav" />}
             </div>
           ))}

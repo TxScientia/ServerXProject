@@ -6,7 +6,7 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 
 from ..database import Base
-from ..types import GUID
+from ..types import GUID, EncryptedJSON, EncryptedString
 
 
 class Message(Base):
@@ -19,7 +19,7 @@ class Message(Base):
     id = Column(GUID(), primary_key=True, default=uuid.uuid4, unique=True, nullable=False)
     chat_id = Column(GUID(), ForeignKey("chats.id"), nullable=False)
     from_character_id = Column(GUID(), ForeignKey("characters.id"), nullable=False)
-    body = Column(JSON().with_variant(JSONB, "postgresql"), nullable=False)
+    body = Column(EncryptedJSON, nullable=False)  # Tiptap JSON, AES-GCM encrypted at rest
     created_at = Column(DateTime(timezone=True), nullable=False, server_default=func.now())
 
     chat = relationship("Chat", back_populates="messages")
@@ -52,7 +52,7 @@ class SystemMessage(Base):
     from_account_id = Column(GUID(), ForeignKey("accounts.id"), nullable=False)
     to_account_id = Column(GUID(), ForeignKey("accounts.id"), nullable=False)
     type = Column(String, nullable=False)  # 'still_playing' | 'invite' | 'plot_link' | 'system_news'
-    content = Column(String, nullable=False)  # the human-readable message
+    content = Column(EncryptedString, nullable=False)  # human-readable text, encrypted at rest
     action_required = Column(String, nullable=False, default=False, server_default="false")  # bool as string for SQLite
     data = Column(JSON().with_variant(JSONB, "postgresql"), nullable=True)  # request details: {location_id, plot_id, etc}
     response = Column(JSON().with_variant(JSONB, "postgresql"), nullable=True)  # {action: 'free'|'keep_occupied'|'accept'|'decline', responded_at: datetime}
