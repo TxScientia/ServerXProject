@@ -7,6 +7,7 @@ import StoryBooks from './pages/StoryBooks';
 import StoryBookDetail from './pages/StoryBookDetail';
 import PlotSettings from './pages/PlotSettings';
 import PM from './pages/PM';
+import OOCPopup from './pages/OOCPopup';
 import NewsPage from './pages/News';
 import StoryBookNewsPage from './pages/StoryBookNews';
 import GesuchePage from './pages/Gesuche';
@@ -21,6 +22,7 @@ export default function App() {
           <Route path="/" element={<Home />} />
           <Route path="/lobby" element={<Lobby />} />
           <Route path="/pm" element={<PM />} />
+          <Route path="/ooc" element={<OOCPopup />} />
           <Route path="/news" element={<NewsPage />} />
           <Route path="/gesuche" element={<GesuchePage />} />
           <Route path="/admin" element={<AdminPage />} />
