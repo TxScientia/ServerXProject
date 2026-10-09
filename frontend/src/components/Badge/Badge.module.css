@@ -18,14 +18,16 @@
   margin-left: 8px;
 }
 
-/* Nav variant: an inline, raised superscript to the RIGHT of the label. Being part of
-   the layout (not absolutely positioned over the text) means it can never cover the
-   label — works for short ("PM") and longer ("News") labels alike. */
+/* Nav variant: the standard "corner badge" (as in Material UI / Ant Design). Anchored to
+   the label's top-right corner and shifted outward so it straddles the corner — it never
+   shifts the labels (absolute) and `pointer-events: none` means it never blocks the nav
+   click, even where it overlaps the text. */
 .badge.nav {
-  position: static;
-  align-self: flex-start;
-  margin-left: 5px;
-  transform: translateY(-4px);
+  position: absolute;
+  top: 0;
+  right: 0;
+  transform: translate(60%, -45%);
+  pointer-events: none;
   min-width: 16px;
   height: 16px;
   font-size: 0.58rem;
