@@ -28,3 +28,26 @@
 .clickable:hover {
   background-color: color-mix(in srgb, var(--color-accent) 18%, transparent);
 }
+
+.iconButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.1rem;
+  height: 2.1rem;
+  margin-right: 0.45rem;
+  border: 1px solid rgba(132, 163, 132, 0.55);
+  border-radius: var(--radius-sm);
+  background: rgba(12, 15, 15, 0.74);
+  color: var(--color-text);
+  cursor: pointer;
+  font: inherit;
+  line-height: 1;
+  text-decoration: none;
+}
+
+.iconButton:hover,
+.iconButton:focus-visible {
+  border-color: #84a384;
+  color: #9fbd9f;
+}
