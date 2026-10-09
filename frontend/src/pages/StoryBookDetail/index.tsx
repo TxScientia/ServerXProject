@@ -101,10 +101,17 @@ export default function StoryBookDetail() {
     }
     fetch(apiUrl(`/storybooks/${id}`), { headers: { ...authHeaders() } })
       .then((res) => {
+        // Private plot the account isn't a member of — show a members-only notice.
+        if (res.status === 403) {
+          setError(t('plot.membersOnly'));
+          return null;
+        }
         if (!res.ok) throw new Error();
         return res.json();
       })
-      .then(setStorybook)
+      .then((data) => {
+        if (data) setStorybook(data);
+      })
       .catch(() => setError(t('plot.loadError')));
   }, [id, navigate, t]);
 
@@ -151,7 +158,10 @@ export default function StoryBookDetail() {
     fetchPlotNewsUnread();
     fetchMembers();
     fetchRanks();
-  }, [fetchStorybook, fetchPlotNewsUnread, fetchMembers, fetchRanks]);
+    // Refetch linked worlds on every navigation to the plot so a just-accepted link shows
+    // up without needing several refreshes.
+    fetchLinkedPlots();
+  }, [fetchStorybook, fetchPlotNewsUnread, fetchMembers, fetchRanks, fetchLinkedPlots]);
 
   const places = storybook?.places ?? [];
   const topLevel = places.filter((p) => !p.parent_place_id);
