@@ -242,7 +242,9 @@
     "loadError": "Gesuche konnten nicht geladen werden.",
     "saveError": "Fehler beim Speichern des Gesuchs.",
     "deleteError": "Fehler beim Löschen des Gesuchs.",
-    "messageError": "Chat konnte nicht gestartet werden."
+    "messageError": "Chat konnte nicht gestartet werden.",
+    "messagePickTitle": "Als welchen Charakter schreiben?",
+    "noCharacters": "Keine Charaktere verfügbar."
   },
   "ooc": {
     "globalTitle": "Globaler OOC-Chat",

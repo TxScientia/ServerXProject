@@ -4,6 +4,14 @@
   gap: 1rem;
 }
 
+/* Character picker inside the "message as…" modal. */
+.charPicker {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin: 0.5rem 0 1rem;
+}
+
 /* Layout only — the shell (border/bg/radius) comes from the base Card. */
 .card {
   display: flex;

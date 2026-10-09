@@ -3,7 +3,6 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import Badge from '../../components/Badge/Badge';
 import LanguageSwitcher from '../../components/LanguageSwitcher';
-import { GlobalOOCOverlay } from '../../components/OOC';
 import { apiUrl, authHeaders, clearAuthToken } from '../../api';
 import { useWebSocket } from '../../realtime/WebSocketProvider';
 import styles from './AppLayout.module.css';
@@ -30,7 +29,6 @@ function TopNavbar() {
   const { t } = useTranslation();
   const { pmUnread } = useWebSocket();
   const [newsUnread, setNewsUnread] = useState(0);
-  const [showOOC, setShowOOC] = useState(false);
 
   useEffect(() => {
     if (!localStorage.getItem('token')) return;
@@ -46,7 +44,8 @@ function TopNavbar() {
 
   const go = (item: { key: string; path: string | null }) => {
     if (item.key === 'nav.oocChat') {
-      setShowOOC(true);
+      // Open the global OOC chat in its own browser window (re-focuses if already open).
+      window.open('/ooc', 'serverx-ooc', 'popup,width=440,height=680');
       return;
     }
     if (item.path) navigate(item.path);
@@ -102,7 +101,6 @@ function TopNavbar() {
           <LanguageSwitcher />
         </nav>
       </header>
-      {showOOC && <GlobalOOCOverlay onClose={() => setShowOOC(false)} />}
     </>
   );
 }

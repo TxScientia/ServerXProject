@@ -18,14 +18,19 @@
   margin-left: 8px;
 }
 
-/* Nav variant: positioned at bottom right corner */
+/* Nav variant: the standard "corner badge" (as in Material UI / Ant Design). Anchored to
+   the label's top-right corner and shifted outward so it straddles the corner — it never
+   shifts the labels (absolute) and `pointer-events: none` means it never blocks the nav
+   click, even where it overlaps the text. */
 .badge.nav {
   position: absolute;
-  bottom: -6px;
-  right: -6px;
-  min-width: 18px;
-  height: 18px;
-  font-size: 0.6rem;
+  top: 0;
+  right: 0;
+  transform: translate(60%, -45%);
+  pointer-events: none;
+  min-width: 16px;
+  height: 16px;
+  font-size: 0.58rem;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
   border: 2px solid var(--color-topbar);
 }
