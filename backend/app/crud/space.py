@@ -11,7 +11,10 @@ def create_storybook(
     owner: Character,
     title: str,
     description: str = None,
-    visibility: str = "public",
+    # New plots start members-only (listed, but only members can enter/post); the creator
+    # can switch to "public" (open posting) in settings. Open-by-default would make every
+    # new plot world-postable now that public ungates posting.
+    visibility: str = "private_listed",
 ):
     """Create a StoryBook owned by ``owner``, with the creator as its creator member."""
     space = Space(
@@ -31,6 +34,45 @@ def create_storybook(
 
 def list_storybooks(db: Session):
     return db.query(Space).filter(Space.type == "storybook").all()
+
+
+# --- Visibility / access (the agreed standard matrix) ---------------------------
+# public / generic : viewable by anyone. private_listed / private_hidden : members only
+# to view. For LISTING, only private_hidden is withheld from non-members.
+
+def account_is_member(db: Session, space_id, account_id) -> bool:
+    """True if ANY of the account's characters is a member of the space."""
+    return (
+        db.query(Membership)
+        .join(Character, Membership.character_id == Character.id)
+        .filter(Membership.space_id == space_id, Character.account_id == account_id)
+        .first()
+        is not None
+    )
+
+
+def can_view_space(db: Session, space, account_id) -> bool:
+    """Whether the account may open/read a plot. Public & generic are open; private
+    (listed or hidden) requires membership by one of the account's characters."""
+    if space.visibility in ("public", "generic", None):
+        return True
+    return account_is_member(db, space.id, account_id)
+
+
+def list_visible_storybooks(db: Session, account_id):
+    """Storybooks for the StoryBooks list: everything except private_hidden plots the
+    account isn't a member of (public, private_listed and generic are always listed)."""
+    result = []
+    for s in list_storybooks(db):
+        if s.visibility == "private_hidden" and not account_is_member(db, s.id, account_id):
+            continue
+        result.append(s)
+    return result
+
+
+def can_post_in_space(db: Session, space, character_id) -> bool:
+    """Who may post / start scenes: any member, or anyone if the plot is public."""
+    return space.visibility == "public" or is_member(db, space.id, character_id)
 
 
 def get_storybook(db: Session, storybook_id):

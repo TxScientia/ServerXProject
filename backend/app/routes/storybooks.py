@@ -8,6 +8,8 @@ from sqlalchemy.orm import Session
 from ..auth import get_current_character, get_current_user
 from ..crud import (
     can_edit_space,
+    can_post_in_space,
+    can_view_space,
     create_place,
     create_post,
     create_rank,
@@ -22,12 +24,11 @@ from ..crud import (
     get_rank,
     get_scene,
     get_storybook,
-    is_member,
     is_scene_participant,
     list_places,
     list_ranks,
     list_scenes_in_place,
-    list_storybooks,
+    list_visible_storybooks,
     reopen_scene,
     reorder_places,
     scene_participant_ids,
@@ -189,7 +190,8 @@ def list_storybooks_endpoint(
     current_user: Account = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    return list_storybooks(db)
+    # Hide private_hidden plots the account isn't a member of; everything else is listed.
+    return list_visible_storybooks(db, current_user.id)
 
 
 @router.get("/{storybook_id}", response_model=StorybookWithPlaces)
@@ -201,6 +203,9 @@ def get_storybook_endpoint(
     space = get_storybook(db, storybook_id)
     if space is None:
         raise HTTPException(status_code=404, detail="StoryBook nicht gefunden")
+    # Private plots (listed or hidden) are only readable by members of the account.
+    if not can_view_space(db, space, current_user.id):
+        raise HTTPException(status_code=403, detail="Diese Welt ist privat – nur für Mitglieder")
     return space
 
 
@@ -387,7 +392,7 @@ def create_scene_endpoint(
 ):
     space = _require_storybook(db, storybook_id)
     place = _get_place_in_space(db, space.id, place_id)
-    if not is_member(db, space.id, character.id):
+    if not can_post_in_space(db, space, character.id):
         raise HTTPException(status_code=403, detail="Nur Mitglieder können Szenen starten")
     if not data.title.strip():
         raise HTTPException(status_code=422, detail="Titel darf nicht leer sein")
@@ -428,7 +433,7 @@ def create_post_endpoint(
 ):
     space = _require_storybook(db, storybook_id)
     scene = _get_scene_in_space(db, space, scene_id)
-    if not is_member(db, space.id, character.id):
+    if not can_post_in_space(db, space, character.id):
         raise HTTPException(status_code=403, detail="Nur Mitglieder können posten")
     if scene_status(scene, space.scene_timeout_days) == "finished":
         raise HTTPException(status_code=409, detail="Szene ist abgeschlossen")

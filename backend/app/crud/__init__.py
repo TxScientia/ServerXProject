@@ -87,7 +87,10 @@ from .wanted_ad import (
     list_space_wanted_ads,
 )
 from .space import (
+    account_is_member,
     can_edit_space,
+    can_post_in_space,
+    can_view_space,
     create_storybook,
     get_membership,
     get_space_creator,
@@ -95,6 +98,7 @@ from .space import (
     is_member,
     list_members,
     list_storybooks,
+    list_visible_storybooks,
     set_member_role,
     update_storybook,
 )
@@ -184,5 +188,9 @@ __all__ = [
     "update_place",
     "update_post",
     "update_storybook",
+    "account_is_member",
     "can_edit_space",
+    "can_post_in_space",
+    "can_view_space",
+    "list_visible_storybooks",
 ]

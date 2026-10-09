@@ -104,7 +104,8 @@
     "noPlaces": "No places yet.",
     "worldBioPlaceholder": "World description – editable soon via StoryBook settings.",
     "worldNoPlaces": "This world has no places yet.",
-    "loadError": "Could not load StoryBook."
+    "loadError": "Could not load StoryBook.",
+    "membersOnly": "This world is private – visible to members only."
   },
   "home": {
     "appTitle": "when worlds collide",

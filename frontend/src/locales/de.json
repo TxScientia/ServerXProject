@@ -104,7 +104,8 @@
     "noPlaces": "Noch keine Orte.",
     "worldBioPlaceholder": "Weltbeschreibung – bald über die StoryBook-Einstellungen bearbeitbar.",
     "worldNoPlaces": "Diese Welt hat noch keine Orte.",
-    "loadError": "StoryBook konnte nicht geladen werden."
+    "loadError": "StoryBook konnte nicht geladen werden.",
+    "membersOnly": "Diese Welt ist privat – nur für Mitglieder sichtbar."
   },
   "home": {
     "appTitle": "when worlds collide",
