@@ -30,6 +30,15 @@ export default function CreateChatModal({
   const [creatorCharacterId, setCreatorCharacterId] = useState<string>(accountCharacters[0]?.id || '');
   const [loading, setLoading] = useState(true);
 
+  // accountCharacters may arrive after this modal mounts (the parent fetches it async).
+  // Keep the acting-character id in sync so it's never left empty — otherwise the create
+  // request would send an empty X-Character-Id (422) or the button would silently no-op.
+  useEffect(() => {
+    if (!creatorCharacterId && accountCharacters.length > 0) {
+      setCreatorCharacterId(accountCharacters[0].id);
+    }
+  }, [accountCharacters, creatorCharacterId]);
+
   useEffect(() => {
     fetch(apiUrl('/residents'), { headers: authHeaders() })
       .then((res) => {
