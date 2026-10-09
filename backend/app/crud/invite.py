@@ -38,6 +38,15 @@ def get_pending_character_invites_for_character(
     )
 
 
+def list_pending_character_invites_for_space(db: Session, space_id: str) -> List[CharacterInvite]:
+    """Pending invites issued for this space (not yet accepted/declined)."""
+    return (
+        db.query(CharacterInvite)
+        .filter(CharacterInvite.space_id == space_id, CharacterInvite.status == "pending")
+        .all()
+    )
+
+
 def accept_character_invite(db: Session, invite_id: str) -> CharacterInvite:
     """Accept a character invite."""
     invite = db.query(CharacterInvite).filter(CharacterInvite.id == invite_id).first()
@@ -81,6 +90,15 @@ def get_pending_plot_links_for_space(db: Session, space_id: str) -> List[PlotLin
     return (
         db.query(PlotLink)
         .filter(PlotLink.target_space_id == space_id, PlotLink.status == "pending")
+        .all()
+    )
+
+
+def get_pending_outgoing_plot_links_for_space(db: Session, space_id: str) -> List[PlotLink]:
+    """Pending plot links this space SENT to others (awaiting the target's response)."""
+    return (
+        db.query(PlotLink)
+        .filter(PlotLink.source_space_id == space_id, PlotLink.status == "pending")
         .all()
     )
 

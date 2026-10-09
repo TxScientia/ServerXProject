@@ -20,7 +20,7 @@ from .invite import (
     PlotLinkCreate,
     PlotLinkRead,
 )
-from .member import MemberRankUpdate
+from .member import MemberRankUpdate, MemberRoleUpdate
 from .news import NewsCreate, NewsRead
 from .ooc import OOCMessageCreate, OOCMessageRead
 from .place import PlaceCreate, PlaceRead, PlaceReorder, PlaceUpdate
@@ -49,6 +49,7 @@ __all__ = [
     "MessageCreate",
     "MessageRead",
     "MemberRankUpdate",
+    "MemberRoleUpdate",
     "PlotLinkAction",
     "PlotLinkCreate",
     "PlotLinkRead",

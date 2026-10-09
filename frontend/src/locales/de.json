@@ -177,6 +177,12 @@
     "membersLoadError": "Mitglieder konnten nicht geladen werden.",
     "memberRankSaved": "Mitgliederrang gespeichert.",
     "memberRankError": "Mitgliederrang konnte nicht gespeichert werden.",
+    "memberRoleSaved": "Rolle gespeichert.",
+    "memberRoleError": "Rolle konnte nicht gespeichert werden.",
+    "roleCreator": "Ersteller",
+    "roleMember": "Mitglied",
+    "roleEditor": "Editor",
+    "pendingOutgoing": "Gesendete Anfragen",
     "linkedLoadError": "Verlinkte Welten konnten nicht geladen werden."
   },
   "admin": {

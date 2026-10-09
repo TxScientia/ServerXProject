@@ -10,12 +10,15 @@ from ..crud import (
     create_plot_link,
     get_accepted_linked_spaces,
     get_membership,
+    get_pending_outgoing_plot_links_for_space,
     get_pending_plot_links_for_space,
     get_space_creator,
     get_storybook,
     is_member,
     list_members,
+    list_pending_character_invites_for_space,
     send_system_message,
+    set_member_role,
 )
 from ..database import get_db
 from ..models import Character, MembershipRank, Rank
@@ -23,6 +26,7 @@ from ..schemas import (
     CharacterInviteCreate,
     CharacterInviteRead,
     MemberRankUpdate,
+    MemberRoleUpdate,
     PlotLinkCreate,
     PlotLinkRead,
 )
@@ -59,12 +63,49 @@ def get_members(
                 "character_id": str(m.character_id),
                 "name": m.character.name,
                 "role": m.role,
+                "status": "accepted",
                 "rank_id": str(rank.id) if rank else None,
                 "rank_name": rank.name if rank else None,
                 "rank_weight": rank.weight if rank else None,
             }
         )
+
+    # Also surface invited-but-not-yet-accepted characters as pending entries.
+    for inv in list_pending_character_invites_for_space(db, space_id):
+        target = db.query(Character).filter(Character.id == inv.character_id).first()
+        rows.append(
+            {
+                "character_id": str(inv.character_id),
+                "name": target.name if target else "?",
+                "role": "member",
+                "status": "pending",
+                "rank_id": None,
+                "rank_name": None,
+                "rank_weight": None,
+            }
+        )
     return rows
+
+
+@router.patch("/storybooks/{space_id}/members/{character_id}/role")
+def update_member_role(
+    space_id: str,
+    character_id: uuid.UUID,
+    data: MemberRoleUpdate,
+    character: Character = Depends(get_current_character),
+    db: Session = Depends(get_db),
+):
+    """Set a member's role to 'member' or 'editor'. Requires creator/editor; the creator's
+    own role can't be reassigned."""
+    space = get_storybook(db, space_id)
+    if not space:
+        raise HTTPException(status_code=404, detail="Storybook not found")
+    if not can_edit_space(db, space_id, character.id):
+        raise HTTPException(status_code=403, detail="Not authorized to edit members")
+    updated = set_member_role(db, space_id, character_id, data.role)
+    if updated is None:
+        raise HTTPException(status_code=404, detail="Member not found or is the creator")
+    return {"ok": True, "role": updated.role}
 
 
 @router.patch("/storybooks/{space_id}/members/{character_id}/rank")
@@ -223,4 +264,20 @@ def get_plot_links(
             }
         )
 
-    return {"linked_spaces": linked_spaces, "pending_invitations": pending}
+    # Links this space sent to others that are still awaiting the target's response.
+    pending_outgoing = []
+    for link in get_pending_outgoing_plot_links_for_space(db, space_id):
+        target = get_storybook(db, link.target_space_id)
+        pending_outgoing.append(
+            {
+                "id": str(link.id),
+                "target_space_id": str(link.target_space_id),
+                "target_title": target.title if target else "?",
+            }
+        )
+
+    return {
+        "linked_spaces": linked_spaces,
+        "pending_invitations": pending,
+        "pending_outgoing": pending_outgoing,
+    }
