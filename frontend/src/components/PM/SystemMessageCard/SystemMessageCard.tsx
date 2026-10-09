@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import Card from '../../Card';
+import { parseServerDate } from '../../../utils/datetime';
 import styles from './SystemMessageCard.module.css';
 
 export interface SystemMessage {
@@ -60,7 +61,7 @@ export default function SystemMessageCard({ msg, onRespond }: SystemMessageCardP
         <div className={styles.header}>
           <span className={styles.type}>{t(TYPE_LABEL_KEYS[msg.type] ?? msg.type)}</span>
           <span className={styles.timestamp}>
-            {new Date(msg.created_at).toLocaleString('de-CH')}
+            {parseServerDate(msg.created_at).toLocaleString('de-CH')}
           </span>
         </div>
 

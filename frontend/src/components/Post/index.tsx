@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { apiUrl, authHeaders, characterHeaders } from '../../api';
 import RichTextEditor, { RichText, isEmptyDoc, type RichTextDoc } from '../RichTextEditor';
 import type { PostRead } from '../Scene/types';
+import { parseServerDate } from '../../utils/datetime';
 import styles from './Post.module.css';
 
 type Props = {
@@ -75,7 +76,7 @@ export default function Post({
   };
 
   const author = post.author_name ?? '???';
-  const timestamp = new Date(post.created_at).toLocaleString();
+  const timestamp = parseServerDate(post.created_at).toLocaleString();
 
   return (
     <article className={styles.post}>

@@ -1,10 +1,11 @@
 import { RichText } from '../RichTextEditor';
 import type { OOCMessage } from './types';
+import { parseServerDate } from '../../utils/datetime';
 import styles from './OOC.module.css';
 
 export default function OOCMessageCard({ message }: { message: OOCMessage }) {
   const author = message.author_name ?? '???';
-  const timestamp = new Date(message.created_at).toLocaleString();
+  const timestamp = parseServerDate(message.created_at).toLocaleString();
 
   return (
     <article className={styles.message}>

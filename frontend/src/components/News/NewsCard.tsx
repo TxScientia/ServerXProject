@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { RichText } from '../RichTextEditor';
 import type { NewsItem } from './types';
+import { parseServerDate } from '../../utils/datetime';
 import styles from './News.module.css';
 
 type Props = { item: NewsItem };
@@ -9,7 +10,7 @@ export default function NewsCard({ item }: Props) {
   const { t, i18n } = useTranslation();
   const author = item.author_character_name ?? item.author_login_name ?? t('news.systemAuthor');
   const date = new Intl.DateTimeFormat(i18n.language, { dateStyle: 'medium', timeStyle: 'short' }).format(
-    new Date(item.created_at),
+    parseServerDate(item.created_at),
   );
 
   return (

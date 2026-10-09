@@ -5,6 +5,7 @@ import RichText from '../RichTextEditor/RichText';
 import { EMPTY_DOC, isEmptyDoc } from '../RichTextEditor/schema';
 import { apiUrl, authHeaders } from '../../api';
 import { useWebSocket } from '../../realtime/WebSocketProvider';
+import { parseServerDate } from '../../utils/datetime';
 import styles from './ThreadView.module.css';
 
 interface Message {
@@ -153,7 +154,7 @@ export default function ThreadView({ chat, onBack, onRefresh, onIncoming }: Thre
             <div className={styles.byline}>
               <span className={styles.author}>{msg.from_character_name}</span>
               <span className={styles.timestamp}>
-                {new Date(msg.created_at).toLocaleString('de-CH')}
+                {parseServerDate(msg.created_at).toLocaleString('de-CH')}
               </span>
             </div>
             <RichText value={msg.body} className={styles.messageContent} />
