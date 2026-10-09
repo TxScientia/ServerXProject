@@ -196,7 +196,9 @@ export default function PM() {
         // Automatically select and enter the new chat
         await handleSelectChat(newChat);
       } else {
-        alert('Fehler beim Erstellen des Chats');
+        const detail = await res.text().catch(() => '');
+        console.error('Create direct chat failed:', res.status, detail);
+        alert(`Fehler beim Erstellen des Chats (${res.status}): ${detail}`);
       }
     } catch (error) {
       console.error('Failed to create direct chat:', error);
@@ -223,7 +225,9 @@ export default function PM() {
         // Automatically select and enter the new chat
         await handleSelectChat(newChat);
       } else {
-        alert('Fehler beim Erstellen der Gruppe');
+        const detail = await res.text().catch(() => '');
+        console.error('Create group chat failed:', res.status, detail);
+        alert(`Fehler beim Erstellen der Gruppe (${res.status}): ${detail}`);
       }
     } catch (error) {
       console.error('Failed to create group chat:', error);
