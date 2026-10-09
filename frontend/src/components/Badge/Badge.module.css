@@ -18,13 +18,14 @@
   margin-left: 8px;
 }
 
-/* Nav variant: a small bubble floating above the top-right corner of the nav label,
-   nudged outward so it never overlaps short labels like "PM". */
+/* Nav variant: an inline, raised superscript to the RIGHT of the label. Being part of
+   the layout (not absolutely positioned over the text) means it can never cover the
+   label — works for short ("PM") and longer ("News") labels alike. */
 .badge.nav {
-  position: absolute;
-  top: -9px;
-  right: -14px;
-  bottom: auto;
+  position: static;
+  align-self: flex-start;
+  margin-left: 5px;
+  transform: translateY(-4px);
   min-width: 16px;
   height: 16px;
   font-size: 0.58rem;
