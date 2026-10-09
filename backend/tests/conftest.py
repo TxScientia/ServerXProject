@@ -59,6 +59,30 @@ def db_session(TestingSessionLocal):
         session.close()
 
 
+class _ApiPrefixClient(TestClient):
+    """TestClient that prepends the /api route prefix to bare paths.
+
+    All API routes are mounted under /api (see app.main), but tests pass bare paths like
+    "/pm/chats". This wrapper adds the prefix automatically so tests stay readable and
+    don't each need updating. Root-level routes (/ping, /db-status) and already-prefixed
+    paths are left untouched.
+    """
+
+    @staticmethod
+    def _prefixed(url):
+        if isinstance(url, str) and url.startswith("/") and not url.startswith(
+            ("/api", "/ping", "/db-status")
+        ):
+            return "/api" + url
+        return url
+
+    def request(self, method, url, *args, **kwargs):
+        return super().request(method, self._prefixed(url), *args, **kwargs)
+
+    def websocket_connect(self, url, *args, **kwargs):
+        return super().websocket_connect(self._prefixed(url), *args, **kwargs)
+
+
 @pytest.fixture
 def client(db_engine, TestingSessionLocal):
     """TestClient with get_db overridden to the isolated test DB.
@@ -74,7 +98,7 @@ def client(db_engine, TestingSessionLocal):
             db.close()
 
     app.dependency_overrides[get_db] = override_get_db
-    with TestClient(app) as test_client:
+    with _ApiPrefixClient(app) as test_client:
         yield test_client
     app.dependency_overrides.clear()
 

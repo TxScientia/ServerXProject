@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
@@ -93,15 +93,18 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(router=accounts_router)
-app.include_router(router=characters_router)
-app.include_router(router=invite_router)
-app.include_router(router=news_router)
-app.include_router(router=ooc_router)
-app.include_router(router=pm_router)
-app.include_router(router=residents_router)
-app.include_router(router=storybooks_router)
-app.include_router(router=wanted_ads_router)
+# All API routes live under /api so they never collide with client-side (SPA) routes
+# like /residents or /storybooks — otherwise a browser refresh on those paths hits the
+# API route instead of the app shell. The catch-all below serves index.html for the rest.
+app.include_router(router=accounts_router, prefix="/api")
+app.include_router(router=characters_router, prefix="/api")
+app.include_router(router=invite_router, prefix="/api")
+app.include_router(router=news_router, prefix="/api")
+app.include_router(router=ooc_router, prefix="/api")
+app.include_router(router=pm_router, prefix="/api")
+app.include_router(router=residents_router, prefix="/api")
+app.include_router(router=storybooks_router, prefix="/api")
+app.include_router(router=wanted_ads_router, prefix="/api")
 
 
 @app.get("/ping")
@@ -129,6 +132,9 @@ if FRONTEND_BUILD_DIR.exists():
 
     @app.get("/{full_path:path}")
     def serve_frontend(full_path: str):
+        # An unmatched /api/* path is a real 404, not the SPA shell.
+        if full_path.startswith("api/"):
+            raise HTTPException(status_code=404, detail="Not found")
         requested = FRONTEND_BUILD_DIR / full_path
         if full_path and requested.is_file():
             return FileResponse(requested)
