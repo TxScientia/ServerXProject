@@ -2,9 +2,15 @@ import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { apiUrl, authHeaders, characterHeaders } from '../../api';
+import { Modal, ModalActions, ModalSpacer } from '../Modal';
 import WantedAdCard from './WantedAdCard';
 import type { WantedAd, WantedAdScope } from './types';
 import styles from './WantedAds.module.css';
+
+interface AccountCharacter {
+  id: string;
+  name: string;
+}
 
 interface WantedAdListProps {
   scope: WantedAdScope;
@@ -24,6 +30,9 @@ export default function WantedAdList({ scope, refreshKey = 0, canModerate = fals
   const [ads, setAds] = useState<WantedAd[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  // The ad we're about to message about, plus the account's characters to choose from.
+  const [messagingAd, setMessagingAd] = useState<WantedAd | null>(null);
+  const [myCharacters, setMyCharacters] = useState<AccountCharacter[]>([]);
   const activeCharacterId = localStorage.getItem('characterId') || '';
 
   const load = useCallback(() => {
@@ -59,14 +68,34 @@ export default function WantedAdList({ scope, refreshKey = 0, canModerate = fals
     }
   };
 
+  // Open the character picker so the user chooses which of their characters writes.
   const handleMessage = async (ad: WantedAd) => {
+    try {
+      const res = await fetch(apiUrl('/characters'), { headers: authHeaders() });
+      const chars: AccountCharacter[] = res.ok ? await res.json() : [];
+      setMyCharacters(chars);
+      setMessagingAd(ad);
+    } catch {
+      setError(t('gesuche.messageError'));
+    }
+  };
+
+  // Create (or reuse) the direct chat acting as the chosen character, then open PM.
+  const startChatAs = async (creatorCharacterId: string) => {
+    if (!messagingAd) return;
     try {
       const res = await fetch(apiUrl('/pm/chats/direct'), {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', ...authHeaders(), ...characterHeaders() },
-        body: JSON.stringify({ character_id: ad.author_character_id }),
+        headers: {
+          'Content-Type': 'application/json',
+          ...authHeaders(),
+          'X-Character-Id': creatorCharacterId,
+        },
+        body: JSON.stringify({ character_id: messagingAd.author_character_id }),
       });
       if (!res.ok) throw new Error();
+      localStorage.setItem('characterId', creatorCharacterId);
+      setMessagingAd(null);
       navigate('/pm');
     } catch {
       setError(t('gesuche.messageError'));
@@ -78,17 +107,46 @@ export default function WantedAdList({ scope, refreshKey = 0, canModerate = fals
   if (ads.length === 0) return <p className={styles.muted}>{emptyText ?? t('gesuche.empty')}</p>;
 
   return (
-    <div className={styles.stack}>
-      {ads.map((ad) => (
-        <WantedAdCard
-          key={ad.id}
-          ad={ad}
-          canDelete={ad.author_character_id === activeCharacterId || canModerate}
-          canMessage={Boolean(activeCharacterId) && ad.author_character_id !== activeCharacterId}
-          onDelete={handleDelete}
-          onMessage={handleMessage}
-        />
-      ))}
-    </div>
+    <>
+      <div className={styles.stack}>
+        {ads.map((ad) => (
+          <WantedAdCard
+            key={ad.id}
+            ad={ad}
+            canDelete={ad.author_character_id === activeCharacterId || canModerate}
+            canMessage={Boolean(activeCharacterId) && ad.author_character_id !== activeCharacterId}
+            onDelete={handleDelete}
+            onMessage={handleMessage}
+          />
+        ))}
+      </div>
+
+      {messagingAd && (
+        <Modal title={t('gesuche.messagePickTitle')}>
+          <div className={styles.charPicker}>
+            {myCharacters.length === 0 ? (
+              <p className={styles.muted}>{t('gesuche.noCharacters')}</p>
+            ) : (
+              myCharacters.map((c) => (
+                <button
+                  key={c.id}
+                  type="button"
+                  className="button button--ghost"
+                  onClick={() => startChatAs(c.id)}
+                >
+                  {c.name}
+                </button>
+              ))
+            )}
+          </div>
+          <ModalActions>
+            <button type="button" className="button button--ghost" onClick={() => setMessagingAd(null)}>
+              {t('common.cancel')}
+            </button>
+            <ModalSpacer />
+          </ModalActions>
+        </Modal>
+      )}
+    </>
   );
 }

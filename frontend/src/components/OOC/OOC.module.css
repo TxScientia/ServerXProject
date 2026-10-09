@@ -73,19 +73,24 @@
   color: var(--color-danger-strong);
 }
 
+/* Popup, not a full-screen modal: anchored bottom-right and click-through so the rest of
+   the page stays usable (only the popup itself captures clicks). */
 .overlayBackdrop {
   position: fixed;
   inset: 0;
   z-index: 50;
-  background: var(--color-overlay);
-  display: grid;
-  place-items: center;
+  background: transparent;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
   padding: 1rem;
+  pointer-events: none;
 }
 
 .overlay {
-  width: min(900px, 96vw);
-  max-height: 92vh;
+  pointer-events: auto;
+  width: min(400px, 94vw);
+  height: min(560px, 75vh);
   overflow: hidden;
   display: flex;
   flex-direction: column;

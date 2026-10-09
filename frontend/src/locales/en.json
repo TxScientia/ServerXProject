@@ -242,7 +242,9 @@
     "loadError": "Failed to load wanted ads.",
     "saveError": "Failed to save the wanted ad.",
     "deleteError": "Failed to delete the wanted ad.",
-    "messageError": "Could not start a chat."
+    "messageError": "Could not start a chat.",
+    "messagePickTitle": "Message as which character?",
+    "noCharacters": "No characters available."
   },
   "ooc": {
     "globalTitle": "Global OOC Chat",

@@ -18,14 +18,16 @@
   margin-left: 8px;
 }
 
-/* Nav variant: positioned at bottom right corner */
+/* Nav variant: a small bubble floating above the top-right corner of the nav label,
+   nudged outward so it never overlaps short labels like "PM". */
 .badge.nav {
   position: absolute;
-  bottom: -6px;
-  right: -6px;
-  min-width: 18px;
-  height: 18px;
-  font-size: 0.6rem;
+  top: -9px;
+  right: -14px;
+  bottom: auto;
+  min-width: 16px;
+  height: 16px;
+  font-size: 0.58rem;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
   border: 2px solid var(--color-topbar);
 }
