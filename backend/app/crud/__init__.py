@@ -33,9 +33,11 @@ from .invite import (
     get_accepted_linked_spaces,
     get_character_invite,
     get_pending_character_invites_for_character,
+    get_pending_outgoing_plot_links_for_space,
     get_pending_plot_links_for_space,
     get_plot_link,
     handle_invite_response,
+    list_pending_character_invites_for_space,
 )
 from .news import (
     count_unread_global_news,
@@ -93,6 +95,7 @@ from .space import (
     is_member,
     list_members,
     list_storybooks,
+    set_member_role,
     update_storybook,
 )
 
@@ -135,7 +138,10 @@ __all__ = [
     "get_member_account_ids",
     "get_message",
     "get_pending_character_invites_for_character",
+    "get_pending_outgoing_plot_links_for_space",
     "get_pending_plot_links_for_space",
+    "list_pending_character_invites_for_space",
+    "set_member_role",
     "get_place",
     "get_plot_link",
     "get_post",

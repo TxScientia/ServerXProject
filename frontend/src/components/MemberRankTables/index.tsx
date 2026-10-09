@@ -5,6 +5,8 @@ export type RankedMember = {
   character_id: string;
   name: string;
   role: string;
+  /** 'accepted' for actual members, 'pending' for invited-but-not-yet-joined. */
+  status?: 'accepted' | 'pending';
   rank_id: string | null;
   rank_name: string | null;
   rank_weight: number | null;

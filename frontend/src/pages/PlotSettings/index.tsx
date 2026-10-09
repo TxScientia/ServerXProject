@@ -38,6 +38,12 @@ type PendingLink = {
   source_title: string;
 };
 
+type PendingOutgoing = {
+  id: string;
+  target_space_id: string;
+  target_title: string;
+};
+
 type RankDraft = {
   id?: string;
   name: string;
@@ -52,8 +58,9 @@ type StatusMessage = {
   section: SettingsSection;
 };
 
+// "Generic" is a dev-only special state (assigned by us, not users), so it's intentionally
+// not offered here. Existing generic plots keep their value; it just isn't selectable.
 const VISIBILITY_OPTIONS = [
-  { value: 'generic', key: 'plotSettings.visGeneric' },
   { value: 'public', key: 'plotSettings.visPublic' },
   { value: 'private_listed', key: 'plotSettings.visPrivateListed' },
   { value: 'private_hidden', key: 'plotSettings.visPrivateHidden' },
@@ -83,6 +90,7 @@ export default function PlotSettings() {
   const [members, setMembers] = useState<Member[]>([]);
   const [linkedSpaces, setLinkedSpaces] = useState<LinkedSpace[]>([]);
   const [pendingLinks, setPendingLinks] = useState<PendingLink[]>([]);
+  const [pendingOutgoing, setPendingOutgoing] = useState<PendingOutgoing[]>([]);
   const [inviteMode, setInviteMode] = useState<'character' | 'plot' | null>(null);
   const [newsRefreshKey, setNewsRefreshKey] = useState(0);
 
@@ -149,10 +157,17 @@ export default function PlotSettings() {
         if (!res.ok) throw new Error();
         return res.json();
       })
-      .then((data: { linked_spaces: LinkedSpace[]; pending_invitations: PendingLink[] }) => {
-        setLinkedSpaces(data.linked_spaces);
-        setPendingLinks(data.pending_invitations);
-      })
+      .then(
+        (data: {
+          linked_spaces: LinkedSpace[];
+          pending_invitations: PendingLink[];
+          pending_outgoing?: PendingOutgoing[];
+        }) => {
+          setLinkedSpaces(data.linked_spaces);
+          setPendingLinks(data.pending_invitations);
+          setPendingOutgoing(data.pending_outgoing ?? []);
+        }
+      )
       .catch(() => setStatus({ kind: 'error', msg: t('plotSettings.linkedLoadError'), section: 'linked-plots' }));
   }, [id, t]);
 
@@ -237,21 +252,40 @@ export default function PlotSettings() {
       .catch(() => setStatus({ kind: 'error', msg: t('plotSettings.rankDeleteError'), section: 'ranks' }));
   };
 
-  const handleInviteCharacter = (characterId: string) => {
-    fetch(apiUrl(`/storybooks/${id}/invites/characters`), {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', ...authHeaders(), ...characterHeaders() },
-      body: JSON.stringify({ character_id: characterId, space_id: id }),
-    })
-      .then((res) => {
-        if (!res.ok) throw new Error();
-        return res.json();
-      })
+  const handleInviteCharacter = (characterIds: string[]) => {
+    Promise.all(
+      characterIds.map((characterId) =>
+        fetch(apiUrl(`/storybooks/${id}/invites/characters`), {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', ...authHeaders(), ...characterHeaders() },
+          body: JSON.stringify({ character_id: characterId, space_id: id }),
+        }).then((res) => {
+          if (!res.ok) throw new Error();
+        })
+      )
+    )
       .then(() => {
         setInviteMode(null);
         setStatus({ kind: 'ok', msg: t('plotSettings.inviteSent'), section: 'members' });
+        fetchMembers(); // show the new pending entries
       })
       .catch(() => setStatus({ kind: 'error', msg: t('plotSettings.inviteError'), section: 'members' }));
+  };
+
+  const updateMemberRole = (characterId: string, role: string) => {
+    fetch(apiUrl(`/storybooks/${id}/members/${characterId}/role`), {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json', ...authHeaders(), ...characterHeaders() },
+      body: JSON.stringify({ role }),
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error();
+      })
+      .then(() => {
+        setStatus({ kind: 'ok', msg: t('plotSettings.memberRoleSaved'), section: 'members' });
+        fetchMembers();
+      })
+      .catch(() => setStatus({ kind: 'error', msg: t('plotSettings.memberRoleError'), section: 'members' }));
   };
 
   const updateMemberRank = (characterId: string, rankId: string) => {
@@ -270,16 +304,18 @@ export default function PlotSettings() {
       .catch(() => setStatus({ kind: 'error', msg: t('plotSettings.memberRankError'), section: 'members' }));
   };
 
-  const handleInvitePlot = (targetSpaceId: string) => {
-    fetch(apiUrl(`/storybooks/${id}/linked-plots/invite`), {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', ...authHeaders(), ...characterHeaders() },
-      body: JSON.stringify({ target_space_id: targetSpaceId }),
-    })
-      .then((res) => {
-        if (!res.ok) throw new Error();
-        return res.json();
-      })
+  const handleInvitePlot = (targetSpaceIds: string[]) => {
+    Promise.all(
+      targetSpaceIds.map((targetSpaceId) =>
+        fetch(apiUrl(`/storybooks/${id}/linked-plots/invite`), {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', ...authHeaders(), ...characterHeaders() },
+          body: JSON.stringify({ target_space_id: targetSpaceId }),
+        }).then((res) => {
+          if (!res.ok) throw new Error();
+        })
+      )
+    )
       .then(() => {
         setInviteMode(null);
         setStatus({ kind: 'ok', msg: t('plotSettings.inviteSent'), section: 'linked-plots' });
@@ -488,27 +524,50 @@ export default function PlotSettings() {
           ) : (
             <>
               <div className={styles.list}>
-                {members.map((m) => (
-                  <div key={m.character_id} className={styles.listCard}>
-                    <div>
-                      <strong>{m.name}</strong>
-                      <span className={styles.roleBadge}>{m.role}</span>
+                {members.map((m) => {
+                  const pending = m.status === 'pending';
+                  const isCreator = m.role === 'creator';
+                  return (
+                    <div key={m.character_id} className={styles.listCard}>
+                      <div>
+                        <strong>{m.name}</strong>
+                        {pending ? (
+                          <span className={styles.roleBadge}>{t('plotSettings.pending')}</span>
+                        ) : isCreator ? (
+                          <span className={styles.roleBadge}>{t('plotSettings.roleCreator')}</span>
+                        ) : (
+                          <select
+                            className="select-input"
+                            value={m.role}
+                            onChange={(e) => updateMemberRole(m.character_id, e.target.value)}
+                          >
+                            <option value="member">{t('plotSettings.roleMember')}</option>
+                            <option value="editor">{t('plotSettings.roleEditor')}</option>
+                          </select>
+                        )}
+                      </div>
+                      {!pending && (
+                        <select
+                          className="select-input"
+                          value={m.rank_id ?? ''}
+                          onChange={(e) => updateMemberRank(m.character_id, e.target.value)}
+                        >
+                          <option value="">{t('members.unranked')}</option>
+                          {ranks.map((rank) => (
+                            <option key={rank.id} value={rank.id}>{rank.name}</option>
+                          ))}
+                        </select>
+                      )}
                     </div>
-                    <select
-                      className="select-input"
-                      value={m.rank_id ?? ''}
-                      onChange={(e) => updateMemberRank(m.character_id, e.target.value)}
-                    >
-                      <option value="">{t('members.unranked')}</option>
-                      {ranks.map((rank) => (
-                        <option key={rank.id} value={rank.id}>{rank.name}</option>
-                      ))}
-                    </select>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
               <h3>{t('members.preview')}</h3>
-              <MemberRankTables members={members} ranks={ranks} emptyText={t('plotSettings.noMembers')} />
+              <MemberRankTables
+                members={members.filter((m) => m.status !== 'pending')}
+                ranks={ranks}
+                emptyText={t('plotSettings.noMembers')}
+              />
             </>
           )}
         </div>
@@ -527,6 +586,18 @@ export default function PlotSettings() {
               {pendingLinks.map((p) => (
                 <div key={p.id} className={styles.listCard}>
                   <span>{p.source_title}</span>
+                  <span className={styles.roleBadge}>{t('plotSettings.pending')}</span>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {pendingOutgoing.length > 0 && (
+            <div className={styles.pendingBlock}>
+              <h3 className={styles.muted}>{t('plotSettings.pendingOutgoing')}</h3>
+              {pendingOutgoing.map((p) => (
+                <div key={p.id} className={styles.listCard}>
+                  <span>{p.target_title}</span>
                   <span className={styles.roleBadge}>{t('plotSettings.pending')}</span>
                 </div>
               ))}

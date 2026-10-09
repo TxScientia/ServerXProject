@@ -13,7 +13,8 @@ interface InviteModalProps {
   title: string;
   type: 'character' | 'plot';
   onClose: () => void;
-  onSelect: (itemId: string) => void;
+  /** Called with all selected ids — multiple can be invited at once. */
+  onSelect: (itemIds: string[]) => void;
   excludeIds?: string[];
 }
 
@@ -27,7 +28,7 @@ export default function InviteModal({
   const { t } = useTranslation();
   const [items, setItems] = useState<Item[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -53,9 +54,15 @@ export default function InviteModal({
     item.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  const toggle = (itemId: string) => {
+    setSelectedIds((prev) =>
+      prev.includes(itemId) ? prev.filter((x) => x !== itemId) : [...prev, itemId]
+    );
+  };
+
   const handleConfirm = () => {
-    if (selectedId) {
-      onSelect(selectedId);
+    if (selectedIds.length > 0) {
+      onSelect(selectedIds);
     }
   };
 
@@ -81,14 +88,13 @@ export default function InviteModal({
           filteredItems.map((item) => (
             <button
               key={item.id}
-              className={`${styles.item} ${selectedId === item.id ? styles.selected : ''}`}
-              onClick={() => setSelectedId(item.id)}
+              className={`${styles.item} ${selectedIds.includes(item.id) ? styles.selected : ''}`}
+              onClick={() => toggle(item.id)}
               type="button"
             >
               <input
-                type="radio"
-                name="invite-selection"
-                checked={selectedId === item.id}
+                type="checkbox"
+                checked={selectedIds.includes(item.id)}
                 readOnly
                 className={styles.radio}
               />
@@ -106,10 +112,10 @@ export default function InviteModal({
         <button
           className="button"
           onClick={handleConfirm}
-          disabled={!selectedId}
+          disabled={selectedIds.length === 0}
           type="button"
         >
-          Einladen
+          {selectedIds.length > 1 ? `Einladen (${selectedIds.length})` : 'Einladen'}
         </button>
       </ModalActions>
     </Modal>

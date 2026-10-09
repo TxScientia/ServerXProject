@@ -122,7 +122,9 @@ export default function StoryBookDetail() {
       headers: { ...authHeaders(), 'X-Character-Id': localStorage.getItem('characterId') || '' },
     })
       .then((res) => (res.ok ? res.json() : []))
-      .then((items: RankedMember[]) => setMembers(items))
+      // Pending invitees are only relevant in PlotSettings; the public member list shows
+      // actual (accepted) members.
+      .then((items: RankedMember[]) => setMembers(items.filter((m) => m.status !== 'pending')))
       .catch(() => setMembers([]));
   }, [id]);
 

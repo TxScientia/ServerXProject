@@ -79,6 +79,22 @@ def is_member(db: Session, space_id, character_id) -> bool:
     return get_membership(db, space_id, character_id) is not None
 
 
+# Assignable member roles (the creator role is fixed and cannot be reassigned here).
+ASSIGNABLE_ROLES = ("member", "editor")
+
+
+def set_member_role(db: Session, space_id, character_id, role: str):
+    """Set a member's role to 'member' or 'editor'. Returns the Membership, or None if
+    the member doesn't exist. Never changes the creator's role."""
+    membership = get_membership(db, space_id, character_id)
+    if membership is None or membership.role == "creator":
+        return None
+    membership.role = role
+    db.commit()
+    db.refresh(membership)
+    return membership
+
+
 def _get_or_create_tag(db: Session, name: str) -> Tag:
     tag = db.query(Tag).filter(Tag.name == name).first()
     if tag is None:

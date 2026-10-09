@@ -177,6 +177,12 @@
     "membersLoadError": "Failed to load members.",
     "memberRankSaved": "Member rank saved.",
     "memberRankError": "Failed to save member rank.",
+    "memberRoleSaved": "Role saved.",
+    "memberRoleError": "Could not save role.",
+    "roleCreator": "Creator",
+    "roleMember": "Member",
+    "roleEditor": "Editor",
+    "pendingOutgoing": "Sent requests",
     "linkedLoadError": "Failed to load linked worlds."
   },
   "admin": {
