@@ -143,6 +143,15 @@ def _require_storybook(db: Session, storybook_id):
     return space
 
 
+def _require_viewable_storybook(db: Session, storybook_id, account_id):
+    """Fetch the StoryBook and require the account to be allowed to read it.
+    Private plots (listed/hidden) are members-only; public & generic are open."""
+    space = _require_storybook(db, storybook_id)
+    if not can_view_space(db, space, account_id):
+        raise HTTPException(status_code=403, detail="Diese Welt ist privat – nur für Mitglieder")
+    return space
+
+
 def _get_place_in_space(db: Session, space_id, place_id):
     place = get_place(db, place_id)
     if place is None or place.space_id != space_id:
@@ -239,9 +248,7 @@ def list_ranks_endpoint(
     current_user: Account = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    space = get_storybook(db, storybook_id)
-    if space is None:
-        raise HTTPException(status_code=404, detail="StoryBook nicht gefunden")
+    space = _require_viewable_storybook(db, storybook_id, current_user.id)
     return list_ranks(db, space.id)
 
 
@@ -291,9 +298,7 @@ def list_places_endpoint(
     current_user: Account = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    space = get_storybook(db, storybook_id)
-    if space is None:
-        raise HTTPException(status_code=404, detail="StoryBook nicht gefunden")
+    space = _require_viewable_storybook(db, storybook_id, current_user.id)
     return list_places(db, space.id)
 
 
@@ -371,7 +376,7 @@ def list_scenes_endpoint(
     current_user: Account = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    space = _require_storybook(db, storybook_id)
+    space = _require_viewable_storybook(db, storybook_id, current_user.id)
     place = _get_place_in_space(db, space.id, place_id)
     scenes = list_scenes_in_place(db, place.id)  # already last_post_at desc
     # Active scene first, history after; stable sort preserves the desc ordering.
@@ -415,7 +420,7 @@ def get_scene_endpoint(
     current_user: Account = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    space = _require_storybook(db, storybook_id)
+    space = _require_viewable_storybook(db, storybook_id, current_user.id)
     scene = _get_scene_in_space(db, space, scene_id)
     return _serialize_scene(scene, space.scene_timeout_days, include_posts=True)
 

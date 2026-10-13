@@ -93,3 +93,77 @@ def test_private_plot_nonmember_cannot_start_scene(client, db_session, auth_head
         json={"title": "Blocked", "body": doc()},
     )
     assert resp.status_code == 403
+
+
+# --- reading content (the read-gating: non-members can't read a private plot) ----
+
+def _private_plot_with_content(client, db_session, auth_headers, character, visibility="private_listed"):
+    """A plot (default private) with a place, a scene, a plot-news item and a wanted ad."""
+    h = {**auth_headers, "X-Character-Id": str(character.id)}
+    sb = create_storybook(db_session, character, "WalledGarden", visibility=visibility)
+    place = client.post(f"/storybooks/{sb.id}/places", json={"title": "Hall"}, headers=h).json()
+    scene = client.post(
+        f"/storybooks/{sb.id}/places/{place['id']}/scenes",
+        headers=h,
+        json={"title": "RP", "body": doc()},
+    ).json()
+    client.post(
+        f"/storybooks/{sb.id}/news",
+        headers=h,
+        json={"title": "Secret", "body": doc(), "kind": "info", "pinned": False},
+    )
+    client.post(
+        f"/storybooks/{sb.id}/wanted-ads",
+        headers=h,
+        json={"title": "Looking", "body": doc()},
+    )
+    return sb, place, scene, h
+
+
+def test_private_places_forbidden_for_nonmember(client, db_session, auth_headers, character):
+    sb, _, _, _ = _private_plot_with_content(client, db_session, auth_headers, character)
+    _, _, other = _other(db_session, "g@x.c", "gwen")
+    assert client.get(f"/storybooks/{sb.id}/places", headers=other).status_code == 403
+
+
+def test_private_ranks_forbidden_for_nonmember(client, db_session, auth_headers, character):
+    sb, _, _, _ = _private_plot_with_content(client, db_session, auth_headers, character)
+    _, _, other = _other(db_session, "h@x.c", "hugo")
+    assert client.get(f"/storybooks/{sb.id}/ranks", headers=other).status_code == 403
+
+
+def test_private_scenes_list_forbidden_for_nonmember(client, db_session, auth_headers, character):
+    sb, place, _, _ = _private_plot_with_content(client, db_session, auth_headers, character)
+    _, _, other = _other(db_session, "i@x.c", "iris")
+    resp = client.get(f"/storybooks/{sb.id}/places/{place['id']}/scenes", headers=other)
+    assert resp.status_code == 403
+
+
+def test_private_scene_detail_forbidden_for_nonmember(client, db_session, auth_headers, character):
+    sb, _, scene, _ = _private_plot_with_content(client, db_session, auth_headers, character)
+    _, _, other = _other(db_session, "j@x.c", "jack")
+    assert client.get(f"/storybooks/{sb.id}/scenes/{scene['id']}", headers=other).status_code == 403
+
+
+def test_private_news_forbidden_for_nonmember(client, db_session, auth_headers, character):
+    sb, _, _, _ = _private_plot_with_content(client, db_session, auth_headers, character)
+    _, _, other = _other(db_session, "k@x.c", "kira")
+    assert client.get(f"/storybooks/{sb.id}/news", headers=other).status_code == 403
+
+
+def test_private_wanted_ads_forbidden_for_nonmember(client, db_session, auth_headers, character):
+    sb, _, _, _ = _private_plot_with_content(client, db_session, auth_headers, character)
+    _, _, other = _other(db_session, "l@x.c", "liam")
+    assert client.get(f"/storybooks/{sb.id}/wanted-ads", headers=other).status_code == 403
+
+
+def test_public_content_readable_by_nonmember(client, db_session, auth_headers, character):
+    sb, place, scene, _ = _private_plot_with_content(
+        client, db_session, auth_headers, character, visibility="public"
+    )
+    _, _, other = _other(db_session, "m@x.c", "mia")
+    assert client.get(f"/storybooks/{sb.id}/places", headers=other).status_code == 200
+    assert client.get(f"/storybooks/{sb.id}/places/{place['id']}/scenes", headers=other).status_code == 200
+    assert client.get(f"/storybooks/{sb.id}/scenes/{scene['id']}", headers=other).status_code == 200
+    assert client.get(f"/storybooks/{sb.id}/news", headers=other).status_code == 200
+    assert client.get(f"/storybooks/{sb.id}/wanted-ads", headers=other).status_code == 200
