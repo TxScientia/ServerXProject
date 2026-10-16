@@ -1,11 +1,144 @@
+/* Full-bleed banner needs the base Card's padding removed and corners clipped. */
+.plotCard {
+  padding: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.banner {
+  height: 150px;
+  background: var(--color-accent-soft, #d7e5de);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-accent, #2f6f5e);
+}
+
+.bannerImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.bannerPlaceholder {
+  opacity: 0.65;
+  display: inline-flex;
+}
+
+.body {
+  padding: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
 .title {
-  margin: 0 0 var(--space-2);
+  margin: 0;
   font-family: var(--font-display);
-  font-size: 1.1rem;
+  font-size: 1.25rem;
+  line-height: 1.2;
 }
 
 .description {
   margin: 0;
-  color: var(--color-text-muted, var(--color-text-muted));
+  color: var(--color-text-muted);
   font-size: 0.9rem;
+  line-height: 1.4;
+  /* Clamp to two lines like the design. */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.tag {
+  font-size: 0.78rem;
+  padding: 0.2rem 0.6rem;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
+
+.divider {
+  border: none;
+  border-top: 1px solid var(--color-border-faint, var(--color-border));
+  margin: var(--space-1) 0 0;
+  width: 100%;
+}
+
+.footer {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.creator {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+  flex: 1;
+}
+
+.avatar {
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--color-accent, #2f6f5e);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+
+.creatorText {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.createdBy {
+  font-size: 0.72rem;
+  color: var(--color-text-muted);
+}
+
+.creatorName {
+  font-size: 0.85rem;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.visBadge,
+.members {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.8rem;
+  padding: 0.25rem 0.55rem;
+  border-radius: 999px;
+  flex-shrink: 0;
+}
+
+.visBadge {
+  background: var(--color-accent-soft, #e2efe9);
+  color: var(--color-accent, #2f6f5e);
+}
+
+.members {
+  background: var(--color-surface-muted, #eef1f0);
+  color: var(--color-text-muted);
 }

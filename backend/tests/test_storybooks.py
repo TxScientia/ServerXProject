@@ -63,6 +63,15 @@ def test_list_storybooks(client, character, auth_headers):
     assert {"One", "Two"} <= titles
 
 
+def test_list_exposes_plot_card_fields(client, character, auth_headers):
+    """The plot card needs creator name + member count (creator counts as 1 member)."""
+    client.post("/storybooks", json={"title": "CardWorld"}, headers=char_headers(auth_headers, character))
+    cards = client.get("/storybooks", headers=auth_headers).json()
+    card = next(c for c in cards if c["title"] == "CardWorld")
+    assert card["owner_character_name"] == character.name
+    assert card["member_count"] == 1
+
+
 def test_enter_storybook_returns_places(client, character, auth_headers):
     sb_id = client.post(
         "/storybooks", json={"title": "World"}, headers=char_headers(auth_headers, character)

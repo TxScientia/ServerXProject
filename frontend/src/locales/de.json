@@ -114,6 +114,14 @@
     "createError": "Fehler beim Erstellen",
     "loadError": "StoryBooks konnten nicht geladen werden."
   },
+  "plotCard": {
+    "createdBy": "Erstellt von",
+    "public": "Öffentlich",
+    "private": "Privat",
+    "generic": "Generisch",
+    "members": "{{count}} Mitglied",
+    "members_other": "{{count}} Mitglieder"
+  },
   "plot": {
     "backToStorybooks": "← StoryBooks",
     "back": "← Zurück",

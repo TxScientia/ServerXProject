@@ -30,7 +30,12 @@ test('renders storybooks from the API and the acting character', async () => {
       id: '1',
       title: 'Neverwhere',
       description: 'A world below',
+      image_url: null,
+      visibility: 'public',
       owner_character_id: 'char-1',
+      owner_character_name: 'Richard Mayhew',
+      member_count: 2,
+      tags: ['Urban Fantasy'],
       created_at: '2026-01-01T00:00:00Z',
     },
   ]);
