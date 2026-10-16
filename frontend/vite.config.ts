@@ -16,6 +16,11 @@ export default defineConfig({
   },
   test: {
     globals: true,
+    coverage: {
+      provider: 'v8',
+      include: ['src/**/*.{ts,tsx}'],
+      exclude: ['src/**/*.d.ts', 'src/**/*.test.{ts,tsx}', 'src/setupTests.ts', 'src/test-utils.tsx'],
+    },
     environment: 'jsdom',
     // A concrete origin so jsdom enables localStorage (opaque origins disable it).
     environmentOptions: { jsdom: { url: 'http://localhost:3000' } },
