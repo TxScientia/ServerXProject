@@ -8,6 +8,12 @@ from .account import (
     verify_password,
 )
 from .character import create_character, list_all_characters
+from .favorite import (
+    add_favorite,
+    get_favorite,
+    list_favorites_for_character,
+    remove_favorite,
+)
 from .chat import (
     count_unread_system_messages,
     create_direct_chat,
@@ -100,6 +106,7 @@ from .space import (
     get_storybook,
     is_member,
     list_members,
+    list_spaces_for_character,
     list_storybooks,
     list_visible_storybooks,
     set_member_role,
@@ -196,6 +203,11 @@ __all__ = [
     "update_storybook",
     "account_is_member",
     "can_edit_space",
+    "add_favorite",
+    "get_favorite",
+    "list_favorites_for_character",
+    "remove_favorite",
+    "list_spaces_for_character",
     "can_post_in_space",
     "can_view_space",
     "list_visible_storybooks",

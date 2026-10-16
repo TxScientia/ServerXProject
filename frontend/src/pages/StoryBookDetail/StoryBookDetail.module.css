@@ -122,9 +122,30 @@
   margin-bottom: var(--space-4);
 }
 
+.placeTitleRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
 .title {
   margin: 0 0 var(--space-2);
   font-family: var(--font-display);
+}
+
+.favButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.6rem;
+  line-height: 1;
+  padding: 0 0.2rem;
+  color: var(--color-accent);
+}
+
+.favButton:hover {
+  opacity: 0.8;
 }
 
 .desc {

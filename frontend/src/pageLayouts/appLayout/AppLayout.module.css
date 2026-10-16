@@ -123,6 +123,45 @@
 
 .charLink {
   opacity: 0.85;
+  cursor: pointer;
+}
+
+.charLink:hover {
+  opacity: 1;
+}
+
+.favRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  opacity: 0.85;
+}
+
+.favRow:hover {
+  opacity: 1;
+}
+
+.favTravel {
+  cursor: pointer;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.favRemove {
+  background: none;
+  border: none;
+  color: var(--color-text-muted, inherit);
+  cursor: pointer;
+  padding: 0 0.2rem;
+  font-size: 0.85rem;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.favRemove:hover {
+  color: var(--color-danger-strong, inherit);
 }
 
 .charSection {
