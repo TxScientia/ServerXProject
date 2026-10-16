@@ -3,8 +3,21 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { apiUrl, authHeaders } from '../../api';
 import styles from './CharacterProfile.module.css';
 
+type ExpertiseLevel = 'Amateur/Beginner' | 'Intermediate' | 'Expert' | 'Master' | 'Grandmaster' | 'Paragon/One Above All';
+
+type TabBuilderItem =
+  | { type: 'headline'; value: string }
+  | { type: 'bullet'; size: 'small' | 'large'; values: [string, string] }
+  | { type: 'textarea'; size: 'small' | 'large'; value: string }
+  | { type: 'image'; size: 'small' | 'large'; url: string }
+  | { type: 'textImageText'; title: string; imageUrl: string; text: string }
+  | { type: 'skill'; name: string; expertise: ExpertiseLevel };
+
 type EditorData = {
   displayName?: string;
+  nameFontFamily?: string;
+  nameFontSize?: string;
+  quote?: string;
   fullName?: string;
   species?: string;
   specification?: string;
@@ -15,10 +28,14 @@ type EditorData = {
   residence?: string;
   origin?: string;
   era?: string;
+  biography?: string;
   frameImageUrl?: string;
   portraitImageUrl?: string;
   headerBackgroundUrl?: string;
+  ornamentImageUrl?: string;
   customFields?: string[];
+  characterTabContent?: TabBuilderItem[];
+  abilitiesTabContent?: TabBuilderItem[];
 };
 
 type Character = {
@@ -30,10 +47,6 @@ type Character = {
   editorData?: EditorData;
 };
 
-const NAV_ITEMS = ['Biografie', 'Character', 'Abilities', 'Socials', 'Gesuche', 'Diary', 'OOC'];
-const PUBLIC_ASSET_BASE = import.meta.env.BASE_URL.replace(/\/$/, '');
-const FALLBACK_BACKGROUND_URL = `${PUBLIC_ASSET_BASE}/pictures/rosesbackgroundWWC.webp`;
-
 const pairFields = (fields: string[] = []) => {
   const pairs: Array<{ label: string; value: string }> = [];
   for (let index = 0; index < fields.length; index += 2) {
@@ -43,6 +56,63 @@ const pairFields = (fields: string[] = []) => {
   }
   return pairs;
 };
+
+const hasValue = (value?: string) => Boolean(value && value.trim());
+
+function ProfileSection({ id, title, children }: { id: string; title: string; children: React.ReactNode }) {
+  return (
+    <section id={id} className={styles.sectionBlock}>
+      <div className={styles.sectionLabel}>{title}</div>
+      {children}
+    </section>
+  );
+}
+
+function renderBuilderItem(item: TabBuilderItem, index: number) {
+  if (item.type === 'headline' && hasValue(item.value)) {
+    return <h3 key={index} className={styles.builderHeadline}>{item.value}</h3>;
+  }
+
+  if (item.type === 'bullet' && (hasValue(item.values[0]) || hasValue(item.values[1]))) {
+    return (
+      <div key={index} className={item.size === 'large' ? styles.builderFactLarge : styles.builderFact}>
+        <h3>{item.values[0]}</h3>
+        <p>{item.values[1]}</p>
+      </div>
+    );
+  }
+
+  if (item.type === 'textarea' && hasValue(item.value)) {
+    return <p key={index} className={item.size === 'large' ? styles.builderTextLarge : styles.builderText}>{item.value}</p>;
+  }
+
+  if (item.type === 'image' && hasValue(item.url)) {
+    return <img key={index} className={item.size === 'large' ? styles.builderImageLarge : styles.builderImage} src={item.url} alt="Profilbild" />;
+  }
+
+  if (item.type === 'skill' && (hasValue(item.name) || hasValue(item.expertise))) {
+    return (
+      <div key={index} className={styles.builderFact}>
+        <h3>{item.name || 'Skill'}</h3>
+        <p>{item.expertise}</p>
+      </div>
+    );
+  }
+
+  if (item.type === 'textImageText' && (hasValue(item.title) || hasValue(item.imageUrl) || hasValue(item.text))) {
+    return (
+      <div key={index} className={styles.textImageText}>
+        <div className={styles.textImageTextLeft}>
+          {hasValue(item.title) && <h3>{item.title}</h3>}
+          {hasValue(item.imageUrl) && <img src={item.imageUrl} alt={item.title || 'Profilbild'} />}
+        </div>
+        {hasValue(item.text) && <p>{item.text}</p>}
+      </div>
+    );
+  }
+
+  return null;
+}
 
 export default function CharacterProfile() {
   const { characterId } = useParams();
@@ -74,16 +144,28 @@ export default function CharacterProfile() {
     fetchCharacters();
   }, [fetchCharacters]);
 
+  const nameFontFamily = character?.editorData?.nameFontFamily?.trim();
+  const nameFontSize = Number(character?.editorData?.nameFontSize);
+
+  useEffect(() => {
+    if (!nameFontFamily) return;
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = `https://fonts.googleapis.com/css2?family=${encodeURIComponent(nameFontFamily).replace(/%20/g, '+')}&display=swap`;
+    document.head.appendChild(link);
+    return () => link.remove();
+  }, [nameFontFamily]);
+
   if (error) return <div className={styles.status}>{error}</div>;
   if (!character) return <div className={styles.status}>Lade Charakterprofil…</div>;
 
   const data = character.editorData || {};
   const customPairs = pairFields(data.customFields);
-  const backgroundUrl = data.headerBackgroundUrl || FALLBACK_BACKGROUND_URL;
+  const displayName = data.displayName || character.name;
 
   const facts = [
     ['Name', data.fullName || character.name],
-    ['Alias/Spitzname', data.displayName || character.name],
+    ['Alias', displayName],
     ['Spezies', data.species || character.race],
     ['Spezifikation', data.specification || character.spec],
     ['Alter', data.age || ''],
@@ -96,55 +178,85 @@ export default function CharacterProfile() {
     ['Zeitalter', data.era || ''],
   ];
 
+  const hasCharacterTab = Boolean(data.characterTabContent?.some((item, index) => renderBuilderItem(item, index)));
+  const hasAbilitiesTab = Boolean(data.abilitiesTabContent?.some((item, index) => renderBuilderItem(item, index)));
+
   return (
-    <main className={styles.page} style={{ '--profile-bg-image': `url(${backgroundUrl})` } as React.CSSProperties}>
-      <section className={styles.profile}>
+    <main className={styles.page}>
+      <article className={styles.profileFrame}>
         <nav className={styles.nav} aria-label="Profilnavigation">
-          {NAV_ITEMS.map((item) => <button key={item} type="button">{item}</button>)}
+          <a href="#steckbrief">Steckbrief</a>
+          {hasCharacterTab && <a href="#character">Character</a>}
+          {hasAbilitiesTab && <a href="#abilities">Abilities</a>}
+          <button type="button">Write PM</button>
         </nav>
-        <div className={styles.topPicture} aria-hidden="true" />
 
-        <div className={styles.hero}>
-          <aside className={styles.windowFrame}>
-            {data.frameImageUrl && <img src={data.frameImageUrl} alt="Linkes Profilbild" />}
-          </aside>
+        <header id="steckbrief" className={styles.hero}>
+          <div className={styles.heroText}>
+            <h1 style={{
+              fontFamily: nameFontFamily ? `${JSON.stringify(nameFontFamily)}, var(--font-display)` : undefined,
+              fontSize: Number.isFinite(nameFontSize) && nameFontSize >= 8 && nameFontSize <= 200 ? `${nameFontSize}px` : undefined,
+            }}>{displayName}</h1>
+            <div className={styles.ornament}>
+              <span />
+              {hasValue(data.ornamentImageUrl) ? <img src={data.ornamentImageUrl} alt="" /> : <b>✥</b>}
+              <span />
+            </div>
+            {hasValue(data.quote) && <p className={styles.quote}>{data.quote}</p>}
+            {hasValue(data.biography) && <p>{data.biography}</p>}
+          </div>
+          {hasValue(data.portraitImageUrl) && (
+            <div className={styles.avatarFrame}>
+              <img src={data.portraitImageUrl} alt={`${displayName} Avatar`} />
+            </div>
+          )}
+        </header>
 
-          <article className={styles.card}>
-            <div className={styles.factGrid}>
-              {facts.map(([label, value]) => (
-                <div key={label} className={styles.fact}>
-                  <h2>{label}</h2>
-                  <p>{value || '—'}</p>
+        <ProfileSection id="facts" title="Steckbrief">
+          <div className={styles.factGrid}>
+            {facts.map(([label, value]) => (
+              <div key={label} className={styles.fact}>
+                <h2>{label}</h2>
+                <p>{value}</p>
+              </div>
+            ))}
+          </div>
+
+          {hasValue(data.frameImageUrl) && (
+            <figure className={styles.bottomImageFigure}>
+              <div className={styles.bannerDecoration}>
+                <div className={styles.bannerFrame}>
+                  <img src={data.frameImageUrl} alt={`${displayName} Banner`} />
+                </div>
+              </div>
+              {hasValue(data.biography) && <figcaption>“{data.biography}”</figcaption>}
+            </figure>
+          )}
+
+          {customPairs.length > 0 && (
+            <div className={styles.customGrid}>
+              {customPairs.map((pair, index) => (
+                <div key={`${pair.label}-${index}`} className={styles.fact}>
+                  <h2>{pair.label}</h2>
+                  <p>{pair.value || '—'}</p>
                 </div>
               ))}
             </div>
+          )}
+        </ProfileSection>
 
-            <div className={styles.portraitFrame}>
-              {data.portraitImageUrl && <img src={data.portraitImageUrl} alt={`${character.name} Profilbild`} />}
-            </div>
+        {hasCharacterTab && (
+          <ProfileSection id="character" title="Character">
+            <div className={styles.builderGrid}>{data.characterTabContent?.map(renderBuilderItem)}</div>
+          </ProfileSection>
+        )}
 
-            <section className={styles.plotSection}>
-              <h2>Plotspezifisches</h2>
-              <div><strong>Plotzugehörigkeit:</strong> #Eden Fall #M.O.R.A.</div>
-              <div><strong>Titel</strong></div>
-              <div><strong>Rang</strong></div>
-              <div><strong>Fraktion</strong></div>
-            </section>
-
-            <section className={styles.knowledge}>
-              <header><h2>Wissenswertes</h2><span /></header>
-              <div className={styles.customGrid}>
-                {customPairs.length ? customPairs.map((pair, index) => (
-                  <div key={`${pair.label}-${index}`} className={styles.fact}>
-                    <h2>{pair.label}</h2>
-                    <p>{pair.value || '—'}</p>
-                  </div>
-                )) : <p className={styles.empty}>Keine zusätzlichen Char-ID-Einträge vorhanden.</p>}
-              </div>
-            </section>
-          </article>
-        </div>
-      </section>
+        {hasAbilitiesTab && (
+          <ProfileSection id="abilities" title="Abilities">
+            <div className={styles.builderGrid}>{data.abilitiesTabContent?.map(renderBuilderItem)}</div>
+          </ProfileSection>
+        )}
+      </article>
     </main>
   );
 }

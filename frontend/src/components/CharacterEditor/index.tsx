@@ -3,6 +3,9 @@ import styles from './CharacterEditor.module.css';
 
 export type CharacterEditorData = {
   displayName: string;
+  nameFontFamily: string;
+  nameFontSize: string;
+  quote: string;
   fullName: string;
   species: string;
   specification: string;
@@ -18,10 +21,13 @@ export type CharacterEditorData = {
   frameImageUrl: string;
   portraitImageUrl: string;
   headerBackgroundUrl: string;
+  ornamentImageUrl: string;
   colorCodes: string;
   characterText: string;
   abilities: string;
   customFields: string[];
+  characterTabContent: TabBuilderItem[];
+  abilitiesTabContent: TabBuilderItem[];
 };
 
 export type EditableCharacter = {
@@ -52,6 +58,7 @@ type TabBuilderItem =
   | { type: 'bullet'; size: 'small' | 'large'; values: [string, string] }
   | { type: 'textarea'; size: 'small' | 'large'; value: string }
   | { type: 'image'; size: 'small' | 'large'; url: string }
+  | { type: 'textImageText'; title: string; imageUrl: string; text: string }
   | { type: 'skill'; name: string; expertise: ExpertiseLevel };
 
 const expertiseLevels: ExpertiseLevel[] = [
@@ -65,6 +72,9 @@ const expertiseLevels: ExpertiseLevel[] = [
 
 const emptyEditorData: CharacterEditorData = {
   displayName: '',
+  nameFontFamily: '',
+  nameFontSize: '',
+  quote: '',
   fullName: '',
   species: '',
   specification: '',
@@ -80,10 +90,13 @@ const emptyEditorData: CharacterEditorData = {
   frameImageUrl: '',
   portraitImageUrl: '',
   headerBackgroundUrl: '',
+  ornamentImageUrl: '',
   colorCodes: '',
   characterText: '',
   abilities: '',
   customFields: ['', ''],
+  characterTabContent: [],
+  abilitiesTabContent: [],
 };
 
 const mergeEditorData = (data?: Partial<CharacterEditorData>): CharacterEditorData => ({
@@ -141,10 +154,14 @@ export default function CharacterEditor({ character, fullPage = false, onSave, o
     const fields = formFromCharacter(character).editorData.customFields;
     return fields.length >= 2 ? fields : ['', ''];
   });
-  const [tabBuilderContent, setTabBuilderContent] = useState<Record<BuilderTab, TabBuilderItem[]>>({
-    character: [],
-    abilities: [],
+  const [tabBuilderContent, setTabBuilderContent] = useState<Record<BuilderTab, TabBuilderItem[]>>(() => {
+    const editorData = formFromCharacter(character).editorData;
+    return {
+      character: editorData.characterTabContent || [],
+      abilities: editorData.abilitiesTabContent || [],
+    };
   });
+  const [draggedTabItem, setDraggedTabItem] = useState<{ tab: BuilderTab; index: number } | null>(null);
 
   const shellClassName = useMemo(
     () => (fullPage ? `${styles.editorShell} ${styles.fullPage}` : styles.editorShell),
@@ -234,11 +251,28 @@ export default function CharacterEditor({ character, fullPage = false, onSave, o
     }));
   };
 
-  const countTabInputs = (items: TabBuilderItem[]) => items.reduce((count, item) => count + (item.type === 'bullet' || item.type === 'skill' ? 2 : 1), 0);
+  const handleTabTextImageTextChange = (
+    tab: BuilderTab,
+    itemIndex: number,
+    field: 'title' | 'imageUrl' | 'text',
+    value: string,
+  ) => {
+    setTabBuilderContent((currentContent) => ({
+      ...currentContent,
+      [tab]: currentContent[tab].map((item, index) => (
+        index === itemIndex && item.type === 'textImageText' ? { ...item, [field]: value } : item
+      )),
+    }));
+  };
+
+  const countTabInputs = (items: TabBuilderItem[]) => items.reduce((count, item) => {
+    if (item.type === 'textImageText') return count + 3;
+    return count + (item.type === 'bullet' || item.type === 'skill' ? 2 : 1);
+  }, 0);
 
   const addTabItem = (tab: BuilderTab, item: TabBuilderItem) => {
     setTabBuilderContent((currentContent) => {
-      const itemInputs = item.type === 'bullet' ? 2 : 1;
+      const itemInputs = item.type === 'textImageText' ? 3 : item.type === 'bullet' || item.type === 'skill' ? 2 : 1;
       if (countTabInputs(currentContent[tab]) + itemInputs > 20) return currentContent;
       return {
         ...currentContent,
@@ -254,13 +288,14 @@ export default function CharacterEditor({ character, fullPage = false, onSave, o
     }));
   };
 
-  const moveTabItem = (tab: BuilderTab, itemIndex: number, direction: -1 | 1) => {
+  const reorderTabItem = (tab: BuilderTab, fromIndex: number, toIndex: number) => {
     setTabBuilderContent((currentContent) => {
-      const nextIndex = itemIndex + direction;
-      if (nextIndex < 0 || nextIndex >= currentContent[tab].length) return currentContent;
+      if (fromIndex === toIndex || fromIndex < 0 || toIndex < 0) return currentContent;
+      if (fromIndex >= currentContent[tab].length || toIndex >= currentContent[tab].length) return currentContent;
 
       const nextItems = [...currentContent[tab]];
-      [nextItems[itemIndex], nextItems[nextIndex]] = [nextItems[nextIndex], nextItems[itemIndex]];
+      const [movedItem] = nextItems.splice(fromIndex, 1);
+      nextItems.splice(toIndex, 0, movedItem);
 
       return {
         ...currentContent,
@@ -269,9 +304,45 @@ export default function CharacterEditor({ character, fullPage = false, onSave, o
     });
   };
 
+  const handleTabItemDragStart = (event: React.DragEvent<HTMLButtonElement>, tab: BuilderTab, itemIndex: number) => {
+    setDraggedTabItem({ tab, index: itemIndex });
+    event.dataTransfer.effectAllowed = 'move';
+    event.dataTransfer.setData('text/plain', `${tab}:${itemIndex}`);
+  };
+
+  const handleTabItemDragOver = (event: React.DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    event.dataTransfer.dropEffect = 'move';
+  };
+
+  const handleTabItemDragEnter = (event: React.DragEvent<HTMLDivElement>, tab: BuilderTab, itemIndex: number) => {
+    event.preventDefault();
+    setDraggedTabItem((currentDraggedItem) => {
+      if (!currentDraggedItem || currentDraggedItem.tab !== tab || currentDraggedItem.index === itemIndex) {
+        return currentDraggedItem;
+      }
+
+      reorderTabItem(tab, currentDraggedItem.index, itemIndex);
+      return { tab, index: itemIndex };
+    });
+  };
+
+  const handleTabItemDrop = (event: React.DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    setDraggedTabItem(null);
+  };
+
   const formWithCustomFields = useMemo(
-    () => ({ ...form, editorData: { ...form.editorData, customFields } }),
-    [customFields, form],
+    () => ({
+      ...form,
+      editorData: {
+        ...form.editorData,
+        customFields,
+        characterTabContent: tabBuilderContent.character,
+        abilitiesTabContent: tabBuilderContent.abilities,
+      },
+    }),
+    [customFields, form, tabBuilderContent],
   );
 
   const handleSaveClick = async () => {
@@ -317,6 +388,21 @@ export default function CharacterEditor({ character, fullPage = false, onSave, o
         {showSteckbrief ? (
           <>
             <div className={styles.formGrid}>
+              <label>
+                <span>Google Font für den Charakternamen</span>
+                <small>Nur für den Namen im Profilkopf. Leer lassen für die Standardschrift.</small>
+                <input name="nameFontFamily" placeholder="z.B. Cinzel" value={form.editorData.nameFontFamily} onChange={handleEditorDataChange} />
+              </label>
+              <label>
+                <span>Schriftgröße des Charakternamens (px)</span>
+                <small>8–200 px. Leer lassen für die automatische Standardgröße.</small>
+                <input type="number" name="nameFontSize" min="8" max="200" step="1" placeholder="z.B. 64" value={form.editorData.nameFontSize} onChange={handleEditorDataChange} />
+              </label>
+              <label>
+                <span>Zitat</span>
+                <small>Wird unter der Linie unter dem Charakternamen im Profil angezeigt.</small>
+                <textarea name="quote" placeholder="Zitat deines Charakters" value={form.editorData.quote} onChange={handleEditorDataChange} rows={3} />
+              </label>
               <label>
                 <span>Vollständiger Name</span>
                 <small>Alle vorhandenen Namen eintragen, zB Vorname Zweitname Nachname, diese werden nur in der ID angezeigt</small>
@@ -422,13 +508,13 @@ export default function CharacterEditor({ character, fullPage = false, onSave, o
         ) : showImageSettings ? (
           <section className={styles.formGrid}>
             <label className={styles.fullWidth}>
-              <span>Linkes Fensterbild</span>
-              <small>URL für das große, fensterartige Bild links im Profil</small>
+              <span>Unteres Bannerbild</span>
+              <small>URL für das breite Bild im unteren Steckbriefbereich</small>
               <input name="frameImageUrl" placeholder="https://…" value={form.editorData.frameImageUrl} onChange={handleEditorDataChange} />
             </label>
             <label className={styles.fullWidth}>
-              <span>Quadratisches Profilbild</span>
-              <small>URL für den quadratischen Rahmen in der ersten Profilseite</small>
+              <span>Rechtes Profilbild</span>
+              <small>URL für das Avatarbild rechts im oberen Profilbereich</small>
               <input name="portraitImageUrl" placeholder="https://…" value={form.editorData.portraitImageUrl} onChange={handleEditorDataChange} />
             </label>
             <label className={styles.fullWidth}>
@@ -436,33 +522,38 @@ export default function CharacterEditor({ character, fullPage = false, onSave, o
               <small>URL für den Hintergrundbereich unter der oberen Profilnavigation</small>
               <input name="headerBackgroundUrl" placeholder="https://…" value={form.editorData.headerBackgroundUrl} onChange={handleEditorDataChange} />
             </label>
+            <label className={styles.fullWidth}>
+              <span>Ornament unter dem Namen</span>
+              <small>URL für das Symbol zwischen den Linien unter dem großen Profilnamen</small>
+              <input name="ornamentImageUrl" placeholder="https://…" value={form.editorData.ornamentImageUrl} onChange={handleEditorDataChange} />
+            </label>
           </section>
         ) : showTabBuilder ? (
           <section className={styles.tabBuilder}>
             <div className={styles.tabBuilderItems}>
               {tabBuilderContent[activeTab as BuilderTab].map((item, itemIndex) => {
                 const builderTab = activeTab as BuilderTab;
-                const isLargeItem = item.type === 'headline' || item.type === 'skill' || item.size === 'large';
+                const isLargeItem = item.type === 'headline' || item.type === 'skill' || item.type === 'textImageText' || item.size === 'large';
                 const itemClassName = `${styles.tabBuilderItem} ${isLargeItem ? styles.tabBuilderItemLarge : styles.tabBuilderItemSmall}`;
+                const isDragging = draggedTabItem?.tab === builderTab && draggedTabItem.index === itemIndex;
+                const blockClassName = `${itemClassName} ${styles.builderBlock} ${isDragging ? styles.draggingBlock : ''}`;
+                const dragDropProps = {
+                  onDragEnter: (event: React.DragEvent<HTMLDivElement>) => handleTabItemDragEnter(event, builderTab, itemIndex),
+                  onDragOver: handleTabItemDragOver,
+                  onDrop: handleTabItemDrop,
+                };
                 const blockControls = (
                   <div className={styles.blockControls}>
                     <button
                       type="button"
-                      className={styles.moveBlockButton}
-                      onClick={() => moveTabItem(builderTab, itemIndex, -1)}
-                      disabled={itemIndex === 0}
-                      aria-label="Baustein nach oben verschieben"
+                      className={styles.dragHandleButton}
+                      draggable
+                      onDragStart={(event) => handleTabItemDragStart(event, builderTab, itemIndex)}
+                      onDragEnd={() => setDraggedTabItem(null)}
+                      aria-label="Baustein per Drag and Drop verschieben"
+                      title="Zum Verschieben ziehen"
                     >
-                      ↑
-                    </button>
-                    <button
-                      type="button"
-                      className={styles.moveBlockButton}
-                      onClick={() => moveTabItem(builderTab, itemIndex, 1)}
-                      disabled={itemIndex === tabBuilderContent[builderTab].length - 1}
-                      aria-label="Baustein nach unten verschieben"
-                    >
-                      ↓
+                      ⠿
                     </button>
                     <button
                       type="button"
@@ -477,7 +568,7 @@ export default function CharacterEditor({ character, fullPage = false, onSave, o
 
                 if (item.type === 'headline') {
                   return (
-                    <div key={`headline-${itemIndex}`} className={`${itemClassName} ${styles.builderBlock}`}>
+                    <div key={`headline-${itemIndex}`} className={blockClassName} {...dragDropProps}>
                       {blockControls}
                       <input
                         className={`${styles.customInput} ${styles.headlineInput}`}
@@ -491,7 +582,7 @@ export default function CharacterEditor({ character, fullPage = false, onSave, o
 
                 if (item.type === 'bullet') {
                   return (
-                    <div key={`bullet-${itemIndex}`} className={`${itemClassName} ${styles.builderBlock}`}>
+                    <div key={`bullet-${itemIndex}`} className={blockClassName} {...dragDropProps}>
                       {blockControls}
                       <div className={styles.customFieldGroup}>
                         <input
@@ -513,7 +604,7 @@ export default function CharacterEditor({ character, fullPage = false, onSave, o
 
                 if (item.type === 'image') {
                   return (
-                    <div key={`image-${itemIndex}`} className={`${itemClassName} ${styles.builderBlock} ${styles.imageBlock}`}>
+                    <div key={`image-${itemIndex}`} className={`${blockClassName} ${styles.imageBlock}`} {...dragDropProps}>
                       {blockControls}
                       <input
                         className={styles.customInput}
@@ -528,7 +619,7 @@ export default function CharacterEditor({ character, fullPage = false, onSave, o
 
                 if (item.type === 'skill') {
                   return (
-                    <div key={`skill-${itemIndex}`} className={`${itemClassName} ${styles.builderBlock}`}>
+                    <div key={`skill-${itemIndex}`} className={blockClassName} {...dragDropProps}>
                       {blockControls}
                       <div className={styles.skillFields}>
                         <input
@@ -551,8 +642,40 @@ export default function CharacterEditor({ character, fullPage = false, onSave, o
                   );
                 }
 
+                if (item.type === 'textImageText') {
+                  return (
+                    <div key={`text-image-text-${itemIndex}`} className={blockClassName} {...dragDropProps}>
+                      {blockControls}
+                      <div className={styles.textImageTextBlock}>
+                        <div className={styles.textImageTextMedia}>
+                          <input
+                            className={styles.customInput}
+                            placeholder="Textfeld links"
+                            value={item.title}
+                            onChange={(event) => handleTabTextImageTextChange(activeTab as BuilderTab, itemIndex, 'title', event.target.value)}
+                          />
+                          <input
+                            className={styles.customInput}
+                            placeholder="Bild-URL"
+                            value={item.imageUrl}
+                            onChange={(event) => handleTabTextImageTextChange(activeTab as BuilderTab, itemIndex, 'imageUrl', event.target.value)}
+                          />
+                          {item.imageUrl && <img className={styles.imagePreview} src={item.imageUrl} alt="Vorschau" />}
+                        </div>
+                        <textarea
+                          className={styles.customInput}
+                          rows={8}
+                          placeholder="Großes Textfeld rechts"
+                          value={item.text}
+                          onChange={(event) => handleTabTextImageTextChange(activeTab as BuilderTab, itemIndex, 'text', event.target.value)}
+                        />
+                      </div>
+                    </div>
+                  );
+                }
+
                 return (
-                  <div key={`textarea-${itemIndex}`} className={`${itemClassName} ${styles.builderBlock}`}>
+                  <div key={`textarea-${itemIndex}`} className={blockClassName} {...dragDropProps}>
                     {blockControls}
                     <textarea
                       className={styles.customInput}
@@ -622,6 +745,14 @@ export default function CharacterEditor({ character, fullPage = false, onSave, o
                 disabled={countTabInputs(tabBuilderContent[activeTab as BuilderTab]) >= 20}
               >
                 Kleines Bild hinzufügen
+              </button>
+              <button
+                type="button"
+                className={styles.addCategoryButton}
+                onClick={() => addTabItem(activeTab as BuilderTab, { type: 'textImageText', title: '', imageUrl: '', text: '' })}
+                disabled={countTabInputs(tabBuilderContent[activeTab as BuilderTab]) > 17}
+              >
+                Text-Bild-Text hinzufügen
               </button>
               {activeTab === 'abilities' && (
                 <button
