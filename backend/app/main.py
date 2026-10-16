@@ -25,6 +25,7 @@ from .crud import (
 )
 from .routes.accounts import router as accounts_router
 from .routes.characters import router as characters_router
+from .routes.character_nav import router as character_nav_router
 from .routes.invite import router as invite_router
 from .routes.news import router as news_router
 from .routes.ooc import router as ooc_router
@@ -98,6 +99,7 @@ app.add_middleware(
 # API route instead of the app shell. The catch-all below serves index.html for the rest.
 app.include_router(router=accounts_router, prefix="/api")
 app.include_router(router=characters_router, prefix="/api")
+app.include_router(router=character_nav_router, prefix="/api")
 app.include_router(router=invite_router, prefix="/api")
 app.include_router(router=news_router, prefix="/api")
 app.include_router(router=ooc_router, prefix="/api")

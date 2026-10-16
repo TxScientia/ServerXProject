@@ -6,7 +6,8 @@
     "create": "Erstellen",
     "comingSoon": "Bald verfügbar",
     "loading": "Lädt…",
-    "saving": "Speichert…"
+    "saving": "Speichert…",
+    "delete": "Löschen"
   },
   "nav": {
     "gesuche": "Gesuche",
@@ -61,7 +62,11 @@
     "steckbrief": "Steckbrief",
     "haeuser": "Häuser",
     "plots": "Plots",
-    "favOrte": "Fav. Orte"
+    "favOrte": "Fav. Orte",
+    "noPlots": "Noch in keinem Plot.",
+    "noFavorites": "Noch keine Lieblingsorte.",
+    "removeFavorite": "Favorit entfernen",
+    "removeFavoriteConfirm": "«{{name}}» aus deinen Favoriten entfernen?"
   },
   "lobby": {
     "chooseCharacter": "Wähle deinen Charakter",
@@ -121,7 +126,9 @@
     "worldBioPlaceholder": "Weltbeschreibung – bald über die StoryBook-Einstellungen bearbeitbar.",
     "worldNoPlaces": "Diese Welt hat noch keine Orte.",
     "loadError": "StoryBook konnte nicht geladen werden.",
-    "membersOnly": "Diese Welt ist privat – nur für Mitglieder sichtbar."
+    "membersOnly": "Diese Welt ist privat – nur für Mitglieder sichtbar.",
+    "addFavorite": "Zu Favoriten hinzufügen",
+    "removeFavorite": "Aus Favoriten entfernen"
   },
   "home": {
     "appTitle": "when worlds collide",

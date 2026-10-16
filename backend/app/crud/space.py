@@ -75,6 +75,17 @@ def can_post_in_space(db: Session, space, character_id) -> bool:
     return space.visibility == "public" or is_member(db, space.id, character_id)
 
 
+def list_spaces_for_character(db: Session, character_id):
+    """The storybooks a character is a member of (for the right-side 'Plots' nav)."""
+    return (
+        db.query(Space)
+        .join(Membership, Membership.space_id == Space.id)
+        .filter(Membership.character_id == character_id, Space.type == "storybook")
+        .order_by(Space.title.asc())
+        .all()
+    )
+
+
 def get_storybook(db: Session, storybook_id):
     return (
         db.query(Space)

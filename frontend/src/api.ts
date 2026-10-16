@@ -23,6 +23,9 @@ export function wsUrl(path: string): string {
  * (re)connect or disconnect. Cross-tab changes come through the native 'storage' event. */
 export const AUTH_EVENT = 'serverx:auth';
 
+/** Fired (same-tab) when the acting character's favourites change, so the nav refreshes. */
+export const FAVORITES_EVENT = 'serverx:favorites';
+
 /** Store the login token and notify listeners (used on login). */
 export function setAuthToken(token: string): void {
   localStorage.setItem('token', token);

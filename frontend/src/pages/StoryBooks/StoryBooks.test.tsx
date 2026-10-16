@@ -13,19 +13,27 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 
+/** URL-aware fetch mock: the StoryBooks list for /storybooks, empty for the
+ * sidebar's /me/plots + /me/favorites and the nav's unread counts. */
+function mockFetch(storybooks: unknown[]) {
+  (global.fetch as any).mockImplementation((url: string) =>
+    Promise.resolve({
+      ok: true,
+      json: async () => (url.includes('/storybooks') ? storybooks : []),
+    }),
+  );
+}
+
 test('renders storybooks from the API and the acting character', async () => {
-  (global.fetch as any).mockResolvedValue({
-    ok: true,
-    json: async () => [
-      {
-        id: '1',
-        title: 'Neverwhere',
-        description: 'A world below',
-        owner_character_id: 'char-1',
-        created_at: '2026-01-01T00:00:00Z',
-      },
-    ],
-  });
+  mockFetch([
+    {
+      id: '1',
+      title: 'Neverwhere',
+      description: 'A world below',
+      owner_character_id: 'char-1',
+      created_at: '2026-01-01T00:00:00Z',
+    },
+  ]);
 
   render(<StoryBooks />);
 
@@ -35,10 +43,7 @@ test('renders storybooks from the API and the acting character', async () => {
 });
 
 test('shows an empty state when there are no storybooks', async () => {
-  (global.fetch as any).mockResolvedValue({
-    ok: true,
-    json: async () => [],
-  });
+  mockFetch([]);
 
   render(<StoryBooks />);
 

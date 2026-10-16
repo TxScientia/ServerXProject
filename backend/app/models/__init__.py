@@ -7,6 +7,7 @@ Importing this package registers every table on ``Base.metadata`` — required f
 from .account import Account
 from .character import Character
 from .chat import Chat, ChatMember
+from .favorite import Favorite
 from .invite import CharacterInvite, PlotLink
 from .membership import Membership
 from .member_rank import MembershipRank
@@ -28,6 +29,7 @@ __all__ = [
     "CharacterInvite",
     "Chat",
     "ChatMember",
+    "Favorite",
     "Membership",
     "MembershipRank",
     "Message",

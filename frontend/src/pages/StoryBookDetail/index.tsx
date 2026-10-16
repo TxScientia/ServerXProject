@@ -6,7 +6,7 @@ import Badge from '../../components/Badge/Badge';
 import MemberRankTables, { type MemberRank, type RankedMember } from '../../components/MemberRankTables';
 import { OOCChannel } from '../../components/OOC';
 import Scene from '../../components/Scene';
-import { apiUrl, authHeaders } from '../../api';
+import { apiUrl, authHeaders, characterHeaders, FAVORITES_EVENT } from '../../api';
 import styles from './StoryBookDetail.module.css';
 
 type Place = {
@@ -93,6 +93,7 @@ export default function StoryBookDetail() {
   const [members, setMembers] = useState<RankedMember[]>([]);
   const [ranks, setRanks] = useState<Rank[]>([]);
   const [plotPanel, setPlotPanel] = useState<'home' | 'ooc' | 'members'>('home');
+  const [favoritePlaceIds, setFavoritePlaceIds] = useState<Set<string>>(new Set());
 
   const fetchStorybook = useCallback(() => {
     if (!localStorage.getItem('token')) {
@@ -153,15 +154,47 @@ export default function StoryBookDetail() {
       .catch(() => setLinkedSpaces([]));
   }, [id]);
 
+  const fetchFavorites = useCallback(() => {
+    if (!localStorage.getItem('characterId')) return;
+    fetch(apiUrl('/me/favorites'), { headers: { ...authHeaders(), ...characterHeaders() } })
+      .then((res) => (res.ok ? res.json() : []))
+      .then((items: { place_id: string }[]) => setFavoritePlaceIds(new Set(items.map((f) => f.place_id))))
+      .catch(() => undefined);
+  }, []);
+
+  const toggleFavorite = useCallback(
+    (placeId: string) => {
+      const isFav = favoritePlaceIds.has(placeId);
+      const headers = { 'Content-Type': 'application/json', ...authHeaders(), ...characterHeaders() };
+      const req = isFav
+        ? fetch(apiUrl(`/me/favorites/${placeId}`), { method: 'DELETE', headers })
+        : fetch(apiUrl('/me/favorites'), { method: 'POST', headers, body: JSON.stringify({ place_id: placeId }) });
+      req
+        .then((res) => {
+          if (!res.ok) return;
+          setFavoritePlaceIds((prev) => {
+            const next = new Set(prev);
+            if (isFav) next.delete(placeId);
+            else next.add(placeId);
+            return next;
+          });
+          window.dispatchEvent(new Event(FAVORITES_EVENT)); // refresh the nav
+        })
+        .catch(() => undefined);
+    },
+    [favoritePlaceIds],
+  );
+
   useEffect(() => {
     fetchStorybook();
     fetchPlotNewsUnread();
     fetchMembers();
     fetchRanks();
+    fetchFavorites();
     // Refetch linked worlds on every navigation to the plot so a just-accepted link shows
     // up without needing several refreshes.
     fetchLinkedPlots();
-  }, [fetchStorybook, fetchPlotNewsUnread, fetchMembers, fetchRanks, fetchLinkedPlots]);
+  }, [fetchStorybook, fetchPlotNewsUnread, fetchMembers, fetchRanks, fetchFavorites, fetchLinkedPlots]);
 
   const places = storybook?.places ?? [];
   const topLevel = places.filter((p) => !p.parent_place_id);
@@ -176,13 +209,21 @@ export default function StoryBookDetail() {
     fetchLinkedPlots();
   }, [topLevel, fetchLinkedPlots]);
 
-  // Auto-enter the world when arriving via a linked-plot jump (?enter=1).
+  // Auto-enter the world when arriving via a linked-plot jump (?enter=1) or a
+  // favourite quick-travel (?place=<id>, which also selects that place directly).
   useEffect(() => {
-    if (storybook && searchParams.get('enter') === '1' && !enteredWorld) {
-      enterWorld();
-      searchParams.delete('enter');
-      setSearchParams(searchParams, { replace: true });
+    if (!storybook) return;
+    const wantsEnter = searchParams.get('enter') === '1';
+    const placeParam = searchParams.get('place');
+    if (!wantsEnter && !placeParam) return;
+    if (wantsEnter && !enteredWorld) enterWorld();
+    if (placeParam) {
+      setEnteredWorld(true);
+      setSelectedPlaceId(placeParam);
     }
+    if (wantsEnter) searchParams.delete('enter');
+    if (placeParam) searchParams.delete('place');
+    setSearchParams(searchParams, { replace: true });
   }, [storybook, searchParams, enteredWorld, enterWorld, setSearchParams]);
 
   const goToLinkedPlot = (linkedId: string) => {
@@ -377,7 +418,24 @@ export default function StoryBookDetail() {
               alt={selectedPlace.title}
             />
           )}
-          <h1 className={styles.title}>{selectedPlace.title}</h1>
+          <div className={styles.placeTitleRow}>
+            <h1 className={styles.title}>{selectedPlace.title}</h1>
+            {localStorage.getItem('characterId') && (
+              <button
+                type="button"
+                className={styles.favButton}
+                onClick={() => toggleFavorite(selectedPlace.id)}
+                aria-pressed={favoritePlaceIds.has(selectedPlace.id)}
+                title={
+                  favoritePlaceIds.has(selectedPlace.id)
+                    ? t('plot.removeFavorite')
+                    : t('plot.addFavorite')
+                }
+              >
+                {favoritePlaceIds.has(selectedPlace.id) ? '★' : '☆'}
+              </button>
+            )}
+          </div>
           {selectedPlace.description && <p className={styles.desc}>{selectedPlace.description}</p>}
         </div>
         <Scene storybookId={storybook.id} placeId={selectedPlace.id} canModerate={canEditSettings} />
