@@ -1,5 +1,5 @@
 """Pydantic request/response schemas, split by domain."""
-from .account import AccountRead, LoginRequest
+from .account import AccountPreferencesUpdate, AccountRead, LoginRequest, PasswordChange
 from .character import CharacterCreate
 from .chat import (
     ChatRead,
@@ -36,8 +36,10 @@ from .space import (
 )
 
 __all__ = [
+    "AccountPreferencesUpdate",
     "AccountRead",
     "LoginRequest",
+    "PasswordChange",
     "CharacterCreate",
     "CharacterInviteAction",
     "CharacterInviteCreate",

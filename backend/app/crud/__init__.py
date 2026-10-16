@@ -3,6 +3,9 @@ from .account import (
     create_account,
     get_account_by_email,
     get_account_by_login_name,
+    set_password,
+    update_account_preferences,
+    verify_password,
 )
 from .character import create_character, list_all_characters
 from .chat import (
@@ -110,6 +113,9 @@ __all__ = [
     "count_unread_space_news",
     "count_unread_system_messages",
     "create_account",
+    "set_password",
+    "update_account_preferences",
+    "verify_password",
     "create_character",
     "create_character_invite",
     "create_direct_chat",

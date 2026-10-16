@@ -18,6 +18,11 @@ class Account(Base):
     is_global_admin = Column(
         Boolean, nullable=False, default=False, server_default=expression.false()
     )
+    # User preferences (account-wide, so they follow the user across devices).
+    theme = Column(String, nullable=False, default="dark", server_default="dark")
+    show_unread_badge = Column(
+        Boolean, nullable=False, default=True, server_default=expression.true()
+    )
 
     characters = relationship(
         "Character", back_populates="account", cascade="all, delete-orphan"

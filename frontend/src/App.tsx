@@ -13,6 +13,7 @@ import StoryBookNewsPage from './pages/StoryBookNews';
 import GesuchePage from './pages/Gesuche';
 import StoryBookGesuchePage from './pages/StoryBookGesuche';
 import AdminPage from './pages/Admin';
+import SettingsPage from './pages/Settings';
 
 export default function App() {
   return (
@@ -26,6 +27,7 @@ export default function App() {
           <Route path="/news" element={<NewsPage />} />
           <Route path="/gesuche" element={<GesuchePage />} />
           <Route path="/admin" element={<AdminPage />} />
+          <Route path="/settings" element={<SettingsPage />} />
           <Route path="/residents" element={<Residents />} />
           <Route path="/storybooks" element={<StoryBooks />} />
           <Route path="/storybooks/:id" element={<StoryBookDetail />} />

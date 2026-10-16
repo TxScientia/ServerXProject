@@ -39,6 +39,22 @@
     "dark": "Dunkel",
     "parchment": "Pergament"
   },
+  "settings": {
+    "title": "Einstellungen",
+    "appearance": "Darstellung",
+    "language": "Sprache",
+    "notifications": "Benachrichtigungen",
+    "showUnreadBadge": "Badge für ungelesene Nachrichten anzeigen",
+    "changePassword": "Passwort ändern",
+    "currentPassword": "Aktuelles Passwort",
+    "newPassword": "Neues Passwort",
+    "confirmPassword": "Neues Passwort bestätigen",
+    "passwordChanged": "Passwort geändert.",
+    "passwordError": "Passwort konnte nicht geändert werden.",
+    "passwordWrongCurrent": "Aktuelles Passwort ist falsch.",
+    "passwordMismatch": "Die neuen Passwörter stimmen nicht überein.",
+    "passwordTooShort": "Neues Passwort muss mindestens {{min}} Zeichen lang sein."
+  },
   "sidebar": {
     "noCharacter": "Kein Charakter gewählt",
     "biografie": "Biografie",

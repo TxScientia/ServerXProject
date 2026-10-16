@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import Badge from '../../components/Badge/Badge';
 import LanguageSwitcher from '../../components/LanguageSwitcher';
 import { apiUrl, authHeaders, clearAuthToken } from '../../api';
+import { getShowUnreadBadge, PREFS_EVENT } from '../../preferences';
 import { useWebSocket } from '../../realtime/WebSocketProvider';
 import styles from './AppLayout.module.css';
 
@@ -19,7 +20,7 @@ const GLOBAL_NAV: { key: string; path: string | null }[] = [
 
 const RIGHT_NAV: { key: string; path: string | null }[] = [
   { key: 'nav.myCharacters', path: '/lobby' },
-  { key: 'nav.settings', path: null },
+  { key: 'nav.settings', path: '/settings' },
   { key: 'nav.faq', path: null },
 ];
 
@@ -29,6 +30,18 @@ function TopNavbar() {
   const { t } = useTranslation();
   const { pmUnread } = useWebSocket();
   const [newsUnread, setNewsUnread] = useState(0);
+  const [showBadge, setShowBadge] = useState(getShowUnreadBadge());
+
+  // Keep the badge toggle live when changed in Settings (same tab) or another tab.
+  useEffect(() => {
+    const sync = () => setShowBadge(getShowUnreadBadge());
+    window.addEventListener(PREFS_EVENT, sync);
+    window.addEventListener('storage', sync);
+    return () => {
+      window.removeEventListener(PREFS_EVENT, sync);
+      window.removeEventListener('storage', sync);
+    };
+  }, []);
 
   useEffect(() => {
     if (!localStorage.getItem('token')) return;
@@ -74,8 +87,8 @@ function TopNavbar() {
               >
                 {t(item.key)}
               </button>
-              {item.key === 'nav.pm' && <Badge count={pmUnread} variant="nav" />}
-              {item.key === 'nav.news' && <Badge count={newsUnread} variant="nav" />}
+              {showBadge && item.key === 'nav.pm' && <Badge count={pmUnread} variant="nav" />}
+              {showBadge && item.key === 'nav.news' && <Badge count={newsUnread} variant="nav" />}
             </div>
           ))}
         </nav>

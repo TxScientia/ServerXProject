@@ -1,4 +1,5 @@
 import uuid
+from typing import Literal, Optional
 
 from pydantic import BaseModel, ConfigDict
 
@@ -14,3 +15,16 @@ class AccountRead(BaseModel):
     id: uuid.UUID
     login_name: str
     is_global_admin: bool
+    theme: str
+    show_unread_badge: bool
+
+
+class AccountPreferencesUpdate(BaseModel):
+    """Partial update of user preferences; omitted fields stay unchanged."""
+    theme: Optional[Literal["dark", "parchment"]] = None
+    show_unread_badge: Optional[bool] = None
+
+
+class PasswordChange(BaseModel):
+    current_password: str
+    new_password: str

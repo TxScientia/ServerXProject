@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import Badge from '../../components/Badge/Badge';
 import LanguageSwitcher from '../../components/LanguageSwitcher';
 import { apiUrl, authHeaders, clearAuthToken } from '../../api';
+import { getShowUnreadBadge, PREFS_EVENT } from '../../preferences';
 import { useWebSocket } from '../../realtime/WebSocketProvider';
 import styles from './LobbyLayout.module.css';
 
@@ -16,7 +17,7 @@ const LOBBY_NAV: { key: string; path: string | null; adminOnly?: boolean }[] = [
 
 const RIGHT_NAV: { key: string; path: string | null }[] = [
   { key: 'nav.myCharacters', path: '/lobby' },
-  { key: 'nav.settings', path: null },
+  { key: 'nav.settings', path: '/settings' },
   { key: 'nav.faq', path: null },
 ];
 
@@ -36,6 +37,18 @@ export default function LobbyLayout({ children }: LobbyLayoutProps) {
   const { pmUnread } = useWebSocket();
   const [isAdmin, setIsAdmin] = useState(localStorage.getItem('isGlobalAdmin') === '1');
   const [newsUnread, setNewsUnread] = useState(0);
+  const [showBadge, setShowBadge] = useState(getShowUnreadBadge());
+
+  // Keep the badge toggle live when changed in Settings (same tab) or another tab.
+  useEffect(() => {
+    const sync = () => setShowBadge(getShowUnreadBadge());
+    window.addEventListener(PREFS_EVENT, sync);
+    window.addEventListener('storage', sync);
+    return () => {
+      window.removeEventListener(PREFS_EVENT, sync);
+      window.removeEventListener('storage', sync);
+    };
+  }, []);
 
   useEffect(() => {
     if (!localStorage.getItem('token')) return;
@@ -84,8 +97,8 @@ export default function LobbyLayout({ children }: LobbyLayoutProps) {
               >
                 {t(item.key)}
               </button>
-              {item.key === 'nav.pm' && <Badge count={pmUnread} variant="nav" />}
-              {item.key === 'nav.news' && <Badge count={newsUnread} variant="nav" />}
+              {showBadge && item.key === 'nav.pm' && <Badge count={pmUnread} variant="nav" />}
+              {showBadge && item.key === 'nav.news' && <Badge count={newsUnread} variant="nav" />}
             </div>
           ))}
         </nav>
