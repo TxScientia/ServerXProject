@@ -31,6 +31,7 @@ from ..crud import (
 from ..database import get_db
 from ..models import Account, Character
 from ..realtime import manager as realtime_manager
+from ..richtext import validate_rich_text
 from ..security import SECRET_KEY
 from ..schemas import (
     ChatRead,
@@ -44,6 +45,9 @@ from ..schemas import (
 )
 
 router = APIRouter(prefix="/pm", tags=["pm"])
+
+# PMs use a smaller cap than scene posts/news (100k) — chat messages are short.
+MAX_PM_CHARS = 10_000
 
 
 @router.post("/chats/direct", response_model=ChatRead)
@@ -175,7 +179,7 @@ def send_message_endpoint(
     member_ids = [m.character_id for m in chat.members]
     if character.id not in member_ids:
         raise HTTPException(status_code=403, detail="Keine Berechtigung")
-    # TODO: validate body (Tiptap JSON whitelist, non-empty)
+    validate_rich_text(data.body, max_chars=MAX_PM_CHARS)
     message = send_message(db, chat_id, character.id, data.body)
     result = MessageRead(
         id=message.id,

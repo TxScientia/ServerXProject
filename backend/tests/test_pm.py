@@ -101,6 +101,54 @@ def test_send_message(client, character, auth_headers, account, db_session):
     assert msg["body"] == body
 
 
+# --- body validation (shared Tiptap whitelist, reused from richtext.py) ----------
+
+def _direct_chat(client, db_session, account, character, auth_headers):
+    h = char_headers(auth_headers, character)
+    other = create_character(db_session, account.id, "Pal", "Elf", "Ranger", "Divers")
+    chat = client.post("/pm/chats/direct", headers=h, json={"character_id": str(other.id)}).json()
+    return h, chat
+
+
+def _send(client, h, chat, body):
+    return client.post(f"/pm/chats/{chat['id']}/messages", headers=h, json={"body": body})
+
+
+def test_send_message_rejects_empty_body(client, character, auth_headers, account, db_session):
+    h, chat = _direct_chat(client, db_session, account, character, auth_headers)
+    assert _send(client, h, chat, {"type": "doc", "content": []}).status_code == 422
+
+
+def test_send_message_rejects_non_doc(client, character, auth_headers, account, db_session):
+    h, chat = _direct_chat(client, db_session, account, character, auth_headers)
+    assert _send(client, h, chat, {"type": "paragraph"}).status_code == 422
+
+
+def test_send_message_rejects_disallowed_node(client, character, auth_headers, account, db_session):
+    h, chat = _direct_chat(client, db_session, account, character, auth_headers)
+    body = {"type": "doc", "content": [
+        {"type": "heading", "attrs": {"level": 1}, "content": [{"type": "text", "text": "x"}]}
+    ]}
+    assert _send(client, h, chat, body).status_code == 422
+
+
+def test_send_message_rejects_too_long(client, character, auth_headers, account, db_session):
+    h, chat = _direct_chat(client, db_session, account, character, auth_headers)
+    body = {"type": "doc", "content": [
+        {"type": "paragraph", "content": [{"type": "text", "text": "x" * 10_001}]}
+    ]}
+    assert _send(client, h, chat, body).status_code == 422
+
+
+def test_send_message_allows_emoji_and_shortcode_text(client, character, auth_headers, account, db_session):
+    """Unicode emojis and :shortcode: smileys are plain text and must pass."""
+    h, chat = _direct_chat(client, db_session, account, character, auth_headers)
+    body = {"type": "doc", "content": [
+        {"type": "paragraph", "content": [{"type": "text", "text": "Hi 😀 :smile:"}]}
+    ]}
+    assert _send(client, h, chat, body).status_code == 200
+
+
 def test_cannot_send_message_if_not_member(client, character, auth_headers, account, db_session):
     """Cannot send a message if not a chat member."""
     h1 = char_headers(auth_headers, character)
