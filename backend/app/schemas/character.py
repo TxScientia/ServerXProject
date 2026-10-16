@@ -1,4 +1,6 @@
-from pydantic import BaseModel
+from typing import Any
+
+from pydantic import BaseModel, Field
 
 
 class CharacterCreate(BaseModel):
@@ -6,3 +8,4 @@ class CharacterCreate(BaseModel):
     race: str
     spec: str
     gender: str
+    editorData: dict[str, Any] = Field(default_factory=dict)

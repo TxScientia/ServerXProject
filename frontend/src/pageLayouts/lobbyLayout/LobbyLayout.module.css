@@ -1,9 +1,25 @@
 .shell {
+  position: relative;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  isolation: isolate;
   background: var(--color-bg-shell);
   color: var(--color-text);
+}
+
+.shell::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    linear-gradient(rgba(5, 7, 7, 0.42), rgba(5, 7, 7, 0.72)),
+    url('/pictures/rosesbackgroundWWC.webp');
+  background-position: center top;
+  background-size: cover;
+  transform: translateZ(0);
 }
 
 .topbar {

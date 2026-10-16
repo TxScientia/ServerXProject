@@ -22,6 +22,16 @@ Only run this after confirming that server changes are approved:
 
 The script asks for a typed confirmation, builds the frontend, then rsyncs the project to `/home/wwc` while excluding secrets and local dependency folders.
 
+## Deploy a fresh SQLite DB
+
+Use the guarded DB deployment script instead of copying `data/app.db` manually:
+
+```bash
+./scripts/deploy-sqlite-db-wwc.sh
+```
+
+The script deploys a sanitized copy and refuses to leave characters whose name equals their account login name in the deployed DB.
+
 ## After deploy
 
 Open:
