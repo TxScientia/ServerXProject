@@ -34,6 +34,11 @@ interface ThreadViewProps {
   /** Called when a live message arrives for this open chat, so the parent can mark it
    *  read and refresh unread badges. */
   onIncoming?: () => void;
+  /** Called whenever a message is added (sent or received), so the parent knows the
+   *  chat is no longer empty and shouldn't be auto-removed on leave. */
+  onMessageAdded?: () => void;
+  /** Called when the user asks to delete this chat (parent shows the confirm dialog). */
+  onDelete?: () => void;
 }
 
 interface Character {
@@ -41,7 +46,7 @@ interface Character {
   name: string;
 }
 
-export default function ThreadView({ chat, onBack, onRefresh, onIncoming }: ThreadViewProps) {
+export default function ThreadView({ chat, onBack, onRefresh, onIncoming, onMessageAdded, onDelete }: ThreadViewProps) {
   const { t } = useTranslation();
   const { subscribe } = useWebSocket();
   const [characterId, setCharacterId] = useState(localStorage.getItem('characterId') || '');
@@ -65,6 +70,7 @@ export default function ThreadView({ chat, onBack, onRefresh, onIncoming }: Thre
           prev.some((m) => m.id === msg.message.id) ? prev : [...prev, msg.message]
         );
         onIncoming?.();
+        onMessageAdded?.();
       }
     });
     return unsub;
@@ -116,6 +122,7 @@ export default function ThreadView({ chat, onBack, onRefresh, onIncoming }: Thre
         const msg = await res.json();
         setMessages((prev) => (prev.some((m) => m.id === msg.id) ? prev : [...prev, msg]));
         setBody(EMPTY_DOC);
+        onMessageAdded?.();
       } else {
         alert(t('scene.saveError'));
       }
@@ -143,6 +150,11 @@ export default function ThreadView({ chat, onBack, onRefresh, onIncoming }: Thre
         <button className={styles.refreshBtn} onClick={onRefresh} title="Aktualisieren">
           ↻
         </button>
+        {onDelete && (
+          <button className={styles.deleteBtn} onClick={onDelete} title={t('pm.deleteChat')} aria-label={t('pm.deleteChat')}>
+            🗑
+          </button>
+        )}
       </div>
 
       <div className={styles.messages}>

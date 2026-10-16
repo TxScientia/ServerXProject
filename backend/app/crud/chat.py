@@ -58,6 +58,47 @@ def get_chat(db: Session, chat_id: uuid.UUID) -> Optional[Chat]:
     return db.query(Chat).filter(Chat.id == chat_id).first()
 
 
+def delete_chat_for_account(db: Session, chat_id: uuid.UUID, account_id: uuid.UUID) -> str:
+    """Remove a chat from an account's inbox.
+
+    - Empty chat (no messages): hard-deleted for everyone (nothing is lost).
+    - Chat with history: only this account's character memberships are removed
+      ("delete for me"); the chat + history stay for the others, and it's fully
+      purged once the last member leaves.
+
+    Returns "not_found", "forbidden" (account not a participant), or "deleted".
+    """
+    chat = get_chat(db, chat_id)
+    if chat is None:
+        return "not_found"
+
+    account_char_ids = [
+        c.id for c in db.query(Character.id).filter(Character.account_id == account_id).all()
+    ]
+    my_members = (
+        db.query(ChatMember)
+        .filter(ChatMember.chat_id == chat_id, ChatMember.character_id.in_(account_char_ids))
+        .all()
+    )
+    if not my_members:
+        return "forbidden"
+
+    has_messages = db.query(Message).filter(Message.chat_id == chat_id).first() is not None
+    if not has_messages:
+        db.delete(chat)  # cascade removes members; hard delete for everyone
+        db.commit()
+        return "deleted"
+
+    for member in my_members:
+        db.delete(member)
+    db.flush()
+    remaining = db.query(ChatMember).filter(ChatMember.chat_id == chat_id).count()
+    if remaining == 0:
+        db.delete(chat)  # last participant left → purge history
+    db.commit()
+    return "deleted"
+
+
 def list_chats_for_character(db: Session, character_id: uuid.UUID) -> List[Chat]:
     """All chats (direct + group) this character is a member of, sorted by latest message."""
     return (

@@ -272,9 +272,7 @@
     "loadError": "Gesuche konnten nicht geladen werden.",
     "saveError": "Fehler beim Speichern des Gesuchs.",
     "deleteError": "Fehler beim Löschen des Gesuchs.",
-    "messageError": "Chat konnte nicht gestartet werden.",
-    "messagePickTitle": "Als welchen Charakter schreiben?",
-    "noCharacters": "Keine Charaktere verfügbar."
+    "messageError": "Chat konnte nicht gestartet werden."
   },
   "ooc": {
     "globalTitle": "Globaler OOC-Chat",
@@ -330,6 +328,8 @@
     "accept": "Annehmen",
     "decline": "Ablehnen",
     "answered": "Beantwortet: {{action}}",
-    "members": "Mitglied{{count}}"
+    "members": "Mitglied{{count}}",
+    "deleteChat": "Chat löschen",
+    "deleteChatConfirm": "Diesen Chat löschen? Er wird aus deinem Posteingang entfernt; bei vorhandenen Nachrichten behält die andere Person ihre Kopie."
   }
 }
