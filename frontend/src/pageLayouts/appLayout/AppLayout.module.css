@@ -105,29 +105,42 @@
 }
 
 /* --- character sidebar --- */
+/* Name sits on a full-bleed header band at the top of the panel. */
 .charName {
   font-family: var(--font-display);
-  font-size: 1.1rem;
-  margin-bottom: var(--space-4);
+  font-size: 1.15rem;
   color: var(--color-accent);
+  margin: calc(-1 * var(--space-4)) calc(-1 * var(--space-4)) var(--space-4);
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-accent-soft, var(--color-surface-muted));
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
 }
 
 .charLinks {
   list-style: none;
   padding: 0;
-  margin: 0 0 var(--space-4);
+  margin: 0;
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
 }
 
+/* Clickable nav items: bright and slightly indented, so they read clearly as
+   entries under the muted section titles. */
+.charLink,
+.favRow {
+  color: var(--color-text, #fff);
+  font-size: 0.95rem;
+  padding-left: var(--space-3);
+}
+
 .charLink {
-  opacity: 0.85;
   cursor: pointer;
 }
 
-.charLink:hover {
-  opacity: 1;
+.charLink:hover,
+.favTravel:hover {
+  color: var(--color-accent);
 }
 
 .favRow {
@@ -135,11 +148,6 @@
   align-items: center;
   justify-content: space-between;
   gap: var(--space-2);
-  opacity: 0.85;
-}
-
-.favRow:hover {
-  opacity: 1;
 }
 
 .favTravel {
@@ -158,27 +166,41 @@
   font-size: 0.85rem;
   line-height: 1;
   flex-shrink: 0;
+  opacity: 0.5;
+  transition: opacity 0.15s ease;
+}
+
+.favRow:hover .favRemove,
+.favRemove:focus-visible {
+  opacity: 1;
 }
 
 .favRemove:hover {
   color: var(--color-danger-strong, inherit);
+  opacity: 1;
 }
 
+/* Sections are separated by a divider rule above a muted, small-caps title. */
 .charSection {
-  margin-bottom: var(--space-4);
+  margin-top: var(--space-4);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--color-border-subtle, var(--color-border-faint));
 }
 
 .charSection h4 {
-  margin: 0 0 var(--space-2);
-  font-size: 0.72rem;
+  margin: 0 0 var(--space-3);
+  font-size: 0.7rem;
+  font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--color-text-muted, var(--color-text-muted));
+  letter-spacing: 0.1em;
+  color: var(--color-text-muted);
+  opacity: 0.75;
 }
 
 .placeholder {
   margin: 0;
-  opacity: 0.5;
+  padding-left: var(--space-3);
+  opacity: 0.45;
 }
 
 @media (max-width: 900px) {
