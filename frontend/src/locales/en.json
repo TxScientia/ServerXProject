@@ -114,6 +114,14 @@
     "createError": "Error while creating",
     "loadError": "Could not load StoryBooks."
   },
+  "plotCard": {
+    "createdBy": "Created by",
+    "public": "Public",
+    "private": "Private",
+    "generic": "Generic",
+    "members": "{{count}} member",
+    "members_other": "{{count}} members"
+  },
   "plot": {
     "backToStorybooks": "← StoryBooks",
     "back": "← Back",

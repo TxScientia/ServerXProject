@@ -52,6 +52,16 @@ class Space(Base):
         """StoryBook visibility (from the 1:1 detail row), or None for houses."""
         return self.storybook_detail.visibility if self.storybook_detail else None
 
+    @property
+    def owner_character_name(self):
+        """Creator's character name, for the plot card byline."""
+        return self.owner.name if self.owner else None
+
+    @property
+    def member_count(self):
+        """Number of members (shown on the plot card)."""
+        return len(self.memberships)
+
 
 class StorybookDetail(Base):
     """StoryBook-only fields. Houses simply have no row here."""

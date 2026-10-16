@@ -33,6 +33,8 @@ class StorybookRead(BaseModel):
     biography: Optional[str] = None
     visibility: Optional[str] = None
     owner_character_id: uuid.UUID
+    owner_character_name: Optional[str] = None
+    member_count: int = 0
     created_at: datetime.datetime
     tags: List[str] = []
 
