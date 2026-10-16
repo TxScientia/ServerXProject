@@ -1,5 +1,7 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { Modal, ModalActions, ModalSpacer } from '../../components/Modal';
 import AppLayout from '../../pageLayouts/appLayout/AppLayout';
 import PMNavigation from '../../components/PM/PMNavigation';
 import ChatList from '../../components/PM/ChatList';
@@ -43,6 +45,7 @@ interface ChatDetail extends Chat {
 export default function PM() {
   const { t } = useTranslation();
   const { subscribe, refreshPmUnread } = useWebSocket();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [activeTab, setActiveTab] = useState<TabType>('groups');
   const [chats, setChats] = useState<Chat[]>([]);
   const [selectedChat, setSelectedChat] = useState<ChatDetail | null>(null);
@@ -50,6 +53,9 @@ export default function PM() {
   const [characters, setCharacters] = useState<Character[]>([]);
   const [showCreateChatModal, setShowCreateChatModal] = useState(false);
   const [systemUnread, setSystemUnread] = useState(0);
+  const [pendingDeleteChatId, setPendingDeleteChatId] = useState<string | null>(null);
+  // Tracks the open chat so an abandoned (no-messages) chat is removed when left.
+  const openChatInfoRef = useRef<{ id: string; empty: boolean } | null>(null);
 
   const fetchCharacters = useCallback(async () => {
     try {
@@ -133,13 +139,51 @@ export default function PM() {
       });
   }, [selectedChat, refreshPmUnread, fetchChats]);
 
+  const deleteChatRequest = useCallback(async (chatId: string) => {
+    try {
+      await fetch(apiUrl(`/pm/chats/${chatId}`), { method: 'DELETE', headers: authHeaders() });
+    } catch (error) {
+      console.error('Failed to delete chat:', error);
+    }
+  }, []);
+
+  // When leaving a chat that was opened empty and never written in, remove it.
+  const leaveOpenChatIfEmpty = useCallback(async () => {
+    const info = openChatInfoRef.current;
+    openChatInfoRef.current = null;
+    if (info?.empty) {
+      await deleteChatRequest(info.id);
+      fetchChats();
+      refreshPmUnread();
+    }
+  }, [deleteChatRequest, fetchChats, refreshPmUnread]);
+
   const handleTabChange = (tab: TabType) => {
+    leaveOpenChatIfEmpty();
     setActiveTab(tab);
     setSelectedChat(null);
   };
 
+  const requestDeleteChat = () => {
+    if (selectedChat) setPendingDeleteChatId(selectedChat.id);
+  };
+
+  const confirmDeleteChat = async () => {
+    if (!pendingDeleteChatId) return;
+    if (openChatInfoRef.current?.id === pendingDeleteChatId) openChatInfoRef.current = null;
+    await deleteChatRequest(pendingDeleteChatId);
+    setPendingDeleteChatId(null);
+    setSelectedChat(null);
+    fetchChats();
+    refreshPmUnread();
+  };
+
   const handleSelectChat = async (chat: Chat) => {
     try {
+      // Dropping an abandoned empty chat before switching away from it.
+      if (openChatInfoRef.current && openChatInfoRef.current.id !== chat.id) {
+        await leaveOpenChatIfEmpty();
+      }
       // Immediately mark this chat as read in local state
       setChats(chats.map(c => c.id === chat.id ? { ...c, unread_count: 0 } : c));
 
@@ -149,6 +193,7 @@ export default function PM() {
       if (res.ok) {
         const detail = await res.json();
         setSelectedChat(detail);
+        openChatInfoRef.current = { id: detail.id, empty: (detail.messages?.length ?? 0) === 0 };
         refreshPmUnread(); // chat was marked read server-side; sync the top-nav badge
 
         // Auto-select first character from chat that belongs to this account
@@ -164,7 +209,31 @@ export default function PM() {
     }
   };
 
-  const handleBackToList = () => {
+  // Leaving the PM page entirely (route change) also drops an abandoned empty chat.
+  useEffect(() => {
+    return () => {
+      const info = openChatInfoRef.current;
+      if (info?.empty) {
+        fetch(apiUrl(`/pm/chats/${info.id}`), { method: 'DELETE', headers: authHeaders() }).catch(
+          () => undefined,
+        );
+      }
+    };
+  }, []);
+
+  // Deep-open a specific chat from a "message" button on a post: /pm?chat=<id>.
+  useEffect(() => {
+    const chatId = searchParams.get('chat');
+    if (!chatId) return;
+    setActiveTab('direct');
+    handleSelectChat({ id: chatId } as Chat);
+    searchParams.delete('chat');
+    setSearchParams(searchParams, { replace: true });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
+
+  const handleBackToList = async () => {
+    await leaveOpenChatIfEmpty();
     setSelectedChat(null);
     // Refresh chats to update badges
     fetchChats();
@@ -279,6 +348,10 @@ export default function PM() {
               onBack={handleBackToList}
               onRefresh={handleRefresh}
               onIncoming={handleIncomingForOpenChat}
+              onMessageAdded={() => {
+                if (openChatInfoRef.current) openChatInfoRef.current.empty = false;
+              }}
+              onDelete={requestDeleteChat}
             />
           ) : (
             <ChatList
@@ -289,6 +362,21 @@ export default function PM() {
             />
           )}
         </div>
+
+        {pendingDeleteChatId && (
+          <Modal title={t('pm.deleteChat')}>
+            <p>{t('pm.deleteChatConfirm')}</p>
+            <ModalActions>
+              <button type="button" className="button" onClick={() => setPendingDeleteChatId(null)}>
+                {t('common.cancel')}
+              </button>
+              <ModalSpacer />
+              <button type="button" className="button" onClick={confirmDeleteChat}>
+                {t('common.delete')}
+              </button>
+            </ModalActions>
+          </Modal>
+        )}
 
         {showCreateChatModal && (
           <CreateChatModal

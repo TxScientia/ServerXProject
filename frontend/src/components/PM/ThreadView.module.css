@@ -253,3 +253,19 @@
   margin: 0 !important;
   padding: 0 !important;
 }
+
+.deleteBtn {
+  padding: 8px 12px;
+  background: var(--color-surface-muted);
+  border: 1px solid var(--color-border-subtle);
+  color: var(--text-primary);
+  cursor: pointer;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+  min-width: 40px;
+}
+.deleteBtn:hover {
+  background: var(--color-surface-hover);
+  border-color: var(--color-danger-strong, var(--color-accent));
+}

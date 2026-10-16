@@ -13,6 +13,7 @@ from ..crud import (
     count_unread_system_messages,
     create_direct_chat,
     create_group_chat,
+    delete_chat_for_account,
     get_chat,
     get_member_account_ids,
     get_message,
@@ -163,6 +164,23 @@ def get_chat_endpoint(
             for m in messages
         ],
     )
+
+
+@router.delete("/chats/{chat_id}")
+def delete_chat_endpoint(
+    chat_id: uuid.UUID,
+    current_user: Account = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Remove a chat from the account's inbox. Empty chats are hard-deleted for
+    everyone; chats with history are removed just for this account (purged once the
+    last participant leaves)."""
+    result = delete_chat_for_account(db, chat_id, current_user.id)
+    if result == "not_found":
+        raise HTTPException(status_code=404, detail="Chat nicht gefunden")
+    if result == "forbidden":
+        raise HTTPException(status_code=403, detail="Keine Berechtigung")
+    return {"ok": True}
 
 
 @router.post("/chats/{chat_id}/messages", response_model=MessageRead)

@@ -272,9 +272,7 @@
     "loadError": "Failed to load wanted ads.",
     "saveError": "Failed to save the wanted ad.",
     "deleteError": "Failed to delete the wanted ad.",
-    "messageError": "Could not start a chat.",
-    "messagePickTitle": "Message as which character?",
-    "noCharacters": "No characters available."
+    "messageError": "Could not start a chat."
   },
   "ooc": {
     "globalTitle": "Global OOC Chat",
@@ -330,6 +328,8 @@
     "accept": "Accept",
     "decline": "Decline",
     "answered": "Answered: {{action}}",
-    "members": "Member{{count}}"
+    "members": "Member{{count}}",
+    "deleteChat": "Delete chat",
+    "deleteChatConfirm": "Delete this chat? It will be removed from your inbox; if it has messages, the other participant keeps their copy."
   }
 }
