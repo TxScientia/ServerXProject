@@ -1,4 +1,3 @@
-import re
 from typing import List
 import uuid
 
@@ -6,6 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from ..auth import get_current_character, get_current_user
+from ..richtext import validate_rich_text
 from ..crud import (
     can_edit_space,
     can_view_space,
@@ -25,42 +25,12 @@ from ..schemas import NewsCreate, NewsRead
 
 router = APIRouter(tags=["news"])
 
-ALLOWED_NODE_TYPES = {"doc", "paragraph", "text", "hardBreak"}
-ALLOWED_MARK_TYPES = {"bold", "italic", "underline", "strike", "textStyle"}
+# News bodies store Tiptap JSON, validated against the shared whitelist in richtext.py.
 MAX_NEWS_CHARS = 100_000
-_HEX_COLOR = re.compile(r"^#[0-9a-fA-F]{6}$")
 
 
 def _validate_body(body) -> None:
-    """Validate the shared Tiptap JSON rich-text format. No HTML is accepted."""
-    if not isinstance(body, dict) or body.get("type") != "doc":
-        raise HTTPException(status_code=422, detail="Ungültiger Nachrichteninhalt")
-
-    total_chars = 0
-
-    def walk(node):
-        nonlocal total_chars
-        if not isinstance(node, dict) or node.get("type") not in ALLOWED_NODE_TYPES:
-            raise HTTPException(status_code=422, detail="Nicht erlaubter Inhaltstyp")
-        for mark in node.get("marks") or []:
-            mtype = mark.get("type") if isinstance(mark, dict) else None
-            if mtype not in ALLOWED_MARK_TYPES:
-                raise HTTPException(status_code=422, detail="Nicht erlaubte Formatierung")
-            if mtype == "textStyle":
-                color = (mark.get("attrs") or {}).get("color")
-                if color is not None and not _HEX_COLOR.match(str(color)):
-                    raise HTTPException(status_code=422, detail="Ungültige Farbe")
-        text = node.get("text")
-        if isinstance(text, str):
-            total_chars += len(text)
-        for child in node.get("content") or []:
-            walk(child)
-
-    walk(body)
-    if total_chars == 0:
-        raise HTTPException(status_code=422, detail="Nachricht darf nicht leer sein")
-    if total_chars > MAX_NEWS_CHARS:
-        raise HTTPException(status_code=422, detail="Nachricht ist zu lang")
+    validate_rich_text(body, max_chars=MAX_NEWS_CHARS, label="Nachricht")
 
 
 def _serialize_news(item) -> NewsRead:
