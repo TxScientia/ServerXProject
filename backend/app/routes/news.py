@@ -8,6 +8,7 @@ from sqlalchemy.orm import Session
 from ..auth import get_current_character, get_current_user
 from ..crud import (
     can_edit_space,
+    can_view_space,
     count_unread_global_news,
     count_unread_space_news,
     create_global_news,
@@ -92,6 +93,15 @@ def _require_storybook(db: Session, storybook_id: uuid.UUID):
     return space
 
 
+def _require_viewable_storybook(db: Session, storybook_id: uuid.UUID, account_id):
+    """Fetch the StoryBook and require the account to be allowed to read it (private
+    plots are members-only)."""
+    space = _require_storybook(db, storybook_id)
+    if not can_view_space(db, space, account_id):
+        raise HTTPException(status_code=403, detail="Diese Welt ist privat – nur für Mitglieder")
+    return space
+
+
 @router.get("/news/unread-count")
 def global_news_unread_count_endpoint(
     current_user: Account = Depends(get_current_user),
@@ -144,7 +154,7 @@ def storybook_news_unread_count_endpoint(
     current_user: Account = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    space = _require_storybook(db, storybook_id)
+    space = _require_viewable_storybook(db, storybook_id, current_user.id)
     return {"count": count_unread_space_news(db, current_user.id, space.id)}
 
 
@@ -154,7 +164,7 @@ def mark_storybook_news_read_endpoint(
     current_user: Account = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    space = _require_storybook(db, storybook_id)
+    space = _require_viewable_storybook(db, storybook_id, current_user.id)
     return {"marked": mark_space_news_read(db, current_user.id, space.id)}
 
 
@@ -164,7 +174,7 @@ def list_storybook_news_endpoint(
     current_user: Account = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    space = _require_storybook(db, storybook_id)
+    space = _require_viewable_storybook(db, storybook_id, current_user.id)
     return [_serialize_news(item) for item in list_space_news(db, space.id)]
 
 

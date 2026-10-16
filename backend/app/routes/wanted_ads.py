@@ -8,12 +8,13 @@ from sqlalchemy.orm import Session
 from ..auth import get_current_character, get_current_user
 from ..crud import (
     can_edit_space,
+    can_post_in_space,
+    can_view_space,
     create_global_wanted_ad,
     create_space_wanted_ad,
     delete_wanted_ad,
     get_storybook,
     get_wanted_ad,
-    is_member,
     list_global_wanted_ads,
     list_space_wanted_ads,
 )
@@ -107,8 +108,8 @@ def list_storybook_wanted_ads_endpoint(
     db: Session = Depends(get_db),
 ):
     space = _require_storybook(db, storybook_id)
-    if not is_member(db, space.id, character.id):
-        raise HTTPException(status_code=403, detail="Nur Plot-Mitglieder können Gesuche lesen")
+    if not can_view_space(db, space, character.account_id):
+        raise HTTPException(status_code=403, detail="Diese Welt ist privat – nur für Mitglieder")
     return [_serialize(item) for item in list_space_wanted_ads(db, space.id)]
 
 
@@ -120,8 +121,8 @@ def create_storybook_wanted_ad_endpoint(
     db: Session = Depends(get_db),
 ):
     space = _require_storybook(db, storybook_id)
-    if not is_member(db, space.id, character.id):
-        raise HTTPException(status_code=403, detail="Nur Plot-Mitglieder können Gesuche erstellen")
+    if not can_post_in_space(db, space, character.id):
+        raise HTTPException(status_code=403, detail="Nur Mitglieder können Gesuche erstellen")
     title = data.title.strip()
     if not title:
         raise HTTPException(status_code=422, detail="Titel darf nicht leer sein")
