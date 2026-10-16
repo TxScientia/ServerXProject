@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { apiUrl, setAuthToken } from '../../api';
+import { applyTheme } from '../../theme';
+import { setShowUnreadBadge } from '../../preferences';
 import styles from './Home.module.css';
 
 const HERO_IMAGE_URL = '/pictures/hero-background.webp';
@@ -41,6 +43,9 @@ export default function Home() {
 
       const data = await response.json();
       localStorage.setItem('isGlobalAdmin', data.is_global_admin ? '1' : '0');
+      // Hydrate account preferences (server is source of truth) before entering.
+      if (data.theme) applyTheme(data.theme);
+      setShowUnreadBadge(data.show_unread_badge ?? true);
       setAuthToken(data.token); // stores token + triggers the realtime WebSocket to connect
       navigate('/lobby');
     } catch (loginError) {

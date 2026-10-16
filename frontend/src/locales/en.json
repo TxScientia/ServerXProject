@@ -39,6 +39,22 @@
     "dark": "Dark",
     "parchment": "Parchment"
   },
+  "settings": {
+    "title": "Settings",
+    "appearance": "Appearance",
+    "language": "Language",
+    "notifications": "Notifications",
+    "showUnreadBadge": "Show unread-message badge",
+    "changePassword": "Change password",
+    "currentPassword": "Current password",
+    "newPassword": "New password",
+    "confirmPassword": "Confirm new password",
+    "passwordChanged": "Password changed.",
+    "passwordError": "Could not change password.",
+    "passwordWrongCurrent": "Current password is incorrect.",
+    "passwordMismatch": "The new passwords do not match.",
+    "passwordTooShort": "New password must be at least {{min}} characters."
+  },
   "sidebar": {
     "noCharacter": "No character selected",
     "biografie": "Biography",
