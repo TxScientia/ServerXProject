@@ -1,5 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap');
-
 :root,
 :root[data-theme='dark'] {
   color-scheme: dark;
@@ -48,8 +46,8 @@
   --color-info: #9fd3ff;
   --color-update: #a9f5bd;
 
-  --font-display: 'Playfair Display', Georgia, serif;
-  --font-body: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-display: Calibri, 'Segoe UI', Arial, sans-serif;
+  --font-body: Calibri, 'Segoe UI', Arial, sans-serif;
 
   --space-1: 0.25rem;
   --space-2: 0.5rem;

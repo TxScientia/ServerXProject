@@ -28,6 +28,7 @@ from .routes.accounts import router as accounts_router
 from .routes.characters import router as characters_router
 from .routes.character_nav import router as character_nav_router
 from .routes.invite import router as invite_router
+from .routes.fonts import router as fonts_router
 from .routes.news import router as news_router
 from .routes.ooc import router as ooc_router
 from .routes.pm import router as pm_router
@@ -47,6 +48,10 @@ def init_db():
             with engine.begin() as conn:
                 if "is_global_admin" not in account_columns:
                     conn.execute(text("ALTER TABLE accounts ADD COLUMN is_global_admin BOOLEAN NOT NULL DEFAULT 0"))
+                if "theme" not in account_columns:
+                    conn.execute(text("ALTER TABLE accounts ADD COLUMN theme VARCHAR NOT NULL DEFAULT 'dark'"))
+                if "show_unread_badge" not in account_columns:
+                    conn.execute(text("ALTER TABLE accounts ADD COLUMN show_unread_badge BOOLEAN NOT NULL DEFAULT TRUE"))
                 if "editor_data" not in character_columns:
                     conn.execute(text("ALTER TABLE characters ADD COLUMN editor_data TEXT"))
             return
@@ -110,6 +115,7 @@ app.include_router(router=accounts_router, prefix="/api")
 app.include_router(router=characters_router, prefix="/api")
 app.include_router(router=character_nav_router, prefix="/api")
 app.include_router(router=invite_router, prefix="/api")
+app.include_router(router=fonts_router, prefix="/api")
 app.include_router(router=news_router, prefix="/api")
 app.include_router(router=ooc_router, prefix="/api")
 app.include_router(router=pm_router, prefix="/api")

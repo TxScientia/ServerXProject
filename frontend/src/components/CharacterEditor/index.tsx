@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import styles from './CharacterEditor.module.css';
+import FontPicker from './FontPicker';
 
 export type CharacterEditorData = {
   displayName: string;
@@ -388,11 +389,7 @@ export default function CharacterEditor({ character, fullPage = false, onSave, o
         {showSteckbrief ? (
           <>
             <div className={styles.formGrid}>
-              <label>
-                <span>Google Font für den Charakternamen</span>
-                <small>Nur für den Namen im Profilkopf. Leer lassen für die Standardschrift.</small>
-                <input name="nameFontFamily" placeholder="z.B. Cinzel" value={form.editorData.nameFontFamily} onChange={handleEditorDataChange} />
-              </label>
+              <FontPicker value={form.editorData.nameFontFamily} onChange={handleEditorDataChange} />
               <label>
                 <span>Schriftgröße des Charakternamens (px)</span>
                 <small>8–200 px. Leer lassen für die automatische Standardgröße.</small>

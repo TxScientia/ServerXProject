@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { apiUrl, authHeaders } from '../../api';
+import { loadFont } from '../../fonts';
 import styles from './CharacterProfile.module.css';
 
 type ExpertiseLevel = 'Amateur/Beginner' | 'Intermediate' | 'Expert' | 'Master' | 'Grandmaster' | 'Paragon/One Above All';
@@ -149,11 +150,8 @@ export default function CharacterProfile() {
 
   useEffect(() => {
     if (!nameFontFamily) return;
-    const link = document.createElement('link');
-    link.rel = 'stylesheet';
-    link.href = `https://fonts.googleapis.com/css2?family=${encodeURIComponent(nameFontFamily).replace(/%20/g, '+')}&display=swap`;
-    document.head.appendChild(link);
-    return () => link.remove();
+    // Keep the profile readable with its fallback if the provider is unavailable.
+    void loadFont(nameFontFamily).catch(() => {});
   }, [nameFontFamily]);
 
   if (error) return <div className={styles.status}>{error}</div>;
