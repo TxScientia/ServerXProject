@@ -10,6 +10,7 @@ import NewsComposer from '../../components/News/NewsComposer';
 import NewsList from '../../components/News/NewsList';
 import { apiUrl, authHeaders, characterHeaders } from '../../api';
 import styles from './PlotSettings.module.css';
+import ImageUpload from '../../components/ImageUpload';
 
 type Storybook = {
   id: string;
@@ -426,15 +427,8 @@ export default function PlotSettings() {
             />
           </label>
 
-          <label className={styles.field}>
-            {t('plotSettings.plotImage')}
-            <input
-              className="text-input"
-              value={form.image_url}
-              placeholder={t('plotSettings.imageUrlPlaceholder')}
-              onChange={(e) => setForm({ ...form, image_url: e.target.value })}
-            />
-          </label>
+          <ImageUpload label={t('plotSettings.plotImage')} value={form.image_url}
+            onChange={(url) => setForm((current) => ({ ...current, image_url: url }))} />
 
           <label className={styles.field}>
             {t('plotSettings.shortDescription')}

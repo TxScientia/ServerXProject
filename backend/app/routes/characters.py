@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 
 from ..auth import get_current_user
 from ..database import get_db
+from ..images import character_images
 from ..models import Account, Character
 from ..schemas import CharacterCreate
 
@@ -26,7 +27,7 @@ def character_to_response(character: Character):
         "race": character.race,
         "spec": character.specification,
         "gender": character.gender,
-        "editorData": editor_data,
+        "editorData": character_images(editor_data, strict=False),
     }
 
 

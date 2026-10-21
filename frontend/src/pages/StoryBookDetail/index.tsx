@@ -8,6 +8,7 @@ import { OOCChannel } from '../../components/OOC';
 import Scene from '../../components/Scene';
 import { apiUrl, authHeaders, characterHeaders, FAVORITES_EVENT } from '../../api';
 import styles from './StoryBookDetail.module.css';
+import { imageSrc } from '../../images';
 
 type Place = {
   id: string;
@@ -411,10 +412,10 @@ export default function StoryBookDetail() {
     center = (
       <>
         <div className={styles.placeHeader}>
-          {selectedPlace.image_url && (
+          {imageSrc(selectedPlace.image_url) && (
             <img
               className={styles.placeImage}
-              src={selectedPlace.image_url}
+              src={imageSrc(selectedPlace.image_url)}
               alt={selectedPlace.title}
             />
           )}

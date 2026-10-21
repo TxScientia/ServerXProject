@@ -26,6 +26,24 @@ from backend.app.main import app
 from backend.app.security import SECRET_KEY
 
 
+@pytest.fixture(autouse=True)
+def image_storage(tmp_path, monkeypatch):
+    from backend.app import images
+    monkeypatch.setattr(images, 'IMAGE_DIR', tmp_path / 'images')
+    return images.IMAGE_DIR
+
+
+@pytest.fixture
+def uploaded_image(client, auth_headers):
+    import io
+    from PIL import Image
+    output = io.BytesIO()
+    Image.new('RGB', (16, 16), 'red').save(output, format='PNG')
+    response = client.post('/images', content=output.getvalue(), headers=auth_headers)
+    assert response.status_code == 201
+    return response.json()['url']
+
+
 @pytest.fixture
 def db_engine():
     """A fresh in-memory SQLite DB per test.

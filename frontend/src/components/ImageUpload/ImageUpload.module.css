@@ -1,0 +1,23 @@
+.upload {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.upload label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.upload input {
+  max-width: 100%;
+}
+
+.preview {
+  max-width: 100%;
+  max-height: 14rem;
+  object-fit: contain;
+  align-self: flex-start;
+}

@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { apiUrl, authHeaders } from '../../api';
 import { loadFont } from '../../fonts';
+import { imageSrc } from '../../images';
 import styles from './CharacterProfile.module.css';
 
 type ExpertiseLevel = 'Amateur/Beginner' | 'Intermediate' | 'Expert' | 'Master' | 'Grandmaster' | 'Paragon/One Above All';
@@ -87,8 +88,8 @@ function renderBuilderItem(item: TabBuilderItem, index: number) {
     return <p key={index} className={item.size === 'large' ? styles.builderTextLarge : styles.builderText}>{item.value}</p>;
   }
 
-  if (item.type === 'image' && hasValue(item.url)) {
-    return <img key={index} className={item.size === 'large' ? styles.builderImageLarge : styles.builderImage} src={item.url} alt="Profilbild" />;
+  if (item.type === 'image' && imageSrc(item.url)) {
+    return <img key={index} className={item.size === 'large' ? styles.builderImageLarge : styles.builderImage} src={imageSrc(item.url)} alt="Profilbild" />;
   }
 
   if (item.type === 'skill' && (hasValue(item.name) || hasValue(item.expertise))) {
@@ -100,12 +101,12 @@ function renderBuilderItem(item: TabBuilderItem, index: number) {
     );
   }
 
-  if (item.type === 'textImageText' && (hasValue(item.title) || hasValue(item.imageUrl) || hasValue(item.text))) {
+  if (item.type === 'textImageText' && (hasValue(item.title) || imageSrc(item.imageUrl) || hasValue(item.text))) {
     return (
       <div key={index} className={styles.textImageText}>
         <div className={styles.textImageTextLeft}>
           {hasValue(item.title) && <h3>{item.title}</h3>}
-          {hasValue(item.imageUrl) && <img src={item.imageUrl} alt={item.title || 'Profilbild'} />}
+          {imageSrc(item.imageUrl) && <img src={imageSrc(item.imageUrl)} alt={item.title || 'Profilbild'} />}
         </div>
         {hasValue(item.text) && <p>{item.text}</p>}
       </div>
@@ -189,7 +190,10 @@ export default function CharacterProfile() {
           <button type="button">Write PM</button>
         </nav>
 
-        <header id="steckbrief" className={styles.hero}>
+        <header id="steckbrief" className={styles.hero} style={imageSrc(data.headerBackgroundUrl) ? {
+          backgroundImage: `url(${JSON.stringify(imageSrc(data.headerBackgroundUrl))})`,
+          backgroundSize: 'cover', backgroundPosition: 'center',
+        } : undefined}>
           <div className={styles.heroText}>
             <h1 style={{
               fontFamily: nameFontFamily ? `${JSON.stringify(nameFontFamily)}, var(--font-display)` : undefined,
@@ -197,15 +201,15 @@ export default function CharacterProfile() {
             }}>{displayName}</h1>
             <div className={styles.ornament}>
               <span />
-              {hasValue(data.ornamentImageUrl) ? <img src={data.ornamentImageUrl} alt="" /> : <b>✥</b>}
+              {imageSrc(data.ornamentImageUrl) ? <img src={imageSrc(data.ornamentImageUrl)} alt="" /> : <b>✥</b>}
               <span />
             </div>
             {hasValue(data.quote) && <p className={styles.quote}>{data.quote}</p>}
             {hasValue(data.biography) && <p>{data.biography}</p>}
           </div>
-          {hasValue(data.portraitImageUrl) && (
+          {imageSrc(data.portraitImageUrl) && (
             <div className={styles.avatarFrame}>
-              <img src={data.portraitImageUrl} alt={`${displayName} Avatar`} />
+              <img src={imageSrc(data.portraitImageUrl)} alt={`${displayName} Avatar`} />
             </div>
           )}
         </header>
@@ -220,11 +224,11 @@ export default function CharacterProfile() {
             ))}
           </div>
 
-          {hasValue(data.frameImageUrl) && (
+          {imageSrc(data.frameImageUrl) && (
             <figure className={styles.bottomImageFigure}>
               <div className={styles.bannerDecoration}>
                 <div className={styles.bannerFrame}>
-                  <img src={data.frameImageUrl} alt={`${displayName} Banner`} />
+                  <img src={imageSrc(data.frameImageUrl)} alt={`${displayName} Banner`} />
                 </div>
               </div>
               {hasValue(data.biography) && <figcaption>“{data.biography}”</figcaption>}

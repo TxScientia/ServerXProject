@@ -1,6 +1,8 @@
 from typing import Any
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
+
+from ..images import character_images
 
 
 class CharacterCreate(BaseModel):
@@ -9,3 +11,8 @@ class CharacterCreate(BaseModel):
     spec: str
     gender: str
     editorData: dict[str, Any] = Field(default_factory=dict)
+
+    @field_validator('editorData')
+    @classmethod
+    def uploaded_images_only(cls, value):
+        return character_images(value, strict=True)

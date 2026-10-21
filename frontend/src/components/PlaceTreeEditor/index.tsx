@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { apiUrl, authHeaders, characterHeaders } from '../../api';
 import { Modal, ModalActions, ModalSpacer } from '../Modal';
 import styles from './PlaceTreeEditor.module.css';
+import ImageUpload from '../ImageUpload';
 
 export type Place = {
   id: string;
@@ -164,15 +165,8 @@ export default function PlaceTreeEditor({ storybookId, places, onChanged }: Prop
               onChange={(e) => setEditing({ ...editing, description: e.target.value })}
             />
           </label>
-          <label>
-            {t('plotSettings.placeImage')}
-            <input
-              className="text-input"
-              value={editing.image_url ?? ''}
-              placeholder={t('plotSettings.imageUrlPlaceholder')}
-              onChange={(e) => setEditing({ ...editing, image_url: e.target.value })}
-            />
-          </label>
+          <ImageUpload label={t('plotSettings.placeImage')} value={editing.image_url}
+            onChange={(url) => setEditing((current) => current ? { ...current, image_url: url } : null)} />
           <ModalActions>
             <button type="button" className="button button--danger" onClick={deleteEditing}>
               {t('plotSettings.delete')}
