@@ -2,7 +2,9 @@ import datetime
 import uuid
 from typing import List, Optional
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, field_validator
+
+from ..images import local_image, validate_image_reference
 
 
 class PlaceCreate(BaseModel):
@@ -12,6 +14,8 @@ class PlaceCreate(BaseModel):
     image_url: Optional[str] = None
     sort_order: int = 0
 
+    _uploaded_image = field_validator('image_url')(validate_image_reference)
+
 
 class PlaceUpdate(BaseModel):
     """Edit a place — all fields optional; only provided ones are applied."""
@@ -20,6 +24,8 @@ class PlaceUpdate(BaseModel):
     image_url: Optional[str] = None
     parent_place_id: Optional[uuid.UUID] = None
     sort_order: Optional[int] = None
+
+    _uploaded_image = field_validator('image_url')(validate_image_reference)
 
 
 class PlaceReorder(BaseModel):
@@ -36,3 +42,8 @@ class PlaceRead(BaseModel):
     sort_order: int
     parent_place_id: Optional[uuid.UUID] = None
     created_at: datetime.datetime
+
+    @field_validator('image_url', mode='before')
+    @classmethod
+    def _local_image(cls, value):
+        return local_image(value) or None

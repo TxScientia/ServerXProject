@@ -18,6 +18,11 @@ services:
       - "8000:8000"
     volumes:
       - ./backend:/app
+      - font-cache:/data/fonts
+      - image-uploads:/data/images
+    environment:
+      - FONT_CACHE_DIR=/data/fonts
+      - IMAGE_UPLOAD_DIR=/data/images
     command: uvicorn app.main:app --host 0.0.0.0 --reload
     depends_on:
       - db
@@ -31,3 +36,7 @@ services:
       POSTGRES_DB: mydb
     ports:
       - "5432:5432"
+
+volumes:
+  font-cache:
+  image-uploads:

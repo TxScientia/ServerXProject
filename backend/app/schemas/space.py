@@ -5,6 +5,7 @@ from typing import List, Optional
 from pydantic import BaseModel, ConfigDict, field_validator
 
 from .place import PlaceRead
+from ..images import local_image, validate_image_reference
 
 
 class StorybookCreate(BaseModel):
@@ -20,6 +21,8 @@ class StorybookUpdate(BaseModel):
     biography: Optional[str] = None
     visibility: Optional[str] = None
     tags: Optional[List[str]] = None
+
+    _uploaded_image = field_validator('image_url')(validate_image_reference)
 
 
 class StorybookRead(BaseModel):
@@ -37,6 +40,11 @@ class StorybookRead(BaseModel):
     member_count: int = 0
     created_at: datetime.datetime
     tags: List[str] = []
+
+    @field_validator('image_url', mode='before')
+    @classmethod
+    def _local_image(cls, value):
+        return local_image(value) or None
 
     @field_validator("tags", mode="before")
     @classmethod

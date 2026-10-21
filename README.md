@@ -73,6 +73,11 @@ npm run test:ci -- --coverage --coverage.reporter=text --coverage.reporter=lcov
 
 Frontend coverage is written to `frontend/coverage/lcov.info`.
 
+## Self-hosted media
+
+- [Image uploads: optimization, security, storage and privacy](docs/images.md)
+- [On-demand font library](docs/fonts.md)
+
 ## License
 
 This project is licensed under the **CC BY-NC 4.0** license.  

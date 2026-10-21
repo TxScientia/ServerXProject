@@ -1,5 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import styles from './CharacterEditor.module.css';
+import FontPicker from './FontPicker';
+import ImageUpload from '../ImageUpload';
 
 export type CharacterEditorData = {
   displayName: string;
@@ -388,11 +390,7 @@ export default function CharacterEditor({ character, fullPage = false, onSave, o
         {showSteckbrief ? (
           <>
             <div className={styles.formGrid}>
-              <label>
-                <span>Google Font für den Charakternamen</span>
-                <small>Nur für den Namen im Profilkopf. Leer lassen für die Standardschrift.</small>
-                <input name="nameFontFamily" placeholder="z.B. Cinzel" value={form.editorData.nameFontFamily} onChange={handleEditorDataChange} />
-              </label>
+              <FontPicker value={form.editorData.nameFontFamily} onChange={handleEditorDataChange} />
               <label>
                 <span>Schriftgröße des Charakternamens (px)</span>
                 <small>8–200 px. Leer lassen für die automatische Standardgröße.</small>
@@ -507,26 +505,18 @@ export default function CharacterEditor({ character, fullPage = false, onSave, o
           </>
         ) : showImageSettings ? (
           <section className={styles.formGrid}>
-            <label className={styles.fullWidth}>
-              <span>Unteres Bannerbild</span>
-              <small>URL für das breite Bild im unteren Steckbriefbereich</small>
-              <input name="frameImageUrl" placeholder="https://…" value={form.editorData.frameImageUrl} onChange={handleEditorDataChange} />
-            </label>
-            <label className={styles.fullWidth}>
-              <span>Rechtes Profilbild</span>
-              <small>URL für das Avatarbild rechts im oberen Profilbereich</small>
-              <input name="portraitImageUrl" placeholder="https://…" value={form.editorData.portraitImageUrl} onChange={handleEditorDataChange} />
-            </label>
-            <label className={styles.fullWidth}>
-              <span>Hintergrund unter der Navigation</span>
-              <small>URL für den Hintergrundbereich unter der oberen Profilnavigation</small>
-              <input name="headerBackgroundUrl" placeholder="https://…" value={form.editorData.headerBackgroundUrl} onChange={handleEditorDataChange} />
-            </label>
-            <label className={styles.fullWidth}>
-              <span>Ornament unter dem Namen</span>
-              <small>URL für das Symbol zwischen den Linien unter dem großen Profilnamen</small>
-              <input name="ornamentImageUrl" placeholder="https://…" value={form.editorData.ornamentImageUrl} onChange={handleEditorDataChange} />
-            </label>
+            {([
+              ['frameImageUrl', 'Unteres Bannerbild'],
+              ['portraitImageUrl', 'Rechtes Profilbild'],
+              ['headerBackgroundUrl', 'Hintergrund unter der Navigation'],
+              ['ornamentImageUrl', 'Ornament unter dem Namen'],
+            ] as const).map(([field, label]) => (
+              <div key={field} className={styles.fullWidth}>
+                <ImageUpload label={label} value={form.editorData[field]} onChange={(url) =>
+                  setForm((current) => ({ ...current, editorData: { ...current.editorData, [field]: url } }))
+                } />
+              </div>
+            ))}
           </section>
         ) : showTabBuilder ? (
           <section className={styles.tabBuilder}>
@@ -606,13 +596,8 @@ export default function CharacterEditor({ character, fullPage = false, onSave, o
                   return (
                     <div key={`image-${itemIndex}`} className={`${blockClassName} ${styles.imageBlock}`} {...dragDropProps}>
                       {blockControls}
-                      <input
-                        className={styles.customInput}
-                        placeholder="Bild-URL"
-                        value={item.url}
-                        onChange={(event) => handleTabImageChange(activeTab as BuilderTab, itemIndex, event.target.value)}
-                      />
-                      {item.url && <img className={styles.imagePreview} src={item.url} alt="Vorschau" />}
+                      <ImageUpload label="Bild" value={item.url}
+                        onChange={(url) => handleTabImageChange(builderTab, itemIndex, url)} />
                     </div>
                   );
                 }
@@ -654,13 +639,8 @@ export default function CharacterEditor({ character, fullPage = false, onSave, o
                             value={item.title}
                             onChange={(event) => handleTabTextImageTextChange(activeTab as BuilderTab, itemIndex, 'title', event.target.value)}
                           />
-                          <input
-                            className={styles.customInput}
-                            placeholder="Bild-URL"
-                            value={item.imageUrl}
-                            onChange={(event) => handleTabTextImageTextChange(activeTab as BuilderTab, itemIndex, 'imageUrl', event.target.value)}
-                          />
-                          {item.imageUrl && <img className={styles.imagePreview} src={item.imageUrl} alt="Vorschau" />}
+                          <ImageUpload label="Bild" value={item.imageUrl}
+                            onChange={(url) => handleTabTextImageTextChange(builderTab, itemIndex, 'imageUrl', url)} />
                         </div>
                         <textarea
                           className={styles.customInput}

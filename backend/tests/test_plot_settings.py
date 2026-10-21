@@ -10,7 +10,7 @@ def _make_storybook(client, headers, title="World"):
     return client.post("/storybooks", json={"title": title}, headers=headers).json()
 
 
-def test_update_storybook_settings(client, character, auth_headers):
+def test_update_storybook_settings(client, character, auth_headers, uploaded_image):
     h = char_headers(auth_headers, character)
     sb = _make_storybook(client, h)
 
@@ -20,7 +20,7 @@ def test_update_storybook_settings(client, character, auth_headers):
         json={
             "title": "New Title",
             "description": "short summary",
-            "image_url": "http://example.com/x.png",
+            "image_url": uploaded_image,
             "biography": "[b]lore[/b]",
             "visibility": "generic",
             "tags": ["scifi", "romance"],
@@ -31,7 +31,7 @@ def test_update_storybook_settings(client, character, auth_headers):
     body = resp.json()
     assert body["title"] == "New Title"
     assert body["description"] == "short summary"
-    assert body["image_url"] == "http://example.com/x.png"
+    assert body["image_url"] == uploaded_image
     assert body["biography"] == "[b]lore[/b]"
     assert body["visibility"] == "generic"
     assert set(body["tags"]) == {"scifi", "romance"}
