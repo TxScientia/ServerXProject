@@ -138,6 +138,13 @@ def get_image(image_id: str, db: Session = Depends(get_db)):
     })
 
 
+@router.get('/{filename:path}', include_in_schema=False)
+def unknown_image_file():
+    # Without the optional SPA fallback, GETs for private/unknown filenames would
+    # otherwise partially match the DELETE route below and produce HTTP 405.
+    raise HTTPException(404, 'Bild nicht gefunden')
+
+
 @router.delete('/{image_id}', status_code=204)
 def delete_image(image_id: uuid.UUID, user: Account = Depends(get_current_user), db: Session = Depends(get_db)):
     with images.storage_lock():

@@ -189,6 +189,20 @@ def test_invalid_attempts_count_toward_rate(client, auth_headers, monkeypatch):
     assert client.post('/images', content=b'bad', headers=auth_headers).status_code == 429
 
 
+def test_unknown_image_files_return_404_without_spa_routes():
+    from fastapi import FastAPI
+    from fastapi.testclient import TestClient
+    from backend.app.routes.images import router
+
+    api_only = FastAPI()
+    api_only.include_router(router, prefix='/api')
+    with TestClient(api_only) as api_client:
+        for path in ('.rate.json', 'secret.txt', 'nested/private.json'):
+            response = api_client.get(f'/api/images/{path}')
+            assert response.status_code == 404
+            assert response.json() == {'detail': 'Bild nicht gefunden'}
+
+
 def test_owner_delete_and_no_filesystem_traversal(client, auth_headers, uploaded_image, db_session):
     asset = db_session.query(ImageAsset).one()
     other = create_account(db_session, 'other@example.com', 'other', 'secret')
