@@ -1,6 +1,7 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './CharacterOverview.module.css';
+import frameStyles from '../../assets/styles/ResidentFrame.module.css';
 import { apiUrl } from '../../api';
 
 type Character = {
@@ -12,8 +13,6 @@ type Character = {
   status?: string;
 };
 
-const PUBLIC_ASSET_BASE = import.meta.env.BASE_URL.replace(/\/$/, '');
-const CHARACTER_BACKGROUND_URL = `${PUBLIC_ASSET_BASE}/pictures/rosesbackgroundWWC.webp`;
 const NAV_ITEMS = ['Gesuche', 'OOC', 'PM', 'Einwohnerliste', 'Storybook', 'Guidebook', 'MyCharacter'];
 
 const CharacterOverview = () => {
@@ -42,10 +41,7 @@ const CharacterOverview = () => {
   }, [fetchCharacters]);
 
   return (
-    <div
-      className={styles.container}
-      style={{ '--character-background-image': `url(${CHARACTER_BACKGROUND_URL})` } as React.CSSProperties}
-    >
+    <div className={styles.container}>
       <nav className={styles.topNav} aria-label="Character navigation">
         {NAV_ITEMS.map((item) => (
           <button key={item} type="button" className={styles.navItem}>
@@ -54,6 +50,8 @@ const CharacterOverview = () => {
         ))}
       </nav>
 
+      <main className={styles.content}>
+      <div className={frameStyles.frame}>
       <h1>Charakterübersicht</h1>
       <table className={styles.table}>
         <thead>
@@ -101,6 +99,8 @@ const CharacterOverview = () => {
           ))}
         </tbody>
       </table>
+      </div>
+      </main>
     </div>
   );
 };

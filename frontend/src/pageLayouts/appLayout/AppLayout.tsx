@@ -1,4 +1,4 @@
-import { ReactNode, useEffect, useState } from 'react';
+import { ReactNode, useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import Badge from '../../components/Badge/Badge';
@@ -15,6 +15,9 @@ import {
 import { getShowUnreadBadge, PREFS_EVENT } from '../../preferences';
 import { useWebSocket } from '../../realtime/WebSocketProvider';
 import styles from './AppLayout.module.css';
+import paletteStyles from '../../assets/styles/CharacterPalette.module.css';
+import frameStyles from '../../assets/styles/ResidentFrame.module.css';
+import usePageWheelScroll from './usePageWheelScroll';
 
 // Global top-nav. Items without a path are placeholders for not-yet-built features.
 // News lives inside the GuideBook area now (not its own top-nav item).
@@ -135,7 +138,7 @@ function TopNavbar() {
 type CharacterPlot = { id: string; title: string; role: string };
 type Favorite = { place_id: string; place_title: string; space_id: string; space_title: string };
 
-function CharacterSidebar() {
+function CharacterSidebar({ framed = false }: { framed?: boolean }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const name = localStorage.getItem('characterName');
@@ -180,7 +183,7 @@ function CharacterSidebar() {
   };
 
   return (
-    <aside className={styles.rightSidebar} aria-label="Character details">
+    <aside className={`${styles.rightSidebar} ${framed ? frameStyles.frame : ''}`} aria-label="Character details">
       <div className={styles.charName}>{name ?? t('sidebar.noCharacter')}</div>
       <ul className={styles.charLinks}>
         <li className={styles.charLink}>{t('sidebar.biografie')}</li>
@@ -262,22 +265,50 @@ function CharacterSidebar() {
 type AppLayoutProps = {
   leftNav?: ReactNode;
   children: ReactNode;
+  scrollCenterFromPage?: boolean;
+  /** Let document scrolling grow the center panel, with sticky side panels. */
+  pageScroll?: boolean;
 };
 
 /**
  * Shared page shell: top navbar (always), a context-specific left nav, the center
  * content, and the character sidebar (always). Every page renders inside this.
  */
-export default function AppLayout({ leftNav, children }: AppLayoutProps) {
+export default function AppLayout({ leftNav, children, scrollCenterFromPage = false, pageScroll = false }: AppLayoutProps) {
+  const panelFrame = frameStyles.frame;
+  const shellRef = useRef<HTMLDivElement>(null);
+  const centerRef = useRef<HTMLElement>(null);
+
+  // Account for navigation wrapping, translations and viewport resizing when
+  // fitting sticky side panels below the sticky navigation.
+  useEffect(() => {
+    if (!pageScroll) return;
+    const shell = shellRef.current;
+    const topbar = shell?.querySelector('header');
+    if (!shell || !topbar) return;
+    const measure = () => shell.style.setProperty('--app-topbar-height', `${topbar.getBoundingClientRect().height}px`);
+    measure();
+    const observer = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(measure) : null;
+    observer?.observe(topbar);
+    window.addEventListener('resize', measure);
+    return () => {
+      observer?.disconnect();
+      window.removeEventListener('resize', measure);
+    };
+  }, [pageScroll]);
+  usePageWheelScroll(centerRef, scrollCenterFromPage && !pageScroll);
+
   return (
-    <div className={styles.shell}>
+    <div ref={shellRef} className={`${styles.shell} ${paletteStyles.palette} ${pageScroll ? styles.pageScroll : ''}`}>
       <TopNavbar />
-      <div className={styles.body}>
-        <nav className={styles.leftNav} aria-label="Section navigation">
-          {leftNav}
-        </nav>
-        <main className={styles.center}>{children}</main>
-        <CharacterSidebar />
+      <div className={styles.mainBackground}>
+        <div className={styles.body}>
+          <nav className={`${styles.leftNav} ${panelFrame}`} aria-label="Section navigation">
+            {leftNav}
+          </nav>
+          <main ref={centerRef} className={`${styles.center} ${panelFrame}`}>{children}</main>
+          <CharacterSidebar framed />
+        </div>
       </div>
     </div>
   );

@@ -23,14 +23,14 @@ export default function GesuchePage() {
   const content = (
     <div className={styles.page}>
       <div className={styles.header}>
-        <div>
-          <h1 className={styles.title}>{t('gesuche.pageTitle')}</h1>
-          <p className={styles.subtitle}>{t('gesuche.pageSubtitle')}</p>
-        </div>
+        <h1 className={styles.title}>{t('gesuche.pageTitle')}</h1>
+        <p className={styles.subtitle}>{t('gesuche.pageSubtitle')}</p>
         {inServer && !composing && (
-          <button type="button" className="button" onClick={() => setComposing(true)}>
-            {t('gesuche.new')}
-          </button>
+          <div className={styles.actions}>
+            <button type="button" className={`button ${styles.createButton}`} onClick={() => setComposing(true)}>
+              {t('gesuche.createGlobal')}
+            </button>
+          </div>
         )}
       </div>
 
@@ -49,5 +49,5 @@ export default function GesuchePage() {
     </div>
   );
 
-  return inServer ? <AppLayout>{content}</AppLayout> : <LobbyLayout>{content}</LobbyLayout>;
+  return inServer ? <AppLayout pageScroll>{content}</AppLayout> : <LobbyLayout>{content}</LobbyLayout>;
 }

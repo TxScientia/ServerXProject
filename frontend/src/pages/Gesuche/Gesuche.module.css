@@ -1,21 +1,51 @@
 .page {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: var(--space-6);
+  font-family: Calibri, 'Segoe UI', Arial, sans-serif;
 }
 
 .header {
   display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 1rem;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
 }
 
-.title {
+/* Override the shared page heading size and underline width on this page. */
+.page .header .title {
+  width: min(100%, 28rem);
   margin: 0;
+  padding: 0 1rem var(--space-3);
+  border-bottom: 1px solid var(--color-character-heading-line, var(--color-text-muted));
+  color: var(--color-character-heading, var(--color-text));
+  font-family: 'Times New Roman', Times, serif;
+  font-size: 2rem;
+  text-align: center;
 }
 
 .subtitle {
-  color: var(--color-text-subtle);
-  margin: 0.25rem 0 0;
+  color: var(--color-character-heading-line, var(--color-text-muted));
+  margin: 0;
+  font-family: Calibri, 'Segoe UI', Arial, sans-serif;
+  font-size: 0.875rem;
+  text-align: center;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+  margin-top: var(--space-8);
+}
+
+.createButton {
+  border-radius: 0;
+  padding: 0.3rem 0.65rem;
+  background: var(--color-button-bg);
+  color: var(--color-button-text);
+  font-family: 'Times New Roman', Times, serif;
+  font-size: 0.875rem;
+  font-weight: 400;
+  line-height: 1.2;
 }

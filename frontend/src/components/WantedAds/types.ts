@@ -10,6 +10,7 @@ export type WantedAd = {
   space_id: string | null;
   title: string;
   body: RichTextDoc;
+  tags?: string[];
   author_character_id: string;
   author_name: string | null;
   created_at: string;

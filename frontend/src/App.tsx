@@ -1,4 +1,8 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { useEffect } from 'react';
+import { BrowserRouter, Routes, Route, Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { SESSION_EXPIRED_EVENT } from './api';
+import paletteStyles from './assets/styles/CharacterPalette.module.css';
+import styles from './App.module.css';
 import { WebSocketProvider } from './realtime/WebSocketProvider';
 import Home from './pages/Home';
 import Lobby from './pages/Lobby';
@@ -19,12 +23,29 @@ import CharacterEditorPage from './pages/CharacterEditorPage';
 import CharacterOverview from './pages/CharacterOverview';
 import CharacterProfile from './pages/CharacterProfile';
 
+function PageFrame() {
+  const { pathname } = useLocation();
+  const navigate = useNavigate();
+  useEffect(() => {
+    const onSessionExpired = () => navigate('/?session=expired', { replace: true });
+    window.addEventListener(SESSION_EXPIRED_EVENT, onSessionExpired);
+    return () => window.removeEventListener(SESSION_EXPIRED_EVENT, onSessionExpired);
+  }, [navigate]);
+  const excluded = /^\/characters\/[^/]+\/(editor|profile)\/?$/.test(pathname);
+  return (
+    <div className={`${styles.frame} ${excluded ? '' : paletteStyles.palette} ${pathname === '/gesuche' ? styles.scrollingFrame : ''}`}>
+      <div className={styles.content}><Outlet /></div>
+    </div>
+  );
+}
+
 export default function App() {
   return (
     <BrowserRouter>
       <WebSocketProvider>
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route element={<PageFrame />}>
           <Route path="/lobby" element={<Lobby />} />
           <Route path="/pm" element={<PM />} />
           <Route path="/ooc" element={<OOCPopup />} />
@@ -42,6 +63,7 @@ export default function App() {
           <Route path="/characters" element={<CharacterOverview />} />
           <Route path="/characters/:characterId/editor" element={<CharacterEditorPage />} />
           <Route path="/characters/:characterId/profile" element={<CharacterProfile />} />
+          </Route>
         </Routes>
       </WebSocketProvider>
     </BrowserRouter>

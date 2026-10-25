@@ -1,10 +1,19 @@
 .window {
+  composes: background from '../../assets/styles/PageBackground.module.css';
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  height: var(--page-height, 100vh);
   padding: 1rem;
   gap: 0.75rem;
   box-sizing: border-box;
+}
+
+.panel {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
 }
 
 .header {

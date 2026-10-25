@@ -7,6 +7,8 @@ import { apiUrl, authHeaders, clearAuthToken } from '../../api';
 import { getShowUnreadBadge, PREFS_EVENT } from '../../preferences';
 import { useWebSocket } from '../../realtime/WebSocketProvider';
 import styles from './LobbyLayout.module.css';
+import paletteStyles from '../../assets/styles/CharacterPalette.module.css';
+import frameStyles from '../../assets/styles/ResidentFrame.module.css';
 
 // Account-scoped nav only — no character-scoped items. Items without a path are placeholders.
 const LOBBY_NAV: { key: string; path: string | null; adminOnly?: boolean }[] = [
@@ -23,6 +25,7 @@ const RIGHT_NAV: { key: string; path: string | null }[] = [
 
 type LobbyLayoutProps = {
   children: ReactNode;
+  wide?: boolean;
 };
 
 /**
@@ -30,7 +33,7 @@ type LobbyLayoutProps = {
  * Minimal account-only top nav, no character sidebar. Picking a character (in the
  * page content) "enters the server" and moves to the full AppLayout.
  */
-export default function LobbyLayout({ children }: LobbyLayoutProps) {
+export default function LobbyLayout({ children, wide = false }: LobbyLayoutProps) {
   const navigate = useNavigate();
   const location = useLocation();
   const { t } = useTranslation();
@@ -83,7 +86,7 @@ export default function LobbyLayout({ children }: LobbyLayoutProps) {
   };
 
   return (
-    <div className={styles.shell}>
+    <div className={`${styles.shell} ${paletteStyles.palette}`}>
       <header className={styles.topbar}>
         <nav className={styles.left} aria-label="Account navigation">
           {LOBBY_NAV.filter((item) => !item.adminOnly || isAdmin).map((item) => (
@@ -122,7 +125,13 @@ export default function LobbyLayout({ children }: LobbyLayoutProps) {
           <LanguageSwitcher />
         </nav>
       </header>
-      <main className={styles.content}>{children}</main>
+      <div className={styles.mainBackground}>
+        <main className={`${styles.content} ${wide ? styles.wideContent : ''}`}>
+          {location.pathname === '/lobby' ? children : (
+            <div className={frameStyles.frame}>{children}</div>
+          )}
+        </main>
+      </div>
     </div>
   );
 }

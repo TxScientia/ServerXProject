@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { apiUrl, setAuthToken } from '../../api';
 import { applyTheme } from '../../theme';
@@ -13,6 +13,7 @@ const worldTags = ['FSK 18', 'Private RP', 'Multiverse', 'Eng & Ger', 'Xyz'];
 
 export default function Home() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { t } = useTranslation();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -85,6 +86,9 @@ export default function Home() {
 
       <main className={`page-content ${styles.loginContent}`}>
         <h2 className={styles.heading}>{t('home.enterWorlds')}</h2>
+        {searchParams.get('session') === 'expired' && (
+          <p role="status">{t('home.sessionExpired')}</p>
+        )}
         <form className={`form-stack ${styles.loginForm}`} onSubmit={handleLogin}>
           <label className="form-field" htmlFor="login-user">
             <span className="form-label">{t('home.usernameLabel')}</span>

@@ -19,6 +19,7 @@ class WantedAd(Base):
     space_id = Column(GUID(), ForeignKey("spaces.id"), nullable=True)
     title = Column(String, nullable=False)
     body = Column(JSON().with_variant(JSONB, "postgresql"), nullable=False)
+    tags = Column(JSON().with_variant(JSONB, "postgresql"), nullable=False, default=list, server_default="[]")
     author_character_id = Column(GUID(), ForeignKey("characters.id"), nullable=False)
     created_at = Column(DateTime(timezone=True), nullable=False, server_default=func.now())
 

@@ -43,7 +43,9 @@ def get_current_character(
     Verifies the character belongs to the authenticated account, so a user can only
     ever act as one of their own characters.
     """
-    character = db.query(Character).filter(Character.id == x_character_id).first()
+    character = db.query(Character).filter(
+        Character.id == x_character_id, Character.is_deleted.is_(False),
+    ).first()
     if character is None:
         raise HTTPException(status_code=404, detail="Charakter nicht gefunden")
     if character.account_id != current_user.id:

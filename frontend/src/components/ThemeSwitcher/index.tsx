@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { apiUrl, authHeaders } from '../../api';
-import { applyTheme, getInitialTheme, THEMES, type ThemeName } from '../../theme';
+import { applyTheme, getInitialTheme, type ThemeName } from '../../theme';
 import styles from './ThemeSwitcher.module.css';
 
 /** Persist the theme to the account (server is source of truth). Fire-and-forget:
@@ -26,14 +26,16 @@ export default function ThemeSwitcher() {
   };
 
   return (
-    <label className={styles.switcher} aria-label={t('theme.label')}>
-      <select className={styles.select} value={theme} onChange={(e) => change(e.target.value as ThemeName)}>
-        {THEMES.map((name) => (
-          <option key={name} value={name}>
-            {t(`theme.${name}`)}
-          </option>
-        ))}
-      </select>
+    <label className={styles.switcher}>
+      <input
+        className={styles.toggle}
+        type="checkbox"
+        role="switch"
+        aria-label={t('theme.dark')}
+        checked={theme === 'dark'}
+        onChange={(e) => change(e.target.checked ? 'dark' : 'light')}
+      />
+      <span>{t(`theme.${theme}`)}</span>
     </label>
   );
 }

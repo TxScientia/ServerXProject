@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { OOCChannel } from '../../components/OOC';
 import styles from './OOCPopup.module.css';
+import frameStyles from '../../assets/styles/ResidentFrame.module.css';
 
 /**
  * Standalone global OOC chat, rendered in its own browser window (opened via
@@ -12,11 +13,13 @@ export default function OOCPopup() {
 
   return (
     <div className={styles.window}>
+      <div className={`${styles.panel} ${frameStyles.frame}`}>
       <header className={styles.header}>
         <h1 className={styles.title}>{t('ooc.globalTitle')}</h1>
       </header>
       <div className={styles.body}>
         <OOCChannel scope={{ type: 'global' }} scroll />
+      </div>
       </div>
     </div>
   );

@@ -444,5 +444,9 @@ export default function StoryBookDetail() {
     );
   }
 
-  return <AppLayout leftNav={leftNav}>{center}</AppLayout>;
+  return (
+    <AppLayout leftNav={leftNav} scrollCenterFromPage={enteredWorld && !!selectedPlace}>
+      {center}
+    </AppLayout>
+  );
 }

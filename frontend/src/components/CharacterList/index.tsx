@@ -8,22 +8,27 @@ export type Character = {
   spec: string;
   gender: string;
   editorData?: Record<string, unknown>;
+  isFavorite?: boolean;
 };
 
 type CharacterListProps = {
   characters: Character[];
-  /** When provided, each row is clickable (e.g. select-to-enter). */
+  /** When provided, only the character-name cell selects the character. */
   onSelect?: (character: Character) => void;
   editorPageHref?: (character: Character) => string;
   profilePageHref?: (character: Character) => string;
+  onToggleFavorite?: (character: Character) => void;
+  onDelete?: (character: Character) => void;
+  busyCharacterIds?: ReadonlySet<string>;
 };
 
 /**
  * A table of characters. Shared by the Lobby (your own characters, selectable)
  * and Residents (all characters, browse-only).
  */
-export default function CharacterList({ characters, onSelect, editorPageHref, profilePageHref }: CharacterListProps) {
+export default function CharacterList({ characters, onSelect, editorPageHref, profilePageHref, onToggleFavorite, onDelete, busyCharacterIds }: CharacterListProps) {
   const { t } = useTranslation();
+  const hasActions = Boolean(profilePageHref || editorPageHref || onToggleFavorite || onDelete);
 
   return (
     <table className={styles.table}>
@@ -33,22 +38,30 @@ export default function CharacterList({ characters, onSelect, editorPageHref, pr
           <th>{t('characterList.colRace')}</th>
           <th>{t('characterList.colSpec')}</th>
           <th>{t('characterList.colGender')}</th>
-          {(profilePageHref || editorPageHref) && <th>Aktionen</th>}
+          {hasActions && <th>{t('characterList.colActions')}</th>}
         </tr>
       </thead>
       <tbody>
         {characters.map((c) => (
-          <tr
-            key={c.id}
-            className={onSelect ? styles.clickable : undefined}
-            onClick={onSelect ? () => onSelect(c) : undefined}
-            title={onSelect ? t('characterList.playAs') : undefined}
-          >
-            <td>{c.name}</td>
+          <tr key={c.id}>
+            <td
+              className={onSelect ? styles.clickable : undefined}
+              onClick={onSelect ? () => onSelect(c) : undefined}
+              tabIndex={onSelect ? 0 : undefined}
+              onKeyDown={onSelect ? (event) => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                  event.preventDefault();
+                  onSelect(c);
+                }
+              } : undefined}
+              title={onSelect ? t('characterList.playAs') : undefined}
+            >
+              {c.name}
+            </td>
             <td>{c.race}</td>
             <td>{c.spec}</td>
             <td>{c.gender}</td>
-            {(profilePageHref || editorPageHref) && (
+            {hasActions && (
               <td>
                 {profilePageHref && (
                   <a
@@ -75,6 +88,33 @@ export default function CharacterList({ characters, onSelect, editorPageHref, pr
                   >
                     ↗
                   </a>
+                )}
+                {onToggleFavorite && (
+                  <button
+                    type="button"
+                    className={styles.iconButton}
+                    disabled={busyCharacterIds?.has(c.id)}
+                    aria-pressed={Boolean(c.isFavorite)}
+                    aria-label={t(c.isFavorite ? 'characterList.unfavorite' : 'characterList.favorite', { name: c.name })}
+                    title={t(c.isFavorite ? 'characterList.unfavorite' : 'characterList.favorite', { name: c.name })}
+                    onClick={() => onToggleFavorite(c)}
+                  >
+                    {c.isFavorite ? '★' : '☆'}
+                  </button>
+                )}
+                {onDelete && (
+                  <button
+                    type="button"
+                    className={styles.iconButton}
+                    disabled={busyCharacterIds?.has(c.id)}
+                    aria-label={t('characterList.delete', { name: c.name })}
+                    title={t('characterList.delete', { name: c.name })}
+                    onClick={() => onDelete(c)}
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden="true">
+                      <path d="M3 6h18M9 6V3h6v3M5 6l1 15h12l1-15M10 10v7M14 10v7" />
+                    </svg>
+                  </button>
                 )}
               </td>
             )}

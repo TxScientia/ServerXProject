@@ -3,7 +3,7 @@ from ..models import Character
 
 def list_all_characters(db):
     """All characters across all accounts (for the resident list)."""
-    return db.query(Character).all()
+    return db.query(Character).filter(Character.is_deleted.is_(False)).all()
 
 
 def create_character(db, account_id, name, race, specification, gender):

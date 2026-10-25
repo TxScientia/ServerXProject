@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import LobbyLayout from '../../pageLayouts/lobbyLayout/LobbyLayout';
 import ThemeSwitcher from '../../components/ThemeSwitcher';
+import switchStyles from '../../components/ThemeSwitcher/ThemeSwitcher.module.css';
+import { applyAccentHue, getAccentHue } from '../../accentHue';
 import LanguageSwitcher from '../../components/LanguageSwitcher';
 import { apiUrl, authHeaders } from '../../api';
 import { applyTheme, type ThemeName } from '../../theme';
@@ -16,6 +18,7 @@ export default function SettingsPage() {
   const { t } = useTranslation();
   const [ready, setReady] = useState(false);
   const [showBadge, setShowBadge] = useState(getShowUnreadBadge());
+  const [accentHue, setAccentHue] = useState(getAccentHue);
 
   // Password form
   const [currentPassword, setCurrentPassword] = useState('');
@@ -106,6 +109,23 @@ export default function SettingsPage() {
                 <span className={styles.rowLabel}>{t('theme.label')}</span>
                 <ThemeSwitcher />
               </div>
+              <label className={styles.hueControl}>
+                <span>{t('settings.accentHue')}</span>
+                <input
+                  className={styles.hueSlider}
+                  type="range"
+                  min="0"
+                  max="360"
+                  step="1"
+                  value={accentHue}
+                  onChange={(e) => {
+                    const next = Number(e.target.value);
+                    setAccentHue(next);
+                    applyAccentHue(next);
+                  }}
+                />
+                <span className={styles.muted}>{t('settings.accentHueHint')}</span>
+              </label>
               <div className={styles.row}>
                 <span className={styles.rowLabel}>{t('settings.language')}</span>
                 <LanguageSwitcher />
@@ -116,7 +136,9 @@ export default function SettingsPage() {
               <h2 className={styles.sectionTitle}>{t('settings.notifications')}</h2>
               <label className={styles.checkboxRow}>
                 <input
+                  className={switchStyles.toggle}
                   type="checkbox"
+                  role="switch"
                   checked={showBadge}
                   onChange={(e) => toggleBadge(e.target.checked)}
                 />

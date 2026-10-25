@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { apiUrl, authHeaders, characterHeaders } from '../../api';
+import { apiUrl, authHeaders, characterHeaders, fetchAuthenticated } from '../../api';
 import { openDirectChatWith } from '../../pm/directChat';
 import WantedAdCard from './WantedAdCard';
 import type { WantedAd, WantedAdScope } from './types';
@@ -29,7 +29,7 @@ export default function WantedAdList({ scope, refreshKey = 0, canModerate = fals
 
   const load = useCallback(() => {
     setLoading(true);
-    fetch(apiUrl(endpoint(scope)), { headers: { ...authHeaders(), ...characterHeaders() } })
+    fetchAuthenticated(apiUrl(endpoint(scope)), { headers: { ...authHeaders(), ...characterHeaders() } })
       .then((res) => {
         if (!res.ok) throw new Error();
         return res.json();
@@ -49,7 +49,7 @@ export default function WantedAdList({ scope, refreshKey = 0, canModerate = fals
   const handleDelete = async (id: string) => {
     if (!window.confirm(t('gesuche.deleteConfirm'))) return;
     try {
-      const res = await fetch(apiUrl(`/wanted-ads/${id}`), {
+      const res = await fetchAuthenticated(apiUrl(`/wanted-ads/${id}`), {
         method: 'DELETE',
         headers: { ...authHeaders(), ...characterHeaders() },
       });
@@ -81,6 +81,7 @@ export default function WantedAdList({ scope, refreshKey = 0, canModerate = fals
         <WantedAdCard
           key={ad.id}
           ad={ad}
+          framed={scope.type === 'global'}
           canDelete={ad.author_character_id === activeCharacterId || canModerate}
           canMessage={Boolean(activeCharacterId) && ad.author_character_id !== activeCharacterId}
           onDelete={handleDelete}

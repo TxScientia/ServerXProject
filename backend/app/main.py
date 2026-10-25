@@ -48,6 +48,7 @@ def init_db():
             account_columns = {column["name"] for column in inspector.get_columns("accounts")}
             character_columns = {column["name"] for column in inspector.get_columns("characters")}
             ooc_columns = {column["name"] for column in inspector.get_columns("ooc_messages")}
+            wanted_ad_columns = {column["name"] for column in inspector.get_columns("wanted_ads")}
             with engine.begin() as conn:
                 if "is_global_admin" not in account_columns:
                     conn.execute(text("ALTER TABLE accounts ADD COLUMN is_global_admin BOOLEAN NOT NULL DEFAULT 0"))
@@ -59,6 +60,12 @@ def init_db():
                     conn.execute(text("ALTER TABLE characters ADD COLUMN editor_data TEXT"))
                 if "kind" not in ooc_columns:
                     conn.execute(text("ALTER TABLE ooc_messages ADD COLUMN kind VARCHAR"))
+                for flag in ("is_favorite", "is_deleted"):
+                    if flag not in character_columns:
+                        conn.execute(text(f"ALTER TABLE characters ADD COLUMN {flag} BOOLEAN NOT NULL DEFAULT FALSE"))
+                if "tags" not in wanted_ad_columns:
+                    tag_type = "JSONB" if engine.dialect.name == "postgresql" else "JSON"
+                    conn.execute(text(f"ALTER TABLE wanted_ads ADD COLUMN tags {tag_type} NOT NULL DEFAULT '[]'"))
             return
         except OperationalError:
             print("Warte auf Datenbank...")

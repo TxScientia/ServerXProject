@@ -3,10 +3,15 @@
   color-scheme: dark;
 
   /* Semantic colour tokens. Keep component CSS on these so designs can swap. */
+  --page-background-image: url('/pictures/main-background-9CksUN6.webp');
+  --page-background-color: #050608;
+  --page-background-blend: lighten;
+  --color-frame: #29292b;
+  --color-lobby-content: #17191a;
   --color-bg: #151818;
   --color-bg-shell: #070808;
   --color-bg-elevated: #1b2020;
-  --color-topbar: #10131a;
+  --color-topbar: #3f4641;
   --color-topbar-text: #eeeeee;
   --color-panel: #0b0e13;
   --color-panel-strong: #08101f;
@@ -68,13 +73,20 @@
   --transition-fast: 180ms ease;
 }
 
+:root[data-theme='light'],
 :root[data-theme='parchment'] {
   color-scheme: light;
+
+  --page-background-image: url('/pictures/main-background-DEHw1Um.webp');
+  --page-background-color: #a9a49e;
+  --page-background-blend: normal;
+  --color-frame: #29292b;
+  --color-lobby-content: #a9a49e;
 
   --color-bg: #efe3c7;
   --color-bg-shell: #e6d4ad;
   --color-bg-elevated: #f7ecd2;
-  --color-topbar: #5a3823;
+  --color-topbar: hsl(var(--accent-hue, 0) 27.536% 27.059%);
   --color-topbar-text: #fff8e8;
   --color-panel: #f8eed9;
   --color-panel-strong: #fbf2df;

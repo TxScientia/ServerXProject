@@ -21,7 +21,7 @@ class AccountRead(BaseModel):
 
 class AccountPreferencesUpdate(BaseModel):
     """Partial update of user preferences; omitted fields stay unchanged."""
-    theme: Optional[Literal["dark", "parchment"]] = None
+    theme: Optional[Literal["light", "dark", "parchment"]] = None
     show_unread_badge: Optional[bool] = None
 
 

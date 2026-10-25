@@ -43,7 +43,10 @@ export default function Residents() {
 
       {error && <p className={styles.error}>{error}</p>}
 
-      <CharacterList characters={residents} />
+      <CharacterList
+        characters={residents}
+        profilePageHref={(character) => `/characters/${character.id}/profile`}
+      />
     </AppLayout>
   );
 }
