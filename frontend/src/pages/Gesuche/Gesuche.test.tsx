@@ -4,8 +4,14 @@ import { render, screen, fireEvent } from '../../test-utils';
 import GesuchePage from './index';
 
 vi.mock('../../pageLayouts/appLayout/AppLayout', () => ({
-  default: ({ children, pageScroll }: { children: ReactNode; pageScroll?: boolean }) => (
-    <div data-testid="app-layout" data-page-scroll={pageScroll}>{children}</div>
+  default: ({ children, pageScroll, scrollCenterFromPage, hideCenterScrollbar, growCenterFrame }: {
+    children: ReactNode;
+    pageScroll?: boolean;
+    scrollCenterFromPage?: boolean;
+    hideCenterScrollbar?: boolean;
+    growCenterFrame?: boolean;
+  }) => (
+    <div data-testid="app-layout" data-page-scroll={Boolean(pageScroll)} data-scroll-center={scrollCenterFromPage} data-hide-scrollbar={hideCenterScrollbar} data-grow-frame={growCenterFrame}>{children}</div>
   ),
 }));
 vi.mock('../../pageLayouts/lobbyLayout/LobbyLayout', () => ({
@@ -26,9 +32,12 @@ afterEach(() => localStorage.clear());
 
 test('shows the new headline, subtitle and create button without the old button', () => {
   render(<GesuchePage />);
-  expect(screen.getByTestId('app-layout')).toHaveAttribute('data-page-scroll', 'true');
+  expect(screen.getByTestId('app-layout')).toHaveAttribute('data-page-scroll', 'false');
+  expect(screen.getByTestId('app-layout')).toHaveAttribute('data-scroll-center', 'true');
+  expect(screen.getByTestId('app-layout')).toHaveAttribute('data-hide-scrollbar', 'true');
+  expect(screen.getByTestId('app-layout')).toHaveAttribute('data-grow-frame', 'true');
   expect(screen.getByRole('heading', { name: 'GESUCHE' })).toBeInTheDocument();
-  expect(screen.getByText('GLOBALE SUCHE ALLER CHARAKTERE UND PLOTS')).toBeInTheDocument();
+  expect(screen.getByText('“NO MAN IS AN ISLAND, ENTIRE OF ITSELF” — JOHN DONNE')).toBeInTheDocument();
   expect(screen.getByRole('button', { name: 'GESUCH ERSTELLEN' })).toBeInTheDocument();
   expect(screen.queryByText('+ Neues Gesuch')).not.toBeInTheDocument();
 });

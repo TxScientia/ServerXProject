@@ -7,7 +7,9 @@ from sqlalchemy.orm import Session
 from ..models import Chat, ChatMember, Message, MessageRead, SystemMessage, Character
 
 
-def create_direct_chat(db: Session, character_id_1: uuid.UUID, character_id_2: uuid.UUID) -> Chat:
+def create_direct_chat(
+    db: Session, character_id_1: uuid.UUID, character_id_2: uuid.UUID, name: Optional[str] = None
+) -> Chat:
     """Create a direct chat between two characters, or return if it already exists."""
     # Check if a direct chat between these two already exists (order-independent).
     existing = (
@@ -29,10 +31,15 @@ def create_direct_chat(db: Session, character_id_1: uuid.UUID, character_id_2: u
         )
         .first()
     )
+    chat_name = name.strip() if name else None
     if existing:
+        if chat_name:
+            existing.name = chat_name
+            db.commit()
+            db.refresh(existing)
         return existing
 
-    chat = Chat(type="direct")
+    chat = Chat(type="direct", name=chat_name or None)
     db.add(chat)
     db.flush()
     db.add(ChatMember(chat_id=chat.id, character_id=character_id_1, role="member"))

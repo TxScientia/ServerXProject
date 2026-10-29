@@ -9,6 +9,9 @@
 
 /* --- top navbar --- */
 .topbar {
+  position: relative;
+  z-index: 30;
+  flex-shrink: 0;
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
@@ -76,7 +79,7 @@
 .body {
   flex: 1;
   width: 100%;
-  max-width: 1440px;
+  max-width: 1520px;
   margin: 0 auto;
   padding: var(--space-5) var(--space-6);
   display: grid;
@@ -109,6 +112,28 @@
   border-radius: var(--radius-md);
   overflow: auto;
   min-height: 0;
+}
+
+/* The scroll viewport stays fixed; its content-sized decorative frame grows. */
+.center.growingCenter {
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: var(--color-character-container-outer);
+}
+
+.centerFrame {
+  min-height: 100%;
+  box-sizing: border-box;
+}
+
+/* Hide only the scrollbar chrome, retaining wheel, touch and keyboard scrolling. */
+.hideCenterScrollbar {
+  scrollbar-width: none;
+}
+
+.hideCenterScrollbar::-webkit-scrollbar {
+  display: none;
 }
 
 /* Content-sized pages use document scrolling, not a nested center scrollbar. */

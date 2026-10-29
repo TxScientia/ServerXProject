@@ -6,6 +6,7 @@ import AppLayout from '../../pageLayouts/appLayout/AppLayout';
 import LobbyLayout from '../../pageLayouts/lobbyLayout/LobbyLayout';
 import NewsList from '../../components/News/NewsList';
 import styles from './News.module.css';
+import PageHeading from '../../components/PageHeading';
 
 export default function NewsPage() {
   const navigate = useNavigate();
@@ -23,8 +24,7 @@ export default function NewsPage() {
   const content = (
     <div className={styles.page}>
       <div>
-        <h1 className={styles.title}>{t('news.pageTitle')}</h1>
-        <p className={styles.subtitle}>{t('news.pageSubtitle')}</p>
+        <PageHeading title={t('news.pageTitle')} subtitle={t('news.pageSubtitle')} />
       </div>
       <NewsList scope={{ type: 'global' }} />
     </div>

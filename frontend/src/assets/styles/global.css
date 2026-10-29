@@ -6,6 +6,7 @@
   --page-background-image: url('/pictures/main-background-9CksUN6.webp');
   --page-background-color: #050608;
   --page-background-blend: lighten;
+  --page-background-filter: brightness(0.35);
   --color-frame: #29292b;
   --color-lobby-content: #17191a;
   --color-bg: #151818;
@@ -80,6 +81,7 @@
   --page-background-image: url('/pictures/main-background-DEHw1Um.webp');
   --page-background-color: #a9a49e;
   --page-background-blend: normal;
+  --page-background-filter: none;
   --color-frame: #29292b;
   --color-lobby-content: #a9a49e;
 

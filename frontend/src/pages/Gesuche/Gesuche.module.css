@@ -2,6 +2,7 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-6);
+  padding-bottom: var(--space-8);
   font-family: Calibri, 'Segoe UI', Arial, sans-serif;
 }
 
@@ -9,27 +10,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--space-1);
-}
-
-/* Override the shared page heading size and underline width on this page. */
-.page .header .title {
-  width: min(100%, 28rem);
-  margin: 0;
-  padding: 0 1rem var(--space-3);
-  border-bottom: 1px solid var(--color-character-heading-line, var(--color-text-muted));
-  color: var(--color-character-heading, var(--color-text));
-  font-family: 'Times New Roman', Times, serif;
-  font-size: 2rem;
-  text-align: center;
-}
-
-.subtitle {
-  color: var(--color-character-heading-line, var(--color-text-muted));
-  margin: 0;
-  font-family: Calibri, 'Segoe UI', Arial, sans-serif;
-  font-size: 0.875rem;
-  text-align: center;
+  gap: 0;
 }
 
 .actions {

@@ -114,7 +114,7 @@
   "residents": {
     "pageTitle": "RESIDENTS",
     "sideTitle": "Bewohner",
-    "allNote": "Alle Charaktere. (Online-Status folgt später.)",
+    "allNote": "“THAT STRANGERS ARE FRIENDS THAT WE SOME DAY MAY MEET.” — EDGAR A. GUEST",
     "loadError": "Bewohner konnten nicht geladen werden."
   },
   "storybooks": {
@@ -127,7 +127,13 @@
     "clearFilters": "Filter zurücksetzen",
     "noMatches": "Keine StoryBooks entsprechen den Filtern.",
     "pageTitle": "StoryBook",
-    "newPlot": "+ Neuer Plot",
+    "catalogTitle": "Storybooks",
+    "subtitle": "Eigene Welten · Eigene Plots · Unendliche Möglichkeiten",
+    "open": "Zum Storybook",
+    "openTitle": "Zum Storybook: {{title}}",
+    "untagged": "Eine neue Welt",
+    "noDescription": "Diese Geschichte wartet darauf, entdeckt zu werden.",
+    "newPlot": "PLOT ERSTELLEN",
     "generic": "Generic",
     "genericSoon": "Generische StoryBooks – bald verfügbar.",
     "worldsFromUsers": "Worlds from Users",
@@ -261,7 +267,7 @@
   },
   "news": {
     "pageTitle": "News",
-    "pageSubtitle": "Ankündigungen und Updates für When Worlds Collide.",
+    "pageSubtitle": "“NEWS IS ONLY THE FIRST ROUGH DRAFT OF HISTORY” — ALAN BARTH",
     "latest": "Neueste News",
     "title": "Titel",
     "titlePlaceholder": "Überschrift der Nachricht",
@@ -293,12 +299,14 @@
     "italic": "Kursiv",
     "underline": "Unterstrichen",
     "strike": "Durchgestrichen",
+    "bulletList": "Aufzählung",
+    "orderedList": "Nummerierte Liste",
     "color": "Textfarbe",
     "clearColor": "Farbe entfernen"
   },
   "gesuche": {
     "pageTitle": "GESUCHE",
-    "pageSubtitle": "GLOBALE SUCHE ALLER CHARAKTERE UND PLOTS",
+    "pageSubtitle": "“NO MAN IS AN ISLAND, ENTIRE OF ITSELF” — JOHN DONNE",
     "createGlobal": "GESUCH ERSTELLEN",
     "viewAd": "WEITER ZUM GESUCH >",
     "tagsLabel": "Tags (optional)",
@@ -362,6 +370,8 @@
     }
   },
   "pm": {
+    "pageTitle": "NACHRICHTEN",
+    "pageSubtitle": "“LETTER WRITING IS THE ONLY DEVICE COMBINING SOLITUDE WITH GOOD COMPANY” — LORD BYRON",
     "tabGroups": "Gruppen",
     "tabDirect": "Direkt",
     "tabSystem": "System",

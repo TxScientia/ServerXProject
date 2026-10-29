@@ -5,6 +5,7 @@ import AppLayout from '../../pageLayouts/appLayout/AppLayout';
 import NewsList from '../../components/News/NewsList';
 import { apiUrl, authHeaders } from '../../api';
 import styles from './StoryBookNews.module.css';
+import PageHeading from '../../components/PageHeading';
 
 type Storybook = {
   id: string;
@@ -61,8 +62,7 @@ export default function StoryBookNewsPage() {
         ) : (
           <>
             <div>
-              <h1 className={styles.title}>{t('plot.newsTitle', { title: storybook?.title })}</h1>
-              <p className={styles.subtitle}>{t('plot.newsSubtitle')}</p>
+              <PageHeading title={t('plot.newsTitle', { title: storybook?.title })} subtitle={t('plot.newsSubtitle')} />
             </div>
             {id && <NewsList scope={{ type: 'storybook', storybookId: id }} emptyText={t('news.emptyPlot')} />}
           </>

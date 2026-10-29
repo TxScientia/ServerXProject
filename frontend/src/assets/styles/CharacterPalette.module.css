@@ -57,7 +57,7 @@
 /* Invert the neutral surfaces, retaining the selected accent hue. */
 :global(:root[data-theme='dark']) .palette {
   --page-background-image: url('/pictures/main-background-DEHw1Um.webp');
-  --page-background-filter: invert(1);
+  --page-background-filter: invert(1) brightness(0.35);
   --page-background-blend: normal;
   --design-accent: hsl(var(--accent-hue, 0) 27.536% 72.941%);
   --design-inner: #383939;
@@ -67,15 +67,38 @@
 }
 
 :global(:root) .palette h1 {
-  width: fit-content;
+  width: min(100%, 40rem);
   max-width: 100%;
+  box-sizing: border-box;
   margin: 0 auto var(--space-6);
   padding: 0 1rem var(--space-2);
   border-bottom: 1px solid var(--design-text);
   color: var(--design-accent);
   font-family: 'Times New Roman', Times, serif;
-  font-size: clamp(1.125rem, 2.8cqi, 1.375rem);
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: normal;
+  text-transform: uppercase;
+  overflow-wrap: anywhere;
   text-align: center;
+}
+
+/* Keep subtitles close to the underline without changing content spacing. */
+:global(:root) .palette h1:has(+ p) {
+  margin-bottom: 0;
+}
+
+:global(:root) .palette h1 + p {
+  margin: 4px 0 0;
+  color: var(--design-text);
+  text-align: center;
+  font-family: Calibri, 'Segoe UI', Arial, sans-serif;
+  font-size: 0.875rem;
+  font-weight: 400;
+  line-height: 1.5;
+  letter-spacing: normal;
+  text-transform: uppercase;
 }
 
 :global(:root) .palette table {

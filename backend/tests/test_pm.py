@@ -22,6 +22,37 @@ def test_create_direct_chat(client, character, auth_headers, account, db_session
     assert chat["member_count"] == 2
 
 
+def test_named_direct_chat_round_trip(client, character, auth_headers, account, db_session):
+    h = char_headers(auth_headers, character)
+    other = create_character(db_session, account.id, "Recipient", "Elf", "Ranger", "Divers")
+    payload = {"character_id": str(other.id), "name": "  Our story  "}
+    response = client.post("/pm/chats/direct", headers=h, json=payload)
+    assert response.status_code == 200
+    chat = response.json()
+    assert chat["name"] == "Our story"
+    detail = client.get(f"/pm/chats/{chat['id']}", headers=h)
+    assert detail.status_code == 200
+    assert detail.json()["name"] == "Our story"
+    listing = client.get("/pm/chats", headers=h)
+    assert listing.status_code == 200
+    assert listing.json()[0]["name"] == "Our story"
+    # Reopening without a name must not erase a saved title or create a duplicate.
+    reopened = client.post("/pm/chats/direct", headers=h, json={"character_id": str(other.id)})
+    assert reopened.status_code == 200
+    assert reopened.json()["id"] == chat["id"]
+    assert reopened.json()["name"] == "Our story"
+    renamed = client.post("/pm/chats/direct", headers=h, json={**payload, "name": "New title"})
+    assert renamed.status_code == 200
+    assert renamed.json()["id"] == chat["id"]
+    assert renamed.json()["name"] == "New title"
+
+
+def test_direct_chat_rejects_overlong_name(client, character, auth_headers):
+    response = client.post("/pm/chats/direct", headers=char_headers(auth_headers, character),
+                           json={"character_id": str(character.id), "name": "x" * 121})
+    assert response.status_code == 422
+
+
 def test_cannot_create_direct_chat_with_self(client, character, auth_headers):
     """Cannot create a direct chat with yourself."""
     h = char_headers(auth_headers, character)

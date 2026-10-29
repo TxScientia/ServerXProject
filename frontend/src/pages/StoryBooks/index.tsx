@@ -1,10 +1,11 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import AppLayout from '../../pageLayouts/appLayout/AppLayout';
-import PlotCard, { Plot } from '../../components/PlotCard';
+import type { Plot } from '../../components/PlotCard';
 import { apiUrl, authHeaders, characterHeaders } from '../../api';
 import styles from './StoryBooks.module.css';
+import PageHeading from '../../components/PageHeading';
 
 type Storybook = Plot;
 
@@ -30,6 +31,7 @@ export default function StoryBooks() {
       navigate('/lobby');
       return;
     }
+    setError(null);
     fetch(apiUrl('/storybooks'), { headers: { ...authHeaders() } })
       .then((res) => {
         if (!res.ok) throw new Error();
@@ -147,38 +149,61 @@ export default function StoryBooks() {
   );
 
   return (
-    <AppLayout leftNav={leftNav}>
-      <div className={styles.headerRow}>
-        <h1 className={styles.pageTitle}>{t('storybooks.pageTitle')}</h1>
-        <button className="button" onClick={() => setShowModal(true)}>
-          {t('storybooks.newPlot')}
-        </button>
-      </div>
+    <AppLayout leftNav={leftNav} scrollCenterFromPage hideCenterScrollbar growCenterFrame>
+      <header className={styles.header}>
+        <PageHeading title={t('storybooks.catalogTitle')} subtitle={t('storybooks.subtitle')} />
+        <div className={styles.createRow}>
+          <button className={`button ${styles.createButton}`} onClick={() => setShowModal(true)}>
+            {t('storybooks.newPlot')}
+          </button>
+        </div>
+      </header>
 
-      {error && <p className={styles.error}>{error}</p>}
+      {error && <p role="alert" className={styles.error}>{error}</p>}
 
-      <section className={styles.section}>
-        <h2 className={styles.sectionTitle}>{t('storybooks.generic')}</h2>
-        <p className={styles.muted}>{t('storybooks.genericSoon')}</p>
-      </section>
-
-      <section className={styles.section}>
-        <h2 className={styles.sectionTitle}>{t('storybooks.worldsFromUsers')}</h2>
-        {storybooks.length === 0 ? (
+      <section className={styles.catalog} aria-label={t('storybooks.catalogTitle')}>
+        {!error && storybooks.length === 0 && (
           <p className={styles.muted}>{t('storybooks.empty')}</p>
-        ) : filtered.length === 0 ? (
-          <p className={styles.muted}>{t('storybooks.noMatches')}</p>
-        ) : (
-          <div className={styles.grid}>
-            {filtered.map((sb) => (
-              <PlotCard
-                key={sb.id}
-                plot={sb}
-                onClick={() => navigate(`/storybooks/${sb.id}`)}
-              />
-            ))}
-          </div>
         )}
+        {storybooks.length > 0 && filtered.length === 0 && (
+          <p className={styles.muted}>{t('storybooks.noMatches')}</p>
+        )}
+        {filtered.map((sb, index) => (
+          <article key={sb.id} className={styles.book}>
+            <div className={styles.storyPage}>
+              <div className={styles.metadata}>
+                <span>Storybook N° {String(index + 1).padStart(3, '0')}</span>
+                <span>{t('plotCard.createdBy')} {sb.owner_character_name ?? '—'}</span>
+              </div>
+              <h2 className={styles.bookTitle}>{sb.title}</h2>
+              <p className={styles.tags}>{sb.tags.join(' · ') || t('storybooks.untagged')}</p>
+              <div className={styles.ornament} aria-hidden="true"><span>◇</span></div>
+              <p className={styles.description}>{sb.description || t('storybooks.noDescription')}</p>
+              <div className={styles.bookFooter}>
+                <span className={styles.visibility}>
+                  {t(sb.visibility === 'public' ? 'plotCard.public' : sb.visibility === 'generic' ? 'plotCard.generic' : 'plotCard.private')}
+                </span>
+                <Link className={styles.openBook} to={`/storybooks/${sb.id}`} aria-label={t('storybooks.openTitle', { title: sb.title })}>
+                  {t('storybooks.open')} <span aria-hidden="true">⟶</span>
+                </Link>
+              </div>
+            </div>
+            <div className={styles.coverPage}>
+              <div className={styles.cover}>
+                {sb.image_url ? (
+                  <img className={styles.coverImage} src={sb.image_url} alt="" />
+                ) : (
+                  <div className={styles.coverPlaceholder} aria-hidden="true">
+                    <svg viewBox="0 0 80 80" fill="none" stroke="currentColor" strokeWidth="1">
+                      <path d="M40 19C28 12 15 15 8 19v43c10-5 22-5 32 1 10-6 22-6 32-1V19c-7-4-20-7-32 0Zm0 0v44" />
+                      <path d="m35 7 5-5 5 5-5 5Z M21 29c5-1 9 0 13 2m-13 8c5-1 9 0 13 2m12-10c4-2 8-3 13-2m-13 12c4-2 8-3 13-2" />
+                    </svg>
+                  </div>
+                )}
+              </div>
+            </div>
+          </article>
+        ))}
       </section>
 
       {showModal && (

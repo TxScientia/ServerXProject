@@ -16,6 +16,7 @@
 
 .toolbar {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: var(--space-1);
   padding: var(--space-2);
@@ -123,6 +124,28 @@
 
 .content p:last-child {
   margin-bottom: 0;
+}
+
+.content ul,
+.content ol {
+  margin: 0 0 var(--space-3);
+  padding-left: 1.75rem;
+}
+
+.content ul {
+  list-style-type: disc;
+}
+
+.content ol {
+  list-style-type: decimal;
+}
+
+.content li {
+  display: list-item;
+}
+
+.content li > p {
+  margin-bottom: var(--space-1);
 }
 
 /* Placeholder text for an empty editor (Tiptap Placeholder extension). */

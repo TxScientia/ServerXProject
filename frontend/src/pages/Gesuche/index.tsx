@@ -6,6 +6,7 @@ import LobbyLayout from '../../pageLayouts/lobbyLayout/LobbyLayout';
 import WantedAdList from '../../components/WantedAds/WantedAdList';
 import WantedAdComposer from '../../components/WantedAds/WantedAdComposer';
 import styles from './Gesuche.module.css';
+import PageHeading from '../../components/PageHeading';
 
 export default function GesuchePage() {
   const navigate = useNavigate();
@@ -23,8 +24,7 @@ export default function GesuchePage() {
   const content = (
     <div className={styles.page}>
       <div className={styles.header}>
-        <h1 className={styles.title}>{t('gesuche.pageTitle')}</h1>
-        <p className={styles.subtitle}>{t('gesuche.pageSubtitle')}</p>
+        <PageHeading title={t('gesuche.pageTitle')} subtitle={t('gesuche.pageSubtitle')} />
         {inServer && !composing && (
           <div className={styles.actions}>
             <button type="button" className={`button ${styles.createButton}`} onClick={() => setComposing(true)}>
@@ -49,5 +49,5 @@ export default function GesuchePage() {
     </div>
   );
 
-  return inServer ? <AppLayout pageScroll>{content}</AppLayout> : <LobbyLayout>{content}</LobbyLayout>;
+  return inServer ? <AppLayout scrollCenterFromPage hideCenterScrollbar growCenterFrame>{content}</AppLayout> : <LobbyLayout>{content}</LobbyLayout>;
 }

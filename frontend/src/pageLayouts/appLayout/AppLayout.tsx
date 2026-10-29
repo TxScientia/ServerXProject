@@ -266,6 +266,10 @@ type AppLayoutProps = {
   leftNav?: ReactNode;
   children: ReactNode;
   scrollCenterFromPage?: boolean;
+  /** Keep panel scrolling available without showing an inner scrollbar. */
+  hideCenterScrollbar?: boolean;
+  /** Let the inner decorative frame grow with the scrollable content. */
+  growCenterFrame?: boolean;
   /** Let document scrolling grow the center panel, with sticky side panels. */
   pageScroll?: boolean;
 };
@@ -274,7 +278,7 @@ type AppLayoutProps = {
  * Shared page shell: top navbar (always), a context-specific left nav, the center
  * content, and the character sidebar (always). Every page renders inside this.
  */
-export default function AppLayout({ leftNav, children, scrollCenterFromPage = false, pageScroll = false }: AppLayoutProps) {
+export default function AppLayout({ leftNav, children, scrollCenterFromPage = false, pageScroll = false, hideCenterScrollbar = false, growCenterFrame = false }: AppLayoutProps) {
   const panelFrame = frameStyles.frame;
   const shellRef = useRef<HTMLDivElement>(null);
   const centerRef = useRef<HTMLElement>(null);
@@ -306,7 +310,9 @@ export default function AppLayout({ leftNav, children, scrollCenterFromPage = fa
           <nav className={`${styles.leftNav} ${panelFrame}`} aria-label="Section navigation">
             {leftNav}
           </nav>
-          <main ref={centerRef} className={`${styles.center} ${panelFrame}`}>{children}</main>
+          <main ref={centerRef} className={`${styles.center} ${growCenterFrame ? styles.growingCenter : panelFrame} ${hideCenterScrollbar ? styles.hideCenterScrollbar : ''}`}>
+            {growCenterFrame ? <div className={`${panelFrame} ${styles.centerFrame}`}>{children}</div> : children}
+          </main>
           <CharacterSidebar framed />
         </div>
       </div>

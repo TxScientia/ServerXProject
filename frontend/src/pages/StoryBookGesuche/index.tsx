@@ -6,6 +6,7 @@ import WantedAdList from '../../components/WantedAds/WantedAdList';
 import WantedAdComposer from '../../components/WantedAds/WantedAdComposer';
 import { apiUrl, authHeaders } from '../../api';
 import styles from './StoryBookGesuche.module.css';
+import PageHeading from '../../components/PageHeading';
 
 type Storybook = {
   id: string;
@@ -68,8 +69,7 @@ export default function StoryBookGesuchePage() {
           <>
             <div className={styles.header}>
               <div>
-                <h1 className={styles.title}>{t('gesuche.plotTitle', { title: storybook?.title })}</h1>
-                <p className={styles.subtitle}>{t('gesuche.plotSubtitle')}</p>
+                <PageHeading title={t('gesuche.plotTitle', { title: storybook?.title })} subtitle={t('gesuche.plotSubtitle')} />
               </div>
               {!composing && (
                 <button type="button" className="button" onClick={() => setComposing(true)}>

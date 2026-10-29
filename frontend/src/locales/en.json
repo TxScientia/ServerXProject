@@ -114,7 +114,7 @@
   "residents": {
     "pageTitle": "RESIDENTS",
     "sideTitle": "Residents",
-    "allNote": "All characters. (Online status coming later.)",
+    "allNote": "“THAT STRANGERS ARE FRIENDS THAT WE SOME DAY MAY MEET.” — EDGAR A. GUEST",
     "loadError": "Could not load residents."
   },
   "storybooks": {
@@ -127,7 +127,13 @@
     "clearFilters": "Clear filters",
     "noMatches": "No StoryBooks match your filters.",
     "pageTitle": "StoryBook",
-    "newPlot": "+ New Plot",
+    "catalogTitle": "Storybooks",
+    "subtitle": "Your worlds · Your plots · Endless possibilities",
+    "open": "Open storybook",
+    "openTitle": "Open storybook: {{title}}",
+    "untagged": "A new world",
+    "noDescription": "This story is waiting to be discovered.",
+    "newPlot": "CREATE PLOT",
     "generic": "Generic",
     "genericSoon": "Generic StoryBooks – coming soon.",
     "worldsFromUsers": "Worlds from Users",
@@ -261,7 +267,7 @@
   },
   "news": {
     "pageTitle": "News",
-    "pageSubtitle": "Announcements and updates for When Worlds Collide.",
+    "pageSubtitle": "“NEWS IS ONLY THE FIRST ROUGH DRAFT OF HISTORY” — ALAN BARTH",
     "latest": "Latest news",
     "title": "Title",
     "titlePlaceholder": "News headline",
@@ -293,12 +299,14 @@
     "italic": "Italic",
     "underline": "Underline",
     "strike": "Strikethrough",
+    "bulletList": "Bulleted list",
+    "orderedList": "Numbered list",
     "color": "Text color",
     "clearColor": "Remove color"
   },
   "gesuche": {
     "pageTitle": "WANTED ADS",
-    "pageSubtitle": "GLOBAL SEARCH FOR ALL CHARACTERS AND PLOTS",
+    "pageSubtitle": "“NO MAN IS AN ISLAND, ENTIRE OF ITSELF” — JOHN DONNE",
     "createGlobal": "CREATE WANTED AD",
     "viewAd": "VIEW WANTED AD >",
     "tagsLabel": "Tags (optional)",
@@ -362,6 +370,8 @@
     }
   },
   "pm": {
+    "pageTitle": "MESSAGES",
+    "pageSubtitle": "“LETTER WRITING IS THE ONLY DEVICE COMBINING SOLITUDE WITH GOOD COMPANY” — LORD BYRON",
     "tabGroups": "Groups",
     "tabDirect": "Direct",
     "tabSystem": "System",

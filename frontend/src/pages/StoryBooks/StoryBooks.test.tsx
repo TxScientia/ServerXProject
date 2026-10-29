@@ -1,11 +1,16 @@
-import { render, screen, fireEvent } from '../../test-utils';
+import { fireEvent, render, screen, within } from '../../test-utils';
 import StoryBooks from './index';
+import usePageWheelScroll from '../../pageLayouts/appLayout/usePageWheelScroll';
+import layoutStyles from '../../pageLayouts/appLayout/AppLayout.module.css';
+
+vi.mock('../../pageLayouts/appLayout/usePageWheelScroll', () => ({ default: vi.fn() }));
 
 beforeEach(() => {
   localStorage.setItem('token', 'test-token');
   localStorage.setItem('characterId', 'char-1');
   localStorage.setItem('characterName', 'Arthas');
   global.fetch = vi.fn();
+  vi.mocked(usePageWheelScroll).mockClear();
 });
 
 afterEach(() => {
@@ -61,9 +66,42 @@ test('renders storybooks from the API and the acting character', async () => {
 
   render(<StoryBooks />);
 
-  expect(await screen.findByText('Neverwhere')).toBeInTheDocument();
+  expect(await screen.findByRole('heading', { name: 'Neverwhere' })).toBeInTheDocument();
+  expect(screen.getAllByText('Neverwhere')).toHaveLength(1);
+  expect(screen.getByText('Storybook N° 001')).toBeInTheDocument();
+  expect(screen.getByText('Erstellt von Richard Mayhew')).toBeInTheDocument();
+  expect(screen.getByText('Urban Fantasy')).toBeInTheDocument();
+  expect(screen.getByText('A world below')).toBeInTheDocument();
+  expect(screen.getByRole('link', { name: 'Zum Storybook: Neverwhere' })).toHaveAttribute('href', '/storybooks/1');
   // Acting character shown in the always-present character sidebar
   expect(screen.getByText('Arthas')).toBeInTheDocument();
+});
+
+test('keeps the page shell fixed and routes page wheel scrolling to the main panel', async () => {
+  mockFetch([]);
+
+  const { container } = render(<StoryBooks />);
+
+  await screen.findByText(/Noch keine StoryBooks/);
+  expect(container.firstElementChild).not.toHaveClass(layoutStyles.pageScroll);
+  const [targetRef, enabled] = vi.mocked(usePageWheelScroll).mock.calls.at(-1)!;
+  expect(enabled).toBe(true);
+  expect(targetRef.current).toBe(screen.getByRole('main'));
+  expect(screen.getByRole('main')).toHaveClass(layoutStyles.hideCenterScrollbar, layoutStyles.growingCenter);
+  expect(screen.getByRole('main').firstElementChild).toHaveClass(layoutStyles.centerFrame);
+});
+
+test('places the create action below the heading and opens the plot form', async () => {
+  mockFetch([]);
+  render(<StoryBooks />);
+  await screen.findByText(/Noch keine StoryBooks/);
+
+  const header = screen.getByRole('heading', { name: 'Storybooks' }).closest('header')!;
+  const button = within(header).getByRole('button', { name: 'PLOT ERSTELLEN' });
+  expect(screen.getAllByRole('button', { name: 'PLOT ERSTELLEN' })).toHaveLength(1);
+  fireEvent.click(button);
+  expect(screen.getByRole('heading', { name: 'Neuen Plot erstellen' })).toBeInTheDocument();
+  expect(screen.getByLabelText('Titel')).toBeInTheDocument();
 });
 
 test('shows an empty state when there are no storybooks', async () => {
