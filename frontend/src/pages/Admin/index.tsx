@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import LobbyLayout from '../../pageLayouts/lobbyLayout/LobbyLayout';
 import NewsComposer from '../../components/News/NewsComposer';
 import NewsList from '../../components/News/NewsList';
+import AdminTags from '../../components/AdminTags';
 import { apiUrl, authHeaders } from '../../api';
 import styles from './Admin.module.css';
 
@@ -20,6 +21,7 @@ export default function AdminPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [refreshKey, setRefreshKey] = useState(0);
+  const [view, setView] = useState<'news' | 'tags'>('news');
 
   useEffect(() => {
     if (!localStorage.getItem('token')) {
@@ -45,8 +47,19 @@ export default function AdminPage() {
 
   const leftNav = (
     <div className={styles.sideNav}>
-      <button type="button" className={`${styles.sideItem} ${styles.active}`}>
+      <button
+        type="button"
+        className={`${styles.sideItem} ${view === 'news' ? styles.active : ''}`}
+        onClick={() => setView('news')}
+      >
         {t('admin.systemNews')}
+      </button>
+      <button
+        type="button"
+        className={`${styles.sideItem} ${view === 'tags' ? styles.active : ''}`}
+        onClick={() => setView('tags')}
+      >
+        {t('admin.tags')}
       </button>
     </div>
   );
@@ -65,11 +78,19 @@ export default function AdminPage() {
           ) : error ? (
             <p className={styles.error}>{error}</p>
           ) : account ? (
-            <>
-              <NewsComposer scope={{ type: 'global' }} onCreated={() => setRefreshKey((x) => x + 1)} />
-              <h2>{t('news.latest')}</h2>
-              <NewsList scope={{ type: 'global' }} refreshKey={refreshKey} />
-            </>
+            view === 'news' ? (
+              <>
+                <NewsComposer scope={{ type: 'global' }} onCreated={() => setRefreshKey((x) => x + 1)} />
+                <h2>{t('news.latest')}</h2>
+                <NewsList scope={{ type: 'global' }} refreshKey={refreshKey} />
+              </>
+            ) : (
+              <>
+                <h2>{t('admin.tags')}</h2>
+                <p className={styles.subtitle}>{t('admin.tagsSubtitle')}</p>
+                <AdminTags />
+              </>
+            )
           ) : null}
         </main>
       </div>

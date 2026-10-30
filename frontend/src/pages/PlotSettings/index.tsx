@@ -86,7 +86,7 @@ export default function PlotSettings() {
     visibility: 'public',
   });
   const [tags, setTags] = useState<string[]>([]);
-  const [tagInput, setTagInput] = useState('');
+  const [poolTags, setPoolTags] = useState<string[]>([]);
   const [status, setStatus] = useState<StatusMessage | null>(null);
   const [members, setMembers] = useState<Member[]>([]);
   const [linkedSpaces, setLinkedSpaces] = useState<LinkedSpace[]>([]);
@@ -191,10 +191,20 @@ export default function PlotSettings() {
     return () => window.clearTimeout(timer);
   }, [status]);
 
-  const addTag = () => {
-    const v = tagInput.trim();
-    if (v && tags.length < MAX_TAGS && !tags.includes(v)) setTags([...tags, v]);
-    setTagInput('');
+  // The shared tag pool (admin-managed). Plots pick from it; no free-text tags.
+  useEffect(() => {
+    fetch(apiUrl('/tags'), { headers: authHeaders() })
+      .then((res) => (res.ok ? res.json() : []))
+      .then((items: { name: string }[]) => setPoolTags(items.map((item) => item.name)))
+      .catch(() => undefined);
+  }, []);
+
+  const toggleTag = (name: string) => {
+    setTags((prev) => {
+      if (prev.includes(name)) return prev.filter((x) => x !== name);
+      if (prev.length >= MAX_TAGS) return prev; // cap reached
+      return [...prev, name];
+    });
   };
 
   const saveGeneral = () => {
@@ -441,31 +451,28 @@ export default function PlotSettings() {
 
           <div className={styles.field}>
             {t('plotSettings.tags')} <span className={styles.muted}>({tags.length}/{MAX_TAGS})</span>
-            <div className={styles.tagRow}>
-              {tags.map((tag) => (
-                <span key={tag} className={styles.tag}>
-                  {tag}
-                  <button type="button" onClick={() => setTags(tags.filter((x) => x !== tag))}>
-                    ×
-                  </button>
-                </span>
-              ))}
-            </div>
-            <div className={styles.tagAdd}>
-              <input
-                className="text-input"
-                value={tagInput}
-                placeholder={t('plotSettings.addTag')}
-                disabled={tags.length >= MAX_TAGS}
-                onChange={(e) => setTagInput(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    e.preventDefault();
-                    addTag();
-                  }
-                }}
-              />
-            </div>
+            {poolTags.length === 0 ? (
+              <p className={styles.muted}>{t('plotSettings.noPoolTags')}</p>
+            ) : (
+              <div className={styles.tagRow}>
+                {poolTags.map((name) => {
+                  const selected = tags.includes(name);
+                  const disabled = !selected && tags.length >= MAX_TAGS;
+                  return (
+                    <button
+                      key={name}
+                      type="button"
+                      className={`${styles.tagChoice} ${selected ? styles.tagChoiceSelected : ''}`.trim()}
+                      aria-pressed={selected}
+                      disabled={disabled}
+                      onClick={() => toggleTag(name)}
+                    >
+                      {name}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
           </div>
 
           <label className={styles.field}>

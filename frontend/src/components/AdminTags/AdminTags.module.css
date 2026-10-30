@@ -1,0 +1,47 @@
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  max-width: 520px;
+}
+
+.addRow {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.addRow .text-input {
+  flex: 1;
+}
+
+.list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border: 1px solid var(--color-border-subtle, var(--color-border));
+  background: var(--color-surface-muted);
+  border-radius: 10px;
+  padding: 0.5rem 0.7rem;
+}
+
+.name {
+  flex: 1;
+}
+
+.muted {
+  color: var(--color-text-subtle, var(--color-text-muted));
+}
+
+.error {
+  color: var(--color-danger-strong);
+  margin: 0;
+}

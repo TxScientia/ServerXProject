@@ -8,6 +8,15 @@ from .account import (
     verify_password,
 )
 from .character import create_character, list_all_characters
+from .tag import (
+    create_tag,
+    delete_tag,
+    get_tag,
+    get_tag_by_name,
+    list_tags,
+    rename_tag,
+    tags_by_names,
+)
 from .favorite import (
     add_favorite,
     get_favorite,
@@ -125,6 +134,13 @@ __all__ = [
     "update_account_preferences",
     "verify_password",
     "create_character",
+    "create_tag",
+    "delete_tag",
+    "get_tag",
+    "get_tag_by_name",
+    "list_tags",
+    "rename_tag",
+    "tags_by_names",
     "create_character_invite",
     "create_direct_chat",
     "create_group_chat",

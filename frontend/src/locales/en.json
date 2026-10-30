@@ -161,6 +161,7 @@
     "tags": "Tags",
     "addTag": "Add tag",
     "tagLimit": "Max 6 tags",
+    "noPoolTags": "No tags available yet — an admin needs to add some.",
     "visibility": "Visibility",
     "visPublic": "Public",
     "visGeneric": "Generic",
@@ -220,7 +221,18 @@
     "title": "Admin",
     "subtitle": "System-wide settings and announcements.",
     "systemNews": "System News",
-    "loadError": "Could not load admin area."
+    "loadError": "Could not load admin area.",
+    "tags": "Tags",
+    "tagsSubtitle": "Manage the tag pool plots can choose from.",
+    "addTag": "Add",
+    "editTag": "Edit",
+    "tagPlaceholder": "New tag name",
+    "noTags": "No tags yet.",
+    "tagExists": "That tag already exists.",
+    "tagSaveError": "Could not save the tag.",
+    "tagLoadError": "Could not load tags.",
+    "deleteTagTitle": "Delete tag",
+    "deleteTagConfirm": "Delete the tag “{{name}}”? It will be removed from all plots."
   },
   "news": {
     "pageTitle": "News",

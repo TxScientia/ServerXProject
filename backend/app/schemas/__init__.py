@@ -27,6 +27,7 @@ from .ooc import OOCMessageCreate, OOCMessageRead
 from .place import PlaceCreate, PlaceRead, PlaceReorder, PlaceUpdate
 from .post import PostCreate, PostRead, PostUpdate
 from .rank import RankCreate, RankRead, RankUpdate
+from .tag import TagCreate, TagRead, TagUpdate
 from .scene import SceneCreate, SceneRead, SceneWithPosts
 from .wanted_ad import WantedAdCreate, WantedAdRead
 from .space import (
@@ -76,6 +77,9 @@ __all__ = [
     "RankCreate",
     "RankRead",
     "RankUpdate",
+    "TagCreate",
+    "TagRead",
+    "TagUpdate",
     "SceneCreate",
     "SceneRead",
     "SceneWithPosts",

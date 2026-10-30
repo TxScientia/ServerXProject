@@ -95,6 +95,33 @@
   max-width: 260px;
 }
 
+/* Selectable chips from the shared tag pool. */
+.tagChoice {
+  padding: 0.2rem 0.65rem;
+  border-radius: 999px;
+  border: 1px solid var(--color-border);
+  background: transparent;
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.tagChoice:hover:not(:disabled) {
+  border-color: var(--color-accent);
+}
+
+.tagChoice:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.tagChoiceSelected {
+  background: color-mix(in srgb, var(--color-accent) 20%, transparent);
+  border-color: var(--color-accent);
+  color: var(--color-text);
+  font-weight: 500;
+}
+
 .muted {
   color: var(--color-text-muted, var(--color-text-muted));
   font-weight: 400;
