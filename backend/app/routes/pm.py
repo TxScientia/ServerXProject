@@ -60,7 +60,7 @@ def create_direct_chat_endpoint(
     """Create a direct chat between the acting character and another."""
     if data.character_id == character.id:
         raise HTTPException(status_code=400, detail="Kann keine Nachricht an sich selbst senden")
-    chat = create_direct_chat(db, character.id, data.character_id)
+    chat = create_direct_chat(db, character.id, data.character_id, name=data.name)
     return ChatRead(
         id=chat.id,
         type=chat.type,

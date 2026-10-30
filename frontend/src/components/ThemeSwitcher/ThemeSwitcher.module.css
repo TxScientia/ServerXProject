@@ -1,20 +1,55 @@
 .switcher {
   display: inline-flex;
   align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
 }
 
-.select {
-  border: 1px solid var(--color-border-subtle);
-  border-radius: var(--radius-pill);
-  background: var(--color-surface-muted);
-  color: var(--color-text);
-  padding: 0.35rem 0.55rem;
-  font: inherit;
-  font-size: 0.85rem;
+.toggle {
+  appearance: none;
+  position: relative;
+  display: inline-block;
+  flex: 0 0 auto;
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  background: var(--color-surface-hover);
+  width: 2.5rem;
+  height: 1.4rem;
+  cursor: pointer;
+  transition: background 180ms ease;
 }
 
-.select:focus {
-  outline: none;
-  border-color: var(--color-accent);
-  box-shadow: var(--focus-ring);
+.toggle::before {
+  content: '';
+  position: absolute;
+  left: 0.15rem;
+  top: 0.15rem;
+  width: 0.975rem;
+  height: 0.975rem;
+  border-radius: 50%;
+  background: var(--color-text);
+  transition: transform 180ms ease;
+}
+
+.toggle:checked {
+  background: var(--color-accent);
+}
+
+.toggle:checked::before {
+  transform: translateX(1.1rem);
+  background: var(--color-accent-contrast);
+}
+
+.toggle:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .toggle,
+  .toggle::before {
+    transition: none;
+  }
 }

@@ -4,14 +4,14 @@
   justify-content: space-between;
   padding: 12px 16px !important;
   margin-bottom: 8px;
-  border-radius: 8px;
+  border-radius: 0;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .chatCard:hover {
   background: color-mix(in srgb, var(--color-bg-elevated) 95%, transparent);
-  border-color: var(--accent-color);
+  border-color: var(--color-accent);
 }
 
 .cardContent {
@@ -49,9 +49,9 @@
   min-width: 24px;
   height: 24px;
   padding: 0 6px;
-  background: var(--accent-color);
-  color: white;
-  border-radius: 12px;
+  background: var(--color-button-bg);
+  color: var(--color-button-text);
+  border-radius: 0;
   font-size: 0.75rem;
   font-weight: 600;
   flex-shrink: 0;

@@ -22,6 +22,7 @@ export function wsUrl(path: string): string {
 /** Fired (same-tab) whenever the login token changes, so the WebSocket provider can
  * (re)connect or disconnect. Cross-tab changes come through the native 'storage' event. */
 export const AUTH_EVENT = 'serverx:auth';
+export const SESSION_EXPIRED_EVENT = 'serverx:session-expired';
 
 /** Fired (same-tab) when the acting character's favourites change, so the nav refreshes. */
 export const FAVORITES_EVENT = 'serverx:favorites';
@@ -39,6 +40,22 @@ export function setAuthToken(token: string): void {
 export function clearAuthToken(): void {
   localStorage.removeItem('token');
   window.dispatchEvent(new Event(AUTH_EVENT));
+}
+
+/** Treat an expired/rejected session as a login problem, not a page failure.
+ * Ignore late responses from an older session after the user has signed in again. */
+export async function fetchAuthenticated(url: string, init?: RequestInit): Promise<Response> {
+  const authorization = new Headers(init?.headers).get('Authorization');
+  const response = await fetch(url, init);
+  const currentToken = localStorage.getItem('token');
+  if (response.status === 401 && currentToken && authorization === `Bearer ${currentToken}`) {
+    localStorage.removeItem('characterId');
+    localStorage.removeItem('characterName');
+    localStorage.removeItem('isGlobalAdmin');
+    clearAuthToken();
+    window.dispatchEvent(new Event(SESSION_EXPIRED_EVENT));
+  }
+  return response;
 }
 
 /** Authorization header from the stored login token (empty if not logged in). */

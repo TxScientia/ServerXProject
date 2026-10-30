@@ -1,8 +1,12 @@
 from typing import Any
 
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, StrictBool, field_validator
 
 from ..images import character_images
+
+
+class CharacterFavoriteUpdate(BaseModel):
+    is_favorite: StrictBool
 
 
 class CharacterCreate(BaseModel):

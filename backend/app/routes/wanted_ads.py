@@ -39,6 +39,7 @@ def _serialize(item):
         space_id=item.space_id,
         title=item.title,
         body=item.body,
+        tags=item.tags or [],
         author_character_id=item.author_character_id,
         author_name=item.author_character.name if item.author_character else None,
         created_at=item.created_at,
@@ -70,7 +71,7 @@ def create_global_wanted_ad_endpoint(
     if not title:
         raise HTTPException(status_code=422, detail="Titel darf nicht leer sein")
     _validate_body(data.body)
-    return _serialize(create_global_wanted_ad(db, author_character_id=character.id, title=title, body=data.body))
+    return _serialize(create_global_wanted_ad(db, author_character_id=character.id, title=title, body=data.body, tags=data.tags))
 
 
 @router.get("/storybooks/{storybook_id}/wanted-ads", response_model=List[WantedAdRead])
@@ -99,7 +100,7 @@ def create_storybook_wanted_ad_endpoint(
     if not title:
         raise HTTPException(status_code=422, detail="Titel darf nicht leer sein")
     _validate_body(data.body)
-    return _serialize(create_space_wanted_ad(db, space_id=space.id, author_character_id=character.id, title=title, body=data.body))
+    return _serialize(create_space_wanted_ad(db, space_id=space.id, author_character_id=character.id, title=title, body=data.body, tags=data.tags))
 
 
 @router.delete("/wanted-ads/{wanted_ad_id}")

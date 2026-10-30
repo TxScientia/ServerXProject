@@ -19,7 +19,7 @@ class Account(Base):
         Boolean, nullable=False, default=False, server_default=expression.false()
     )
     # User preferences (account-wide, so they follow the user across devices).
-    theme = Column(String, nullable=False, default="dark", server_default="dark")
+    theme = Column(String, nullable=False, default="light", server_default="light")
     show_unread_badge = Column(
         Boolean, nullable=False, default=True, server_default=expression.true()
     )

@@ -1,21 +1,32 @@
 .page {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: var(--space-6);
+  padding-bottom: var(--space-8);
+  font-family: Calibri, 'Segoe UI', Arial, sans-serif;
 }
 
 .header {
   display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 1rem;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
 }
 
-.title {
-  margin: 0;
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+  margin-top: var(--space-8);
 }
 
-.subtitle {
-  color: var(--color-text-subtle);
-  margin: 0.25rem 0 0;
+.createButton {
+  border-radius: 0;
+  padding: 0.3rem 0.65rem;
+  background: var(--color-button-bg);
+  color: var(--color-button-text);
+  font-family: 'Times New Roman', Times, serif;
+  font-size: 0.875rem;
+  font-weight: 400;
+  line-height: 1.2;
 }

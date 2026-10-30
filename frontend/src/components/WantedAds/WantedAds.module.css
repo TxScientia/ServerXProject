@@ -11,10 +11,93 @@
   gap: 0.75rem;
 }
 
+/* Match the page frame, with equal breathing room on every inner edge. */
+:global(:root) .framedCard {
+  padding: calc(var(--inset) + var(--space-5));
+}
+
+/* Render the same inner border without masking its glow away. */
+.framedCard::before {
+  display: none;
+}
+
+.adBorder {
+  --line: currentColor;
+  color: var(--color-character-frame);
+  position: absolute;
+  inset: var(--inset);
+  z-index: 0;
+  pointer-events: none;
+  --ad-outline:
+    linear-gradient(var(--line), var(--line)) top var(--corner) left 0 / var(--character-frame-width, 1px) calc(100% - var(--corner) * 2) no-repeat,
+    linear-gradient(var(--line), var(--line)) top var(--corner) right 0 / var(--character-frame-width, 1px) calc(100% - var(--corner) * 2) no-repeat,
+    linear-gradient(var(--line), var(--line)) top 0 left var(--corner) / calc(100% - var(--corner) * 2) var(--character-frame-width, 1px) no-repeat,
+    linear-gradient(var(--line), var(--line)) bottom 0 left var(--corner) / calc(100% - var(--corner) * 2) var(--character-frame-width, 1px) no-repeat,
+    radial-gradient(circle at 0 0, transparent var(--corner), var(--line) var(--corner) calc(var(--corner) + var(--character-frame-corner-width, 1px)), transparent calc(var(--corner) + var(--character-frame-corner-width, 1px) + 0.5px)) top left / 50% 50% no-repeat,
+    radial-gradient(circle at 100% 0, transparent var(--corner), var(--line) var(--corner) calc(var(--corner) + var(--character-frame-corner-width, 1px)), transparent calc(var(--corner) + var(--character-frame-corner-width, 1px) + 0.5px)) top right / 50% 50% no-repeat,
+    radial-gradient(circle at 0 100%, transparent var(--corner), var(--line) var(--corner) calc(var(--corner) + var(--character-frame-corner-width, 1px)), transparent calc(var(--corner) + var(--character-frame-corner-width, 1px) + 0.5px)) bottom left / 50% 50% no-repeat,
+    radial-gradient(circle at 100% 100%, transparent var(--corner), var(--line) var(--corner) calc(var(--corner) + var(--character-frame-corner-width, 1px)), transparent calc(var(--corner) + var(--character-frame-corner-width, 1px) + 0.5px)) bottom right / 50% 50% no-repeat;
+}
+
+.adBorder {
+  background: var(--ad-outline);
+}
+
+/* A bright, independently colored copy sits just OUTSIDE the inner border,
+   on the darker band. It is not hidden beneath the inner fill or masked off. */
+.adBorder::before {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  color: #c7c6c6;
+  background: var(--ad-outline);
+  filter: blur(1.5px) drop-shadow(0 0 2px #c7c6c6);
+  pointer-events: none;
+}
+
+/* Keep text above the glow, and the glow above the inner background fill. */
+.framedCard > :not(.adBorder) {
+  position: relative;
+  z-index: 1;
+}
+
+.framedCard .cardHeader {
+  flex-direction: row;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--space-3) var(--space-5);
+}
+
+.framedCard .cardTitle {
+  font-size: 1.6rem;
+  font-family: 'Times New Roman', Times, serif;
+  color: var(--color-character-heading, var(--color-accent));
+  overflow-wrap: anywhere;
+}
+
+.framedCard .byline {
+  margin-left: auto;
+  text-align: right;
+}
+
 .cardHeader {
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
+}
+
+.cardHeading {
+  min-width: 0;
+  flex: 1 1 12rem;
+}
+
+.tags {
+  margin: var(--space-1) 0 0 var(--space-1);
+  color: var(--color-text);
+  font-family: Calibri, 'Segoe UI', Arial, sans-serif;
+  font-size: 0.9rem;
+  overflow-wrap: anywhere;
 }
 
 .cardTitle {
@@ -23,11 +106,26 @@
 }
 
 .byline {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.4rem;
+  font-family: Calibri, 'Segoe UI', Arial, sans-serif;
   color: var(--color-text-subtle);
   font-size: 0.9rem;
 }
 
+.authorBadge {
+  display: inline-block;
+  padding: 0.2rem 0.45rem;
+  border-radius: 0;
+  background: var(--color-button-bg);
+  color: var(--color-button-text);
+}
+
 .body {
+  font-family: Calibri, 'Segoe UI', Arial, sans-serif;
   color: var(--color-text);
 }
 
@@ -35,6 +133,52 @@
   display: flex;
   gap: 0.5rem;
   justify-content: flex-end;
+}
+
+.framedFooter {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  margin-top: var(--space-4);
+}
+
+.continueButton,
+.deleteButton {
+  border-radius: 0;
+  padding: 0.25rem 0.55rem;
+  background: var(--color-button-bg);
+  color: var(--color-button-text);
+  font-family: Calibri, 'Segoe UI', Arial, sans-serif;
+  font-size: 0.75rem;
+  font-weight: 400;
+  line-height: 1.2;
+}
+
+.continueButton {
+  grid-column: 2;
+}
+
+.deleteButton {
+  grid-column: 3;
+  justify-self: end;
+  text-transform: uppercase;
+}
+
+@media (max-width: 600px) {
+  .framedFooter {
+    grid-template-columns: 1fr;
+    justify-items: center;
+  }
+
+  .continueButton {
+    grid-column: 1;
+    justify-self: center;
+  }
+
+  .deleteButton {
+    grid-column: 1;
+    justify-self: end;
+  }
 }
 
 .composer {
@@ -46,6 +190,49 @@
   border: 1px solid var(--color-border-subtle);
   border-radius: var(--radius-md);
   background: var(--color-panel);
+}
+
+.tagFields {
+  min-width: 0;
+  margin: 0;
+  padding: var(--space-3);
+  border: 1px solid var(--color-border-subtle);
+  font-family: Calibri, 'Segoe UI', Arial, sans-serif;
+}
+
+.tagHint {
+  margin: 0 0 var(--space-2);
+  color: var(--color-text-subtle);
+  font-size: 0.8rem;
+}
+
+.tagInputs {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
+  gap: var(--space-2);
+}
+
+.tagField {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.tagField input {
+  min-width: 0;
+  padding: 0.35rem 0.5rem;
+  font-size: 0.875rem;
+}
+
+.tagRemove,
+.tagAdd {
+  padding: 0.25rem 0.5rem;
+  border-radius: 0;
+  font-size: 0.8rem;
+}
+
+.tagAdd {
+  margin-top: var(--space-2);
 }
 
 .titleInput {

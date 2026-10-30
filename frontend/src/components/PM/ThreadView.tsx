@@ -134,7 +134,7 @@ export default function ThreadView({ chat, onBack, onRefresh, onIncoming, onMess
     }
   };
 
-  const chatName = chat.type === 'group' ? chat.name : chat.member_names?.join(' & ') || 'Chat';
+  const chatName = chat.name || chat.member_names?.join(' & ') || 'Chat';
   const memberList = chat.member_names?.join(', ') || '';
 
   return (

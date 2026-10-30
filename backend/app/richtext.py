@@ -3,7 +3,7 @@
 Every stored rich-text body — RP posts, plot news, wanted ads, PMs — must match
 this whitelist. We store Tiptap's JSON document, never HTML, so the only formatting
 that can ever exist is bold / italic / underline / strike / colour text inside
-paragraphs. Headings, lists, links, images, code — and therefore any HTML tag or
+paragraphs and bulleted/numbered lists. Headings, links, images, code — and therefore any HTML tag or
 script — are impossible to express, so nothing dangerous can be stored.
 
 Custom smileys (:shortcode:) stay plain text and are swapped for an image only at
@@ -13,7 +13,7 @@ import re
 
 from fastapi import HTTPException
 
-ALLOWED_NODE_TYPES = {"doc", "paragraph", "text", "hardBreak"}
+ALLOWED_NODE_TYPES = {"doc", "paragraph", "text", "hardBreak", "bulletList", "orderedList", "listItem"}
 ALLOWED_MARK_TYPES = {"bold", "italic", "underline", "strike", "textStyle"}
 _HEX_COLOR = re.compile(r"^#[0-9a-fA-F]{6}$")
 

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import AppLayout from '../../pageLayouts/appLayout/AppLayout';
 import CharacterList, { Character } from '../../components/CharacterList';
+import PageHeading from '../../components/PageHeading';
 import { apiUrl, authHeaders } from '../../api';
 import styles from './Residents.module.css';
 
@@ -38,12 +39,16 @@ export default function Residents() {
 
   return (
     <AppLayout leftNav={leftNav}>
-      <h1 className={styles.pageTitle}>{t('residents.pageTitle')}</h1>
-      <p className={styles.muted}>{t('residents.allNote')}</p>
+      <PageHeading title={t('residents.pageTitle')} subtitle={t('residents.allNote')} />
 
       {error && <p className={styles.error}>{error}</p>}
 
-      <CharacterList characters={residents} />
+      <div className={styles.residentsList}>
+        <CharacterList
+          characters={residents}
+          profilePageHref={(character) => `/characters/${character.id}/profile`}
+        />
+      </div>
     </AppLayout>
   );
 }

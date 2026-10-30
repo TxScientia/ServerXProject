@@ -7,6 +7,7 @@ import NewsList from '../../components/News/NewsList';
 import AdminTags from '../../components/AdminTags';
 import { apiUrl, authHeaders } from '../../api';
 import styles from './Admin.module.css';
+import PageHeading from '../../components/PageHeading';
 
 type Account = {
   id: string;
@@ -70,8 +71,7 @@ export default function AdminPage() {
         <aside>{leftNav}</aside>
         <main className={styles.page}>
           <div>
-            <h1 className={styles.title}>{t('admin.title')}</h1>
-            <p className={styles.subtitle}>{t('admin.subtitle')}</p>
+            <PageHeading title={t('admin.title')} subtitle={t('admin.subtitle')} />
           </div>
           {loading ? (
             <p className={styles.muted}>{t('common.loading')}</p>

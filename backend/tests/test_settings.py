@@ -3,7 +3,7 @@
 
 def test_me_returns_default_preferences(client, auth_headers):
     me = client.get("/me", headers=auth_headers).json()
-    assert me["theme"] == "dark"
+    assert me["theme"] == "light"
     assert me["show_unread_badge"] is True
 
 
@@ -11,7 +11,7 @@ def test_login_returns_preferences(client, account):
     resp = client.post("/login", json={"login_name": "player", "password": "secret"})
     assert resp.status_code == 200
     body = resp.json()
-    assert body["theme"] == "dark"
+    assert body["theme"] == "light"
     assert body["show_unread_badge"] is True
 
 
@@ -32,8 +32,16 @@ def test_update_preferences(client, auth_headers):
 def test_update_preferences_partial_leaves_others(client, auth_headers):
     client.patch("/me/preferences", headers=auth_headers, json={"show_unread_badge": False})
     me = client.get("/me", headers=auth_headers).json()
-    assert me["theme"] == "dark"  # unchanged
+    assert me["theme"] == "light"  # unchanged
     assert me["show_unread_badge"] is False
+
+
+def test_light_and_dark_preferences_persist(client, auth_headers):
+    for theme in ("dark", "light"):
+        resp = client.patch("/me/preferences", headers=auth_headers, json={"theme": theme})
+        assert resp.status_code == 200
+        assert resp.json()["theme"] == theme
+        assert client.get("/me", headers=auth_headers).json()["theme"] == theme
 
 
 def test_update_preferences_rejects_unknown_theme(client, auth_headers):

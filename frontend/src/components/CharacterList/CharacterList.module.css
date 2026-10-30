@@ -2,8 +2,8 @@
   width: 100%;
   border-collapse: collapse;
   overflow: hidden;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
+  border: var(--character-table-border, 1px solid var(--color-border));
+  border-radius: var(--character-table-radius, var(--radius-md));
   background-color: color-mix(in srgb, var(--color-bg-elevated) 88%, transparent);
   backdrop-filter: blur(4px);
 }
@@ -11,13 +11,29 @@
 .table th,
 .table td {
   padding: var(--space-3);
-  border: 1px solid var(--color-border);
+  border: var(--character-table-border, 1px solid var(--color-border));
   text-align: left;
 }
 
 .table th {
-  background-color: var(--color-surface-strong);
-  color: var(--color-text);
+  background-color: var(--color-character-header-bg, var(--color-surface-strong));
+  color: var(--color-character-header-text, var(--color-text));
+}
+
+.table tbody tr {
+  color: var(--color-character-row-text, var(--color-text));
+}
+
+.table tbody tr + tr td {
+  border-top: 1px solid var(--color-character-row-border, var(--color-border));
+}
+
+.table tbody tr:nth-child(odd) {
+  background-color: var(--color-character-row-odd, transparent);
+}
+
+.table tbody tr:nth-child(even) {
+  background-color: var(--color-character-row-even, transparent);
 }
 
 .clickable {
@@ -25,7 +41,7 @@
   transition: background-color 160ms ease;
 }
 
-.clickable:hover {
+.table tbody tr.clickable:hover {
   background-color: color-mix(in srgb, var(--color-accent) 18%, transparent);
 }
 
@@ -36,18 +52,29 @@
   width: 2.1rem;
   height: 2.1rem;
   margin-right: 0.45rem;
-  border: 1px solid rgba(132, 163, 132, 0.55);
+  border: 1px solid var(--color-character-action-border, rgba(132, 163, 132, 0.55));
   border-radius: var(--radius-sm);
-  background: rgba(12, 15, 15, 0.74);
-  color: var(--color-text);
+  background: var(--color-character-action-bg, rgba(12, 15, 15, 0.74));
+  color: var(--color-character-action-text, var(--color-text));
   cursor: pointer;
   font: inherit;
   line-height: 1;
   text-decoration: none;
 }
 
+.iconButton[aria-pressed='true'] {
+  background: var(--color-character-action-hover-bg, var(--color-accent));
+  color: var(--color-character-action-hover-text, var(--color-accent-contrast));
+}
+
+.iconButton:disabled {
+  opacity: 0.55;
+  cursor: wait;
+}
+
 .iconButton:hover,
 .iconButton:focus-visible {
-  border-color: #84a384;
-  color: #9fbd9f;
+  border-color: var(--color-character-action-border, #84a384);
+  background: var(--color-character-action-hover-bg, rgba(12, 15, 15, 0.74));
+  color: var(--color-character-action-hover-text, #9fbd9f);
 }

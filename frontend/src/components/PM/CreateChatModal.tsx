@@ -1,7 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import { Modal, ModalActions, ModalSpacer } from '../Modal';
 import { apiUrl, authHeaders } from '../../api';
 import styles from './CreateChatModal.module.css';
+
+const NO_EXCLUSIONS: string[] = [];
 
 interface Character {
   id: string;
@@ -10,7 +12,7 @@ interface Character {
 
 interface CreateChatModalProps {
   onClose: () => void;
-  onCreateDirect: (characterId: string, creatorCharacterId: string) => void;
+  onCreateDirect: (characterId: string, creatorCharacterId: string, name?: string) => void;
   onCreateGroup: (characterIds: string[], name: string, creatorCharacterId: string) => void;
   excludeCharacterIds?: string[];
   accountCharacters?: Character[];
@@ -20,15 +22,19 @@ export default function CreateChatModal({
   onClose,
   onCreateDirect,
   onCreateGroup,
-  excludeCharacterIds = [],
+  excludeCharacterIds = NO_EXCLUSIONS,
   accountCharacters = [],
 }: CreateChatModalProps) {
   const [characters, setCharacters] = useState<Character[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
-  const [groupName, setGroupName] = useState('');
+  const [chatName, setChatName] = useState('');
   const [creatorCharacterId, setCreatorCharacterId] = useState<string>(accountCharacters[0]?.id || '');
   const [loading, setLoading] = useState(true);
+  const [activeIndex, setActiveIndex] = useState(-1);
+  const searchRef = useRef<HTMLInputElement>(null);
+  const recipientId = useId();
+  const resultsId = `${recipientId}-results`;
 
   // accountCharacters may arrive after this modal mounts (the parent fetches it async).
   // Keep the acting-character id in sync so it's never left empty — otherwise the create
@@ -54,28 +60,29 @@ export default function CreateChatModal({
   }, [excludeCharacterIds]);
 
   const filteredCharacters = characters.filter((c) =>
-    c.name.toLowerCase().includes(searchQuery.toLowerCase())
+    !selectedIds.includes(c.id) && c.name.toLowerCase().includes(searchQuery.trim().toLowerCase())
   );
 
   const handleSelectCharacter = (charId: string) => {
-    if (selectedIds.includes(charId)) {
-      setSelectedIds(selectedIds.filter((id) => id !== charId));
-    } else {
-      setSelectedIds([...selectedIds, charId]);
-    }
+    setSelectedIds((ids) => ids.includes(charId) ? ids : [...ids, charId]);
+    setSearchQuery('');
+    setActiveIndex(-1);
+    searchRef.current?.focus();
   };
 
   const handleRemoveSelected = (charId: string) => {
-    setSelectedIds(selectedIds.filter((id) => id !== charId));
+    setSelectedIds((ids) => ids.filter((id) => id !== charId));
+    setActiveIndex(-1);
+    searchRef.current?.focus();
   };
 
   const handleCreate = () => {
     if (selectedIds.length === 0 || !creatorCharacterId) return;
 
     if (selectedIds.length === 1) {
-      onCreateDirect(selectedIds[0], creatorCharacterId);
+      onCreateDirect(selectedIds[0], creatorCharacterId, chatName.trim() || undefined);
     } else {
-      const name = groupName.trim() || selectedIds.map((id) => characters.find((c) => c.id === id)?.name).join(', ');
+      const name = chatName.trim() || selectedIds.map((id) => characters.find((c) => c.id === id)?.name).join(', ');
       onCreateGroup(selectedIds, name, creatorCharacterId);
     }
   };
@@ -83,7 +90,7 @@ export default function CreateChatModal({
   const selectedCharacters = selectedIds.map((id) => characters.find((c) => c.id === id)).filter(Boolean) as Character[];
 
   return (
-    <Modal title="Neuer Chat">
+    <Modal title="Neuer Chat" className={styles.createChatModal}>
       {accountCharacters.length > 1 && (
         <div className={styles.creatorSection}>
           <label className={styles.label}>Mit welchem Charakter?</label>
@@ -101,51 +108,88 @@ export default function CreateChatModal({
         </div>
       )}
 
-      <div className={styles.selectedChars}>
-        {selectedCharacters.map((char) => (
-          <div key={char.id} className={styles.chip}>
-            <span>{char.name}</span>
-            <button
-              className={styles.removeBtn}
-              onClick={() => handleRemoveSelected(char.id)}
-              title="Entfernen"
-              type="button"
-            >
-              ×
-            </button>
-          </div>
-        ))}
+      <div>
+        <label className={styles.label} htmlFor={recipientId}>An</label>
+        <div className={styles.recipientField}>
+          {selectedCharacters.map((char) => (
+            <div key={char.id} className={styles.chip}>
+              <span>{char.name}</span>
+              <button
+                className={styles.removeBtn}
+                onClick={() => handleRemoveSelected(char.id)}
+                aria-label={`${char.name} entfernen`}
+                title="Entfernen"
+                type="button"
+              >
+                ×
+              </button>
+            </div>
+          ))}
+          <input
+            ref={searchRef}
+            id={recipientId}
+            type="text"
+            role="combobox"
+            aria-autocomplete="list"
+            aria-expanded={true}
+            aria-controls={resultsId}
+            aria-activedescendant={activeIndex >= 0 && filteredCharacters[activeIndex] ? `${resultsId}-${activeIndex}` : undefined}
+            autoComplete="off"
+            placeholder={selectedIds.length ? 'Weitere Empfänger hinzufügen...' : 'Empfänger suchen...'}
+            value={searchQuery}
+            onChange={(e) => {
+              setSearchQuery(e.target.value);
+              setActiveIndex(-1);
+            }}
+            onKeyDown={(e) => {
+              if ((e.key === 'ArrowDown' || e.key === 'ArrowUp') && filteredCharacters.length) {
+                e.preventDefault();
+                setActiveIndex((index) => e.key === 'ArrowDown'
+                  ? (index + 1) % filteredCharacters.length
+                  : (index <= 0 ? filteredCharacters.length - 1 : index - 1));
+              } else if (e.key === 'Enter' && !e.nativeEvent.isComposing) {
+                e.preventDefault();
+                const recipient = filteredCharacters[activeIndex < 0 ? 0 : activeIndex];
+                if (recipient) handleSelectCharacter(recipient.id);
+              } else if (e.key === 'Backspace' && !searchQuery && selectedIds.length && !e.repeat) {
+                e.preventDefault();
+                handleRemoveSelected(selectedIds[selectedIds.length - 1]);
+              }
+            }}
+            className={styles.searchInput}
+            autoFocus
+          />
+        </div>
       </div>
 
-      <input
-        type="text"
-        placeholder="Suchen..."
-        value={searchQuery}
-        onChange={(e) => setSearchQuery(e.target.value)}
-        className={styles.searchInput}
-        autoFocus
-      />
-
-      {selectedIds.length > 1 && (
+      <div>
+        <label className={styles.label} htmlFor={`${recipientId}-name`}>Chatname (optional)</label>
         <input
+          id={`${recipientId}-name`}
           type="text"
-          placeholder="Gruppenname (optional)"
-          value={groupName}
-          onChange={(e) => setGroupName(e.target.value)}
+          placeholder="Chatname (optional)"
+          maxLength={120}
+          value={chatName}
+          onChange={(e) => setChatName(e.target.value)}
           className={styles.groupNameInput}
         />
-      )}
+      </div>
 
-      <div className={styles.characterList}>
+      <div id={resultsId} className={styles.characterList} role="listbox" aria-label="Empfänger">
         {loading ? (
           <div className={styles.loading}>Laden...</div>
         ) : filteredCharacters.length === 0 ? (
           <div className={styles.empty}>Keine Ergebnisse</div>
         ) : (
-          filteredCharacters.map((char) => (
+          filteredCharacters.map((char, index) => (
             <button
               key={char.id}
-              className={`${styles.charItem} ${selectedIds.includes(char.id) ? styles.selected : ''}`}
+              id={`${resultsId}-${index}`}
+              role="option"
+              aria-selected={activeIndex === index}
+              tabIndex={-1}
+              className={`${styles.charItem} ${activeIndex === index ? styles.selected : ''}`}
+              onMouseDown={(e) => e.preventDefault()}
               onClick={() => handleSelectCharacter(char.id)}
               type="button"
             >
@@ -163,7 +207,7 @@ export default function CreateChatModal({
         <button
           className="button"
           onClick={handleCreate}
-          disabled={selectedIds.length === 0}
+          disabled={selectedIds.length === 0 || !creatorCharacterId}
           type="button"
         >
           Erstellen

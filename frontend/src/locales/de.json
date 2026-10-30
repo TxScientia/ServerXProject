@@ -3,6 +3,7 @@
     "logout": "Logout",
     "save": "Speichern",
     "cancel": "Abbrechen",
+    "close": "Schließen",
     "create": "Erstellen",
     "comingSoon": "Bald verfügbar",
     "loading": "Lädt…",
@@ -47,11 +48,14 @@
   "theme": {
     "label": "Design",
     "dark": "Dunkel",
+    "light": "Hell",
     "parchment": "Pergament"
   },
   "settings": {
     "title": "Einstellungen",
     "appearance": "Darstellung",
+    "accentHue": "Akzentfarbe",
+    "accentHueHint": "Wird in diesem Browser gespeichert. Ändert alle burgunderroten Designelemente.",
     "language": "Sprache",
     "notifications": "Benachrichtigungen",
     "showUnreadBadge": "Badge für ungelesene Nachrichten anzeigen",
@@ -78,7 +82,8 @@
     "removeFavoriteConfirm": "«{{name}}» aus deinen Favoriten entfernen?"
   },
   "lobby": {
-    "chooseCharacter": "Wähle deinen Charakter",
+    "chooseCharacter": "WÄHLE EINEN CHARAKTER UM DIE WELTEN ZU BETRETEN",
+    "favoriteCharacters": "FAVORISIERTE CHARAKTERE",
     "chooseCharacterSub": "Wähle einen Charakter, um die Welt zu betreten.",
     "newCharacter": "Neuen Charakter erstellen",
     "name": "Name:",
@@ -88,19 +93,28 @@
     "genderMale": "Männlich",
     "genderFemale": "Weiblich",
     "genderDiverse": "Divers",
-    "saveError": "Fehler beim Speichern"
+    "saveError": "Fehler beim Speichern",
+    "noFavoriteCharacters": "Noch keine favorisierten Charaktere. Markiere einen Charakter mit dem Stern.",
+    "favoriteError": "Favorit konnte nicht gespeichert werden.",
+    "deleteConfirm": "Charakter „{{name}}“ wirklich löschen? Bisherige Beiträge und Nachrichten bleiben erhalten.",
+    "deleteError": "Charakter konnte nicht gelöscht werden.",
+    "deleteOwnedPlotError": "Dieser Charakter besitzt noch einen Plot. Bitte übertrage oder lösche den Plot zuerst."
   },
   "characterList": {
     "colName": "Charaktername",
     "colRace": "Rasse",
     "colSpec": "Spezifikation",
     "colGender": "Geschlecht",
-    "playAs": "Als diesen Charakter spielen"
+    "playAs": "Als diesen Charakter spielen",
+    "colActions": "Aktionen",
+    "favorite": "{{name}} favorisieren",
+    "unfavorite": "{{name}} aus Favoriten entfernen",
+    "delete": "{{name}} löschen"
   },
   "residents": {
-    "pageTitle": "Residents",
+    "pageTitle": "RESIDENTS",
     "sideTitle": "Bewohner",
-    "allNote": "Alle Charaktere. (Online-Status folgt später.)",
+    "allNote": "“THAT STRANGERS ARE FRIENDS THAT WE SOME DAY MAY MEET.” — EDGAR A. GUEST",
     "loadError": "Bewohner konnten nicht geladen werden."
   },
   "storybooks": {
@@ -113,7 +127,13 @@
     "clearFilters": "Filter zurücksetzen",
     "noMatches": "Keine StoryBooks entsprechen den Filtern.",
     "pageTitle": "StoryBook",
-    "newPlot": "+ Neuer Plot",
+    "catalogTitle": "Storybooks",
+    "subtitle": "Eigene Welten · Eigene Plots · Unendliche Möglichkeiten",
+    "open": "Zum Storybook",
+    "openTitle": "Zum Storybook: {{title}}",
+    "untagged": "Eine neue Welt",
+    "noDescription": "Diese Geschichte wartet darauf, entdeckt zu werden.",
+    "newPlot": "PLOT ERSTELLEN",
     "generic": "Generic",
     "genericSoon": "Generische StoryBooks – bald verfügbar.",
     "worldsFromUsers": "Worlds from Users",
@@ -156,6 +176,7 @@
     "passwordLabel": "Passwort:",
     "passwordPlaceholder": "Passwort",
     "loginError": "Login fehlgeschlagen. Bitte überprüfe deine Eingaben.",
+    "sessionExpired": "Deine Sitzung ist abgelaufen oder nicht mehr gültig. Bitte melde dich erneut an.",
     "submitting": "Bitte warten …",
     "submit": "Eintreten",
     "footer": "© 2025 Worlds Collide – Alle Rechte vorbehalten"
@@ -246,7 +267,7 @@
   },
   "news": {
     "pageTitle": "News",
-    "pageSubtitle": "Ankündigungen und Updates für When Worlds Collide.",
+    "pageSubtitle": "“NEWS IS ONLY THE FIRST ROUGH DRAFT OF HISTORY” — ALAN BARTH",
     "latest": "Neueste News",
     "title": "Titel",
     "titlePlaceholder": "Überschrift der Nachricht",
@@ -278,12 +299,22 @@
     "italic": "Kursiv",
     "underline": "Unterstrichen",
     "strike": "Durchgestrichen",
+    "bulletList": "Aufzählung",
+    "orderedList": "Nummerierte Liste",
     "color": "Textfarbe",
     "clearColor": "Farbe entfernen"
   },
   "gesuche": {
-    "pageTitle": "Gesuche",
-    "pageSubtitle": "Globale RP-Gesuche aller Charaktere.",
+    "pageTitle": "GESUCHE",
+    "pageSubtitle": "“NO MAN IS AN ISLAND, ENTIRE OF ITSELF” — JOHN DONNE",
+    "createGlobal": "GESUCH ERSTELLEN",
+    "viewAd": "WEITER ZUM GESUCH >",
+    "tagsLabel": "Tags (optional)",
+    "tagsHint": "Bis zu 6 Tags mit jeweils maximal 50 Zeichen.",
+    "tagNumber": "Tag {{number}}",
+    "tagPlaceholder": "Tag eingeben",
+    "addTag": "Tag hinzufügen",
+    "removeTag": "Tag {{number}} entfernen",
     "plotTitle": "Gesuche – {{title}}",
     "plotSubtitle": "RP-Gesuche innerhalb dieses Plots.",
     "new": "+ Neues Gesuch",
@@ -293,6 +324,7 @@
     "titleRequired": "Titel darf nicht leer sein",
     "bodyRequired": "Gesuch darf nicht leer sein",
     "by": "von {{author}}",
+    "byPrefix": "von",
     "message": "Nachricht",
     "delete": "Löschen",
     "deleteConfirm": "Dieses Gesuch wirklich löschen?",
@@ -338,6 +370,8 @@
     }
   },
   "pm": {
+    "pageTitle": "NACHRICHTEN",
+    "pageSubtitle": "“LETTER WRITING IS THE ONLY DEVICE COMBINING SOLITUDE WITH GOOD COMPANY” — LORD BYRON",
     "tabGroups": "Gruppen",
     "tabDirect": "Direkt",
     "tabSystem": "System",

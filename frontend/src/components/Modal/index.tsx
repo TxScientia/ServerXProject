@@ -4,16 +4,17 @@ import styles from './Modal.module.css';
 type ModalProps = {
   title: ReactNode;
   children: ReactNode;
+  className?: string;
 };
 
 type ModalActionsProps = {
   children: ReactNode;
 };
 
-export function Modal({ title, children }: ModalProps) {
+export function Modal({ title, children, className }: ModalProps) {
   return (
     <div className={styles.backdrop} role="dialog" aria-modal="true">
-      <div className={styles.content}>
+      <div className={`${styles.content} ${className ?? ''}`.trim()}>
         <h3>{title}</h3>
         {children}
       </div>

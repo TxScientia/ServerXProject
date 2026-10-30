@@ -1,24 +1,93 @@
-.heading {
-  margin: 0 0 var(--space-2);
-  font-family: var(--font-display);
+.contentContainer {
+  --corner: var(--character-frame-corner, 32px);
+  --frame-color: var(--color-character-frame, #2C2D2E);
+  --frame-inset: var(--character-frame-inset, clamp(0.75rem, 2vw, 1.8rem));
+  position: relative;
+  flex: 1;
+  width: min(100%, 1440px);
+  margin: var(--space-4) auto 0;
+  padding: calc(var(--frame-inset) + 2rem);
+  background: var(--color-lobby-content);
 }
 
-.subheading {
+.contentContainer::before {
+  content: '';
+  position: absolute;
+  inset: var(--frame-inset);
+  z-index: 2;
+  pointer-events: none;
+  background:
+    linear-gradient(var(--frame-color), var(--frame-color)) top var(--corner) left 0 / var(--character-frame-width, 1px) calc(100% - (var(--corner) * 2)) no-repeat,
+    linear-gradient(var(--frame-color), var(--frame-color)) top var(--corner) right 0 / var(--character-frame-width, 1px) calc(100% - (var(--corner) * 2)) no-repeat,
+    linear-gradient(var(--frame-color), var(--frame-color)) top 0 left var(--corner) / calc(100% - (var(--corner) * 2)) var(--character-frame-width, 1px) no-repeat,
+    linear-gradient(var(--frame-color), var(--frame-color)) bottom 0 left var(--corner) / calc(100% - (var(--corner) * 2)) var(--character-frame-width, 1px) no-repeat,
+    radial-gradient(circle at 0 0, transparent 0 var(--corner), var(--frame-color) var(--corner) calc(var(--corner) + var(--character-frame-corner-width, 1px)), transparent calc(var(--corner) + var(--character-frame-corner-width, 1px) + 0.5px)) top left / 50% 50% no-repeat,
+    radial-gradient(circle at 100% 0, transparent 0 var(--corner), var(--frame-color) var(--corner) calc(var(--corner) + var(--character-frame-corner-width, 1px)), transparent calc(var(--corner) + var(--character-frame-corner-width, 1px) + 0.5px)) top right / 50% 50% no-repeat,
+    radial-gradient(circle at 0 100%, transparent 0 var(--corner), var(--frame-color) var(--corner) calc(var(--corner) + var(--character-frame-corner-width, 1px)), transparent calc(var(--corner) + var(--character-frame-corner-width, 1px) + 0.5px)) bottom left / 50% 50% no-repeat,
+    radial-gradient(circle at 100% 100%, transparent 0 var(--corner), var(--frame-color) var(--corner) calc(var(--corner) + var(--character-frame-corner-width, 1px)), transparent calc(var(--corner) + var(--character-frame-corner-width, 1px) + 0.5px)) bottom right / 50% 50% no-repeat;
+}
+
+/* Fill only the area inside the concave frame, leaving its surround darker. */
+.contentContainer::after {
+  content: '';
+  position: absolute;
+  inset: var(--frame-inset);
+  pointer-events: none;
+  background: var(--color-character-container-inner, transparent);
+  mask:
+    radial-gradient(circle at 0 0, transparent var(--corner), #000 calc(var(--corner) + 0.5px)) top left / 50% 50% no-repeat,
+    radial-gradient(circle at 100% 0, transparent var(--corner), #000 calc(var(--corner) + 0.5px)) top right / 50% 50% no-repeat,
+    radial-gradient(circle at 0 100%, transparent var(--corner), #000 calc(var(--corner) + 0.5px)) bottom left / 50% 50% no-repeat,
+    radial-gradient(circle at 100% 100%, transparent var(--corner), #000 calc(var(--corner) + 0.5px)) bottom right / 50% 50% no-repeat;
+}
+
+.contentInner {
+  container-type: inline-size;
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 872px;
+  margin: 0 auto;
+}
+
+.heading {
+  width: fit-content;
+  max-width: 100%;
+  margin: 0 auto var(--space-6);
+  padding: 0 1rem var(--space-2);
+  border-bottom: 1px solid var(--color-character-heading-line, var(--color-text-muted));
+  color: var(--color-character-heading, var(--color-text));
+  font-family: 'Times New Roman', Times, serif;
+  font-size: clamp(1.125rem, 2.8cqi, 1.375rem);
+  text-wrap: balance;
+  text-align: center;
+}
+
+.favoritesSection {
+  margin-bottom: var(--space-8);
+}
+
+.sectionHeading {
   margin: 0 0 var(--space-4);
-  color: var(--color-text-muted, var(--color-text-muted));
+  color: var(--color-character-heading, var(--color-text));
+  font-family: 'Times New Roman', Times, serif;
+  font-size: 1.125rem;
+  text-align: left;
 }
 
 .actions {
   display: flex;
   justify-content: flex-end;
-  margin-bottom: var(--space-4);
+  margin-bottom: var(--space-8);
 }
 
-.plusButton {
-  min-width: 2.75rem;
-  padding: 0.35rem 0.8rem;
-  font-size: 1.5rem;
-  line-height: 1;
+.createButton {
+  border-radius: 0;
+  background: var(--color-character-header-bg, var(--color-button-bg));
+  color: var(--color-character-header-text, var(--color-button-text));
+  padding: 0.3rem 0.65rem;
+  font-size: 0.875rem;
+  line-height: 1.2;
 }
 
 .modal {
@@ -46,7 +115,7 @@
 
 .modalContent h2 {
   margin: 0;
-  font-family: var(--font-display);
+  font-family: 'Times New Roman', Times, serif;
 }
 
 .modalContent label {

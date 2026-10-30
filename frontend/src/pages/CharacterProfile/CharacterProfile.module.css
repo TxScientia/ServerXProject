@@ -1,5 +1,5 @@
 .status {
-  min-height: 100vh;
+  min-height: var(--page-height, 100vh);
   display: grid;
   place-items: center;
   background: #141616;
@@ -7,8 +7,8 @@
 }
 
 .page {
-  min-height: 100vh;
-  padding: 0 0 4rem;
+  min-height: var(--page-height, 100vh);
+  padding: clamp(1rem, 3vw, 3rem) clamp(1rem, 3vw, 3rem) 4rem;
   background: #101313;
   color: #9fa79c;
 }
@@ -17,7 +17,7 @@
   position: relative;
   isolation: isolate;
   overflow: clip;
-  width: min(96vw, 1120px);
+  width: min(100%, 1120px);
   margin: 0 auto;
   background: #17191A;
   border-left: 1px solid rgba(94, 104, 94, 0.22);

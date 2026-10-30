@@ -2,7 +2,7 @@ import datetime
 import uuid
 from typing import Any, List, Optional
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class MessageRead(BaseModel):
@@ -38,6 +38,7 @@ class MessageCreate(BaseModel):
 
 class CreateDirectChatRequest(BaseModel):
     character_id: uuid.UUID
+    name: Optional[str] = Field(default=None, max_length=120)
 
 
 class CreateGroupChatRequest(BaseModel):

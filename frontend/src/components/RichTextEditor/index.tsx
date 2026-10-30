@@ -113,6 +113,8 @@ export default function RichTextEditor({
         {markBtn(t('editor.italic'), editor.isActive('italic'), () => editor.chain().focus().toggleItalic().run(), 'I', styles.italic)}
         {markBtn(t('editor.underline'), editor.isActive('underline'), () => editor.chain().focus().toggleUnderline().run(), 'U', styles.underline)}
         {markBtn(t('editor.strike'), editor.isActive('strike'), () => editor.chain().focus().toggleStrike().run(), 'S', styles.strike)}
+        {markBtn(t('editor.bulletList'), editor.isActive('bulletList'), () => editor.chain().focus().toggleBulletList().run(), '• ≡')}
+        {markBtn(t('editor.orderedList'), editor.isActive('orderedList'), () => editor.chain().focus().toggleOrderedList().run(), '1. ≡')}
         <label className={styles.colorBtn} title={t('editor.color')} aria-label={t('editor.color')}>
           <span className={styles.colorSwatch} style={{ background: currentColor }} aria-hidden="true" />
           <input

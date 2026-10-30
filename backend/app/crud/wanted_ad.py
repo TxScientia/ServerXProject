@@ -3,12 +3,13 @@ from sqlalchemy.orm import Session
 from ..models import WantedAd
 
 
-def create_global_wanted_ad(db: Session, *, author_character_id, title: str, body):
+def create_global_wanted_ad(db: Session, *, author_character_id, title: str, body, tags=None):
     item = WantedAd(
         scope_type="global",
         author_character_id=author_character_id,
         title=title,
         body=body,
+        tags=list(tags or []),
     )
     db.add(item)
     db.commit()
@@ -16,13 +17,14 @@ def create_global_wanted_ad(db: Session, *, author_character_id, title: str, bod
     return item
 
 
-def create_space_wanted_ad(db: Session, *, space_id, author_character_id, title: str, body):
+def create_space_wanted_ad(db: Session, *, space_id, author_character_id, title: str, body, tags=None):
     item = WantedAd(
         scope_type="space",
         space_id=space_id,
         author_character_id=author_character_id,
         title=title,
         body=body,
+        tags=list(tags or []),
     )
     db.add(item)
     db.commit()

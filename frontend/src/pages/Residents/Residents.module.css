@@ -1,17 +1,10 @@
 .sideTitle {
-  font-family: var(--font-display);
+  font-family: 'Times New Roman', Times, serif;
   font-size: 1.1rem;
 }
 
-.pageTitle {
-  margin: 0 0 var(--space-2);
-  font-family: var(--font-display);
-}
-
-.muted {
-  color: var(--color-text-muted, var(--color-text-muted));
-  opacity: 0.8;
-  margin-bottom: var(--space-4);
+.residentsList {
+  margin-top: var(--space-6);
 }
 
 .error {

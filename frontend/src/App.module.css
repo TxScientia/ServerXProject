@@ -1,0 +1,28 @@
+.frame {
+  --page-height: 96vh;
+  --viewport-frame-inset: 2vh;
+  min-height: 100vh;
+  padding: var(--viewport-frame-inset);
+  background: var(--color-frame);
+}
+
+.content {
+  min-height: var(--page-height);
+  /* Keep fixed page backgrounds and overlays inside the outer frame. */
+  contain: paint;
+}
+
+/* Document-scrolling pages keep their fixed background and frame anchored to
+   the viewport, not to a paint-containing block that moves with the document. */
+.scrollingFrame .content {
+  contain: none;
+}
+
+.scrollingFrame::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  pointer-events: none;
+  border: var(--viewport-frame-inset) solid var(--color-frame);
+}

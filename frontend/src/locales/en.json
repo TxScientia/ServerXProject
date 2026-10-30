@@ -3,6 +3,7 @@
     "logout": "Logout",
     "save": "Save",
     "cancel": "Cancel",
+    "close": "Close",
     "create": "Create",
     "comingSoon": "Coming soon",
     "loading": "Loading…",
@@ -47,11 +48,14 @@
   "theme": {
     "label": "Theme",
     "dark": "Dark",
+    "light": "Light",
     "parchment": "Parchment"
   },
   "settings": {
     "title": "Settings",
     "appearance": "Appearance",
+    "accentHue": "Accent hue",
+    "accentHueHint": "Saved in this browser. Changes all burgundy design accents.",
     "language": "Language",
     "notifications": "Notifications",
     "showUnreadBadge": "Show unread-message badge",
@@ -78,7 +82,8 @@
     "removeFavoriteConfirm": "Remove “{{name}}” from your favourites?"
   },
   "lobby": {
-    "chooseCharacter": "Choose your character",
+    "chooseCharacter": "CHOOSE A CHARACTER TO ENTER THE WORLDS",
+    "favoriteCharacters": "FAVORITE CHARACTERS",
     "chooseCharacterSub": "Choose a character to enter the world.",
     "newCharacter": "Create new character",
     "name": "Name:",
@@ -88,19 +93,28 @@
     "genderMale": "Male",
     "genderFemale": "Female",
     "genderDiverse": "Diverse",
-    "saveError": "Error while saving"
+    "saveError": "Error while saving",
+    "noFavoriteCharacters": "No favorite characters yet. Use the star to favorite a character.",
+    "favoriteError": "Could not save favorite.",
+    "deleteConfirm": "Really delete character “{{name}}”? Existing posts and messages will be preserved.",
+    "deleteError": "Could not delete character.",
+    "deleteOwnedPlotError": "This character still owns a plot. Transfer or delete the plot first."
   },
   "characterList": {
     "colName": "Character name",
     "colRace": "Race",
     "colSpec": "Specification",
     "colGender": "Gender",
-    "playAs": "Play as this character"
+    "playAs": "Play as this character",
+    "colActions": "Actions",
+    "favorite": "Favorite {{name}}",
+    "unfavorite": "Remove {{name}} from favorites",
+    "delete": "Delete {{name}}"
   },
   "residents": {
-    "pageTitle": "Residents",
+    "pageTitle": "RESIDENTS",
     "sideTitle": "Residents",
-    "allNote": "All characters. (Online status coming later.)",
+    "allNote": "“THAT STRANGERS ARE FRIENDS THAT WE SOME DAY MAY MEET.” — EDGAR A. GUEST",
     "loadError": "Could not load residents."
   },
   "storybooks": {
@@ -113,7 +127,13 @@
     "clearFilters": "Clear filters",
     "noMatches": "No StoryBooks match your filters.",
     "pageTitle": "StoryBook",
-    "newPlot": "+ New Plot",
+    "catalogTitle": "Storybooks",
+    "subtitle": "Your worlds · Your plots · Endless possibilities",
+    "open": "Open storybook",
+    "openTitle": "Open storybook: {{title}}",
+    "untagged": "A new world",
+    "noDescription": "This story is waiting to be discovered.",
+    "newPlot": "CREATE PLOT",
     "generic": "Generic",
     "genericSoon": "Generic StoryBooks – coming soon.",
     "worldsFromUsers": "Worlds from Users",
@@ -156,6 +176,7 @@
     "passwordLabel": "Password:",
     "passwordPlaceholder": "Password",
     "loginError": "Login failed. Please check your input.",
+    "sessionExpired": "Your session has expired or is no longer valid. Please sign in again.",
     "submitting": "Please wait …",
     "submit": "Enter",
     "footer": "© 2025 Worlds Collide – All rights reserved"
@@ -246,7 +267,7 @@
   },
   "news": {
     "pageTitle": "News",
-    "pageSubtitle": "Announcements and updates for When Worlds Collide.",
+    "pageSubtitle": "“NEWS IS ONLY THE FIRST ROUGH DRAFT OF HISTORY” — ALAN BARTH",
     "latest": "Latest news",
     "title": "Title",
     "titlePlaceholder": "News headline",
@@ -278,12 +299,22 @@
     "italic": "Italic",
     "underline": "Underline",
     "strike": "Strikethrough",
+    "bulletList": "Bulleted list",
+    "orderedList": "Numbered list",
     "color": "Text color",
     "clearColor": "Remove color"
   },
   "gesuche": {
-    "pageTitle": "Wanted Ads",
-    "pageSubtitle": "Global RP wanted ads from all characters.",
+    "pageTitle": "WANTED ADS",
+    "pageSubtitle": "“NO MAN IS AN ISLAND, ENTIRE OF ITSELF” — JOHN DONNE",
+    "createGlobal": "CREATE WANTED AD",
+    "viewAd": "VIEW WANTED AD >",
+    "tagsLabel": "Tags (optional)",
+    "tagsHint": "Up to 6 tags, each with a maximum of 50 characters.",
+    "tagNumber": "Tag {{number}}",
+    "tagPlaceholder": "Enter tag",
+    "addTag": "Add tag",
+    "removeTag": "Remove tag {{number}}",
     "plotTitle": "Wanted Ads – {{title}}",
     "plotSubtitle": "RP wanted ads within this plot.",
     "new": "+ New wanted ad",
@@ -293,6 +324,7 @@
     "titleRequired": "Title must not be empty",
     "bodyRequired": "Wanted ad must not be empty",
     "by": "by {{author}}",
+    "byPrefix": "by",
     "message": "Message",
     "delete": "Delete",
     "deleteConfirm": "Really delete this wanted ad?",
@@ -338,6 +370,8 @@
     }
   },
   "pm": {
+    "pageTitle": "MESSAGES",
+    "pageSubtitle": "“LETTER WRITING IS THE ONLY DEVICE COMBINING SOLITUDE WITH GOOD COMPANY” — LORD BYRON",
     "tabGroups": "Groups",
     "tabDirect": "Direct",
     "tabSystem": "System",

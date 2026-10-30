@@ -1,5 +1,5 @@
 .shell {
-  height: 100vh;
+  height: var(--page-height, 100vh);
   display: flex;
   flex-direction: column;
   background: var(--color-bg-shell);
@@ -9,6 +9,9 @@
 
 /* --- top navbar --- */
 .topbar {
+  position: relative;
+  z-index: 30;
+  flex-shrink: 0;
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
@@ -65,16 +68,23 @@
   cursor: default;
 }
 
+.mainBackground {
+  composes: background from '../../assets/styles/PageBackground.module.css';
+  flex: 1;
+  min-height: 0;
+  display: flex;
+}
+
 /* --- 3-column body --- */
 .body {
   flex: 1;
   width: 100%;
-  max-width: 1440px;
+  max-width: 1520px;
   margin: 0 auto;
   padding: var(--space-5) var(--space-6);
   display: grid;
   grid-template-columns: 240px 1fr 240px;
-  gap: var(--space-4);
+  gap: var(--page-panel-gap, var(--space-4));
   min-height: 0;
 }
 
@@ -104,13 +114,91 @@
   min-height: 0;
 }
 
+/* The scroll viewport stays fixed; its content-sized decorative frame grows. */
+.center.growingCenter {
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: var(--color-character-container-outer);
+}
+
+.centerFrame {
+  min-height: 100%;
+  box-sizing: border-box;
+}
+
+/* Hide only the scrollbar chrome, retaining wheel, touch and keyboard scrolling. */
+.hideCenterScrollbar {
+  scrollbar-width: none;
+}
+
+.hideCenterScrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Content-sized pages use document scrolling, not a nested center scrollbar. */
+.shell.pageScroll {
+  height: auto;
+  min-height: var(--page-height, 100vh);
+  overflow: visible;
+}
+
+.pageScroll .topbar {
+  position: sticky;
+  top: var(--viewport-frame-inset, 2vh);
+  z-index: 30;
+}
+
+.pageScroll .mainBackground::after {
+  position: fixed;
+  inset: var(--viewport-frame-inset, 2vh);
+}
+
+/* Keep the gap below the navigation clear while the center content scrolls
+   behind it. Render the same viewport-aligned image so the gap is seamless. */
+.shell.pageScroll::before {
+  content: '';
+  position: fixed;
+  inset: var(--viewport-frame-inset, 2vh);
+  z-index: 25;
+  pointer-events: none;
+  background: var(--page-background-color) var(--page-background-image) center / cover no-repeat;
+  filter: var(--page-background-filter, none);
+  clip-path: inset(var(--app-topbar-height, 4rem) 0 calc(100% - var(--app-topbar-height, 4rem) - var(--space-5)) 0);
+}
+
+.pageScroll .body {
+  align-items: start;
+  grid-template-columns: 240px minmax(0, 1fr) 240px;
+}
+
+.pageScroll .center {
+  min-width: 0;
+  overflow: visible;
+}
+
+.pageScroll .body .center {
+  padding-bottom: calc(var(--inset) + var(--space-8));
+}
+
+/* Extra specificity keeps the shared frame's position: relative from
+   overriding sticky positioning. Neither sidebar has an inner scroll area. */
+.pageScroll .body .leftNav,
+.pageScroll .body .rightSidebar {
+  position: sticky;
+  top: calc(var(--viewport-frame-inset, 2vh) + var(--app-topbar-height, 4rem) + var(--space-5));
+  height: calc(100dvh - var(--viewport-frame-inset, 2vh) * 2 - var(--app-topbar-height, 4rem) - var(--space-5) * 2);
+  min-height: 0;
+  overflow: clip;
+}
+
 /* --- character sidebar --- */
 /* Name sits on a full-bleed header band at the top of the panel. */
 .charName {
   font-family: var(--font-display);
   font-size: 1.15rem;
   color: var(--color-accent);
-  margin: calc(-1 * var(--space-4)) calc(-1 * var(--space-4)) var(--space-4);
+  margin: var(--character-sidebar-name-margin, calc(-1 * var(--space-4)) calc(-1 * var(--space-4)) var(--space-4));
   padding: var(--space-3) var(--space-4);
   background: var(--color-accent-soft, var(--color-surface-muted));
   border-radius: var(--radius-md) var(--radius-md) 0 0;
@@ -204,7 +292,16 @@
 }
 
 @media (max-width: 900px) {
-  .body {
+  .body,
+  .pageScroll .body {
     grid-template-columns: 1fr;
+  }
+
+  .pageScroll .body .leftNav,
+  .pageScroll .body .rightSidebar {
+    position: relative;
+    top: auto;
+    height: auto;
+    overflow: visible;
   }
 }

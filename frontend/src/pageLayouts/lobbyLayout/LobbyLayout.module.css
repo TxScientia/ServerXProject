@@ -1,25 +1,11 @@
 .shell {
   position: relative;
-  min-height: 100vh;
+  min-height: var(--page-height, 100vh);
   display: flex;
   flex-direction: column;
   isolation: isolate;
   background: var(--color-bg-shell);
   color: var(--color-text);
-}
-
-.shell::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-  background:
-    linear-gradient(rgba(5, 7, 7, 0.42), rgba(5, 7, 7, 0.72)),
-    url('/pictures/rosesbackgroundWWC.webp');
-  background-position: center top;
-  background-size: cover;
-  transform: translateZ(0);
 }
 
 .topbar {
@@ -79,10 +65,25 @@
   cursor: default;
 }
 
+.mainBackground {
+  composes: background from '../../assets/styles/PageBackground.module.css';
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
 .content {
   flex: 1;
   width: 100%;
   max-width: 1000px;
   margin: 0 auto;
   padding: var(--space-6);
+}
+
+.content.wideContent {
+  max-width: none;
+  display: flex;
+  flex-direction: column;
+  padding: clamp(1rem, 3vw, 3rem);
+  padding-bottom: calc(clamp(1rem, 3vw, 3rem) + var(--space-8));
 }

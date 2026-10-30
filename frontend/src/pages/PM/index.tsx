@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Modal, ModalActions, ModalSpacer } from '../../components/Modal';
 import AppLayout from '../../pageLayouts/appLayout/AppLayout';
 import PMNavigation from '../../components/PM/PMNavigation';
+import PageHeading from '../../components/PageHeading';
 import ChatList from '../../components/PM/ChatList';
 import ThreadView from '../../components/PM/ThreadView';
 import SystemMessagesTab from '../../components/PM/SystemMessagesTab';
@@ -246,7 +247,7 @@ export default function PM() {
     }
   };
 
-  const handleCreateDirectChat = async (characterId: string, creatorCharacterId: string) => {
+  const handleCreateDirectChat = async (characterId: string, creatorCharacterId: string, name?: string) => {
     try {
       const res = await fetch(apiUrl('/pm/chats/direct'), {
         method: 'POST',
@@ -255,7 +256,7 @@ export default function PM() {
           ...authHeaders(),
           'X-Character-Id': creatorCharacterId,
         },
-        body: JSON.stringify({ character_id: characterId }),
+        body: JSON.stringify({ character_id: characterId, name }),
       });
 
       if (res.ok) {
@@ -333,10 +334,12 @@ export default function PM() {
     <AppLayout leftNav={leftNav}>
       <div className={styles.pmContainer}>
         <div className={styles.header}>
-          <h1 className={styles.title}>Nachrichten</h1>
-          <button className={styles.newChatBtn} onClick={() => setShowCreateChatModal(true)}>
-            + Neuer Chat
-          </button>
+          <PageHeading title={t('pm.pageTitle')} subtitle={t('pm.pageSubtitle')} />
+          <div className={styles.actions}>
+            <button type="button" className={`button ${styles.newChatBtn}`} onClick={() => setShowCreateChatModal(true)}>
+              NEUER CHAT
+            </button>
+          </div>
         </div>
 
         <div className={styles.content}>

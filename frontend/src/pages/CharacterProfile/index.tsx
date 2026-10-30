@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { apiUrl, authHeaders } from '../../api';
 import { loadFont } from '../../fonts';
@@ -119,32 +119,32 @@ function renderBuilderItem(item: TabBuilderItem, index: number) {
 export default function CharacterProfile() {
   const { characterId } = useParams();
   const navigate = useNavigate();
-  const [characters, setCharacters] = useState<Character[]>([]);
+  const [character, setCharacter] = useState<Character | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const character = useMemo(
-    () => characters.find((item) => item.id === characterId),
-    [characterId, characters],
-  );
-
-  const fetchCharacters = useCallback(() => {
+  useEffect(() => {
     if (!localStorage.getItem('token')) {
       navigate('/');
       return;
     }
 
-    fetch(apiUrl('/characters'), { headers: { ...authHeaders() } })
+    let active = true;
+    setCharacter(null);
+    setError(null);
+    fetch(apiUrl(`/characters/${characterId}`), { headers: { ...authHeaders() } })
       .then((res) => {
-        if (!res.ok) throw new Error();
+        if (res.status === 404) throw new Error('Charakter nicht gefunden.');
+        if (!res.ok) throw new Error('Charakterprofil konnte nicht geladen werden.');
         return res.json();
       })
-      .then(setCharacters)
-      .catch(() => setError('Charakterprofil konnte nicht geladen werden.'));
-  }, [navigate]);
-
-  useEffect(() => {
-    fetchCharacters();
-  }, [fetchCharacters]);
+      .then((data: Character) => {
+        if (active) setCharacter(data);
+      })
+      .catch((error: unknown) => {
+        if (active) setError(error instanceof Error ? error.message : 'Charakterprofil konnte nicht geladen werden.');
+      });
+    return () => { active = false; };
+  }, [characterId, navigate]);
 
   const nameFontFamily = character?.editorData?.nameFontFamily?.trim();
   const nameFontSize = Number(character?.editorData?.nameFontSize);

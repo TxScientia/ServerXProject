@@ -5,7 +5,7 @@
  * Safety by construction: we store Tiptap's JSON document, never HTML. The editor
  * and the read-only renderer both use THIS extension list, so the only formatting
  * that can ever exist is bold / italic / underline / strike / colour, inside
- * paragraphs. Headings, lists, links, images, code — and therefore any HTML tag
+ * paragraphs and bulleted/numbered lists. Headings, links, images, code — and therefore any HTML tag
  * or script — are impossible; there is no node/mark that can express them. The
  * backend validates stored JSON against the same whitelist.
  */
@@ -22,7 +22,8 @@ export type RichTextDoc = JSONContent;
  * the editor and renderer must never drift apart.
  *
  * Kept from StarterKit: document, paragraph, text, bold, italic, strike,
- * underline, hardBreak, undoRedo (undo/redo), dropcursor, gapcursor, trailingNode.
+ * underline, hardBreak, bulletList, orderedList, listItem, listKeymap,
+ * undoRedo (undo/redo), dropcursor, gapcursor, trailingNode.
  * Everything below is switched off on purpose.
  */
 export const richTextExtensions = [
@@ -33,10 +34,6 @@ export const richTextExtensions = [
     codeBlock: false,
     horizontalRule: false,
     link: false,
-    bulletList: false,
-    orderedList: false,
-    listItem: false,
-    listKeymap: false,
   }),
   TextStyle,
   Color,

@@ -1,0 +1,45 @@
+:global(:root) .frame {
+  --character-sidebar-name-margin: 0 0 var(--space-4);
+  --corner: var(--character-frame-corner, 16px);
+  --inset: var(--character-frame-inset, 0.75rem);
+  position: relative;
+  isolation: isolate;
+  background: var(--color-character-container-outer);
+  border: 0;
+  border-radius: 0;
+  padding: calc(var(--inset) + var(--space-4));
+}
+
+.frame::before,
+.frame::after {
+  content: '';
+  position: absolute;
+  inset: var(--inset);
+  pointer-events: none;
+  z-index: -1;
+  mask:
+    radial-gradient(circle at 0 0, transparent var(--corner), #000 calc(var(--corner) + 0.5px)) top left / 50% 50% no-repeat,
+    radial-gradient(circle at 100% 0, transparent var(--corner), #000 calc(var(--corner) + 0.5px)) top right / 50% 50% no-repeat,
+    radial-gradient(circle at 0 100%, transparent var(--corner), #000 calc(var(--corner) + 0.5px)) bottom left / 50% 50% no-repeat,
+    radial-gradient(circle at 100% 100%, transparent var(--corner), #000 calc(var(--corner) + 0.5px)) bottom right / 50% 50% no-repeat;
+}
+
+.frame::before {
+  --line: var(--color-character-frame);
+  mask: none;
+  background:
+    linear-gradient(var(--line), var(--line)) top var(--corner) left 0 / var(--character-frame-width, 1px) calc(100% - var(--corner) * 2) no-repeat,
+    linear-gradient(var(--line), var(--line)) top var(--corner) right 0 / var(--character-frame-width, 1px) calc(100% - var(--corner) * 2) no-repeat,
+    linear-gradient(var(--line), var(--line)) top 0 left var(--corner) / calc(100% - var(--corner) * 2) var(--character-frame-width, 1px) no-repeat,
+    linear-gradient(var(--line), var(--line)) bottom 0 left var(--corner) / calc(100% - var(--corner) * 2) var(--character-frame-width, 1px) no-repeat,
+    radial-gradient(circle at 0 0, transparent var(--corner), var(--line) var(--corner) calc(var(--corner) + var(--character-frame-corner-width, 1px)), transparent calc(var(--corner) + var(--character-frame-corner-width, 1px) + 0.5px)) top left / 50% 50% no-repeat,
+    radial-gradient(circle at 100% 0, transparent var(--corner), var(--line) var(--corner) calc(var(--corner) + var(--character-frame-corner-width, 1px)), transparent calc(var(--corner) + var(--character-frame-corner-width, 1px) + 0.5px)) top right / 50% 50% no-repeat,
+    radial-gradient(circle at 0 100%, transparent var(--corner), var(--line) var(--corner) calc(var(--corner) + var(--character-frame-corner-width, 1px)), transparent calc(var(--corner) + var(--character-frame-corner-width, 1px) + 0.5px)) bottom left / 50% 50% no-repeat,
+    radial-gradient(circle at 100% 100%, transparent var(--corner), var(--line) var(--corner) calc(var(--corner) + var(--character-frame-corner-width, 1px)), transparent calc(var(--corner) + var(--character-frame-corner-width, 1px) + 0.5px)) bottom right / 50% 50% no-repeat;
+}
+
+.frame::after {
+  inset: calc(var(--inset) + var(--character-frame-width, 1px));
+  --corner: calc(var(--character-frame-corner, 16px) + var(--character-frame-width, 1px));
+  background: var(--color-character-container-inner);
+}
