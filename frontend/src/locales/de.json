@@ -161,6 +161,7 @@
     "tags": "Tags",
     "addTag": "Tag hinzufügen",
     "tagLimit": "Max. 6 Tags",
+    "noPoolTags": "Noch keine Tags vorhanden – ein Admin muss zuerst welche anlegen.",
     "visibility": "Zugänglichkeit",
     "visPublic": "Öffentlich",
     "visGeneric": "Generisch",
@@ -220,7 +221,18 @@
     "title": "Admin",
     "subtitle": "Systemweite Einstellungen und Ankündigungen.",
     "systemNews": "System-News",
-    "loadError": "Adminbereich konnte nicht geladen werden."
+    "loadError": "Adminbereich konnte nicht geladen werden.",
+    "tags": "Tags",
+    "tagsSubtitle": "Verwalte den Tag-Pool, aus dem Plots wählen können.",
+    "addTag": "Hinzufügen",
+    "editTag": "Bearbeiten",
+    "tagPlaceholder": "Name des neuen Tags",
+    "noTags": "Noch keine Tags.",
+    "tagExists": "Dieser Tag existiert bereits.",
+    "tagSaveError": "Tag konnte nicht gespeichert werden.",
+    "tagLoadError": "Tags konnten nicht geladen werden.",
+    "deleteTagTitle": "Tag löschen",
+    "deleteTagConfirm": "Tag «{{name}}» löschen? Er wird von allen Plots entfernt."
   },
   "news": {
     "pageTitle": "News",

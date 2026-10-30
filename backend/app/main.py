@@ -35,6 +35,7 @@ from .routes.ooc import router as ooc_router
 from .routes.pm import router as pm_router
 from .routes.residents import router as residents_router
 from .routes.storybooks import router as storybooks_router
+from .routes.tags import router as tags_router
 from .routes.wanted_ads import router as wanted_ads_router
 
 
@@ -123,6 +124,7 @@ app.include_router(router=ooc_router, prefix="/api")
 app.include_router(router=pm_router, prefix="/api")
 app.include_router(router=residents_router, prefix="/api")
 app.include_router(router=storybooks_router, prefix="/api")
+app.include_router(router=tags_router, prefix="/api")
 app.include_router(router=wanted_ads_router, prefix="/api")
 
 

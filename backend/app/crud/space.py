@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
 
-from ..models import Character, Membership, Space, StorybookDetail, Tag
+from ..models import Character, Membership, Space, StorybookDetail
+from .tag import tags_by_names
 
 # Plot roles that may edit settings/content (creator is the owner; editor is granted).
 EDIT_ROLES = ("creator", "editor")
@@ -148,15 +149,6 @@ def set_member_role(db: Session, space_id, character_id, role: str):
     return membership
 
 
-def _get_or_create_tag(db: Session, name: str) -> Tag:
-    tag = db.query(Tag).filter(Tag.name == name).first()
-    if tag is None:
-        tag = Tag(name=name)
-        db.add(tag)
-        db.flush()
-    return tag
-
-
 def update_storybook(
     db: Session,
     space: Space,
@@ -180,7 +172,8 @@ def update_storybook(
     if visibility is not None and space.storybook_detail is not None:
         space.storybook_detail.visibility = visibility
     if tags is not None:
-        space.tags = [_get_or_create_tag(db, name) for name in tags]
+        # Plots may only use tags from the admin-managed pool; unknown names are ignored.
+        space.tags = tags_by_names(db, tags)
     db.commit()
     db.refresh(space)
     return space

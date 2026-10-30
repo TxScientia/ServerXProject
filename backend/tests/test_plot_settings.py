@@ -10,9 +10,15 @@ def _make_storybook(client, headers, title="World"):
     return client.post("/storybooks", json={"title": title}, headers=headers).json()
 
 
-def test_update_storybook_settings(client, character, auth_headers, uploaded_image):
+def test_update_storybook_settings(client, character, auth_headers, account, db_session, uploaded_image):
     h = char_headers(auth_headers, character)
     sb = _make_storybook(client, h)
+
+    # Tags must exist in the admin-managed pool before a plot can use them.
+    account.is_global_admin = True
+    db_session.commit()
+    client.post("/admin/tags", headers=auth_headers, json={"name": "scifi"})
+    client.post("/admin/tags", headers=auth_headers, json={"name": "romance"})
 
     resp = client.patch(
         f"/storybooks/{sb['id']}",

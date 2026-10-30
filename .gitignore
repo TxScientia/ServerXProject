@@ -10,6 +10,7 @@ frontend/dist/
 
 # Python virtual environments
 .venv/
+.venv314/
 venv/
 env/
 ENV/
