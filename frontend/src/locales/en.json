@@ -96,8 +96,6 @@
   },
   "storybooks": {
     "sideTitle": "StoryBooks",
-    "myPlots": "My Plots",
-    "home": "Home",
     "filterBy": "Filter by",
     "filterTitle": "Title",
     "filterTitlePlaceholder": "Search by title",

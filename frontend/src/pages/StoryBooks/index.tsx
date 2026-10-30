@@ -108,14 +108,6 @@ export default function StoryBooks() {
   const leftNav = (
     <div className={styles.sideNav}>
       <div className={styles.sideTitle}>{t('storybooks.sideTitle')}</div>
-      <button className={styles.sideItem} onClick={() => navigate('/storybooks')}>
-        {t('storybooks.myPlots')}
-      </button>
-      <button className={styles.sideItem} onClick={() => navigate('/lobby')}>
-        {t('storybooks.home')}
-      </button>
-
-      <hr className={styles.divider} />
 
       <div className={styles.filterTitle}>{t('storybooks.filterBy')}</div>
       <label className={styles.filterField}>
