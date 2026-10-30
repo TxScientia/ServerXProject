@@ -88,6 +88,32 @@ test('chat name has the same visible input border and focus highlight as recipie
   expect(focus).toContain('box-shadow: var(--focus-ring);');
 });
 
+test('PM categories match recipient selection with a stable left highlight', () => {
+  const css = source('../../components/PM/PMNavigation.module.css');
+  const recipientCss = source('../../components/PM/CreateChatModal.module.css');
+  const tab = css.split('.tab {')[1].split('}')[0];
+  const recipient = recipientCss.split('.charItem {')[1].split('}')[0];
+  for (const declaration of [
+    'background: none;',
+    'border: none;',
+    'border-bottom: 1px solid var(--color-surface-muted);',
+    'border-left: 4px solid transparent;',
+    'padding-left: 12px;',
+    'color: var(--color-text);',
+  ]) {
+    expect(tab).toContain(declaration);
+    expect(recipient).toContain(declaration);
+  }
+  expect(css).toContain('.tab:hover,\n.tab:focus-visible {');
+  for (const selector of ['.tab:focus-visible', '.tab.active']) {
+    const state = css.split(`${selector} {`)[1].split('}')[0];
+    expect(state).toContain('background: var(--color-accent-soft);');
+    expect(state).toContain('color: var(--color-accent);');
+    expect(state).toContain('border-left-color: var(--color-accent);');
+    expect(state).not.toContain('padding');
+  }
+});
+
 test('PM navigation tabs are square and have extra top spacing', () => {
   const css = source('../../components/PM/PMNavigation.module.css');
   expect(css.split('.pmNav {')[1].split('}')[0]).toContain('padding-top: var(--space-4);');
