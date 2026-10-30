@@ -16,6 +16,7 @@
     "residents": "Residents",
     "storybooks": "StoryBooks",
     "myCharacters": "My Characters",
+    "guidebook": "GuideBook",
     "settings": "Settings",
     "faq": "FAQ",
     "systemNews": "System News",
@@ -24,6 +25,14 @@
     "home": "Home",
     "mitglieder": "Mitglieder",
     "plotSettings": "Plot Settings"
+  },
+  "guidebook": {
+    "title": "GuideBook",
+    "dashboard": "Dashboard",
+    "dashboardPlaceholder": "Inhalt folgt.",
+    "faq": "FAQ",
+    "news": "News",
+    "regeln": "Regeln"
   },
   "members": {
     "title": "Mitglieder",
