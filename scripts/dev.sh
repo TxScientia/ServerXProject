@@ -21,6 +21,14 @@ LOG_DIR="$ROOT/.dev-logs"
 BACKEND_LOG="$LOG_DIR/backend.log"
 FRONTEND_LOG="$LOG_DIR/frontend.log"
 
+# Backend needs Python 3.10+ (image code uses `X | None`). Prefer .venv314;
+# fall back to .venv for older setups.
+if [ -x "$ROOT/.venv314/bin/python" ]; then
+  VENV_PY="$ROOT/.venv314/bin/python"
+else
+  VENV_PY="$ROOT/.venv/bin/python"
+fi
+
 port_pids() { lsof -ti:"$1" 2>/dev/null; }
 
 wait_for_200() {
@@ -70,7 +78,7 @@ start() {
   mkdir -p "$LOG_DIR"
 
   echo "Starting backend (FastAPI) on :8000 ..."
-  .venv/bin/python -m uvicorn backend.app.main:app --host 127.0.0.1 --port 8000 \
+  "$VENV_PY" -m uvicorn backend.app.main:app --host 127.0.0.1 --port 8000 \
     >"$BACKEND_LOG" 2>&1 &
   BACKEND_PID=$!
 
