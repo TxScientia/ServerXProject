@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import AppLayout from '../../pageLayouts/appLayout/AppLayout';
@@ -15,6 +15,12 @@ export default function StoryBooks() {
   const [showModal, setShowModal] = useState(false);
   const [form, setForm] = useState({ title: '', description: '' });
   const [error, setError] = useState<string | null>(null);
+
+  // Filters (client-side; the list is already fully loaded).
+  const [filterTitle, setFilterTitle] = useState('');
+  const [filterCreator, setFilterCreator] = useState('');
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [poolTags, setPoolTags] = useState<string[]>([]);
 
   const fetchStorybooks = useCallback(() => {
     if (!localStorage.getItem('token')) {
@@ -37,6 +43,45 @@ export default function StoryBooks() {
   useEffect(() => {
     fetchStorybooks();
   }, [fetchStorybooks]);
+
+  // The admin-managed tag pool, used to offer tag filter chips.
+  useEffect(() => {
+    fetch(apiUrl('/tags'), { headers: authHeaders() })
+      .then((res) => (res.ok ? res.json() : []))
+      .then((items: { name: string }[]) => setPoolTags(items.map((item) => item.name)))
+      .catch(() => undefined);
+  }, []);
+
+  const toggleTag = (name: string) => {
+    setSelectedTags((prev) =>
+      prev.includes(name) ? prev.filter((x) => x !== name) : [...prev, name],
+    );
+  };
+
+  const hasFilters =
+    filterTitle.trim() !== '' || filterCreator.trim() !== '' || selectedTags.length > 0;
+
+  const clearFilters = () => {
+    setFilterTitle('');
+    setFilterCreator('');
+    setSelectedTags([]);
+  };
+
+  const filtered = useMemo(() => {
+    const title = filterTitle.trim().toLowerCase();
+    const creator = filterCreator.trim().toLowerCase();
+    return storybooks.filter((sb) => {
+      if (title && !sb.title.toLowerCase().includes(title)) return false;
+      if (creator && !(sb.owner_character_name ?? '').toLowerCase().includes(creator)) {
+        return false;
+      }
+      // Tag match: a plot passes if it carries at least one of the selected tags.
+      if (selectedTags.length > 0 && !selectedTags.some((tag) => sb.tags.includes(tag))) {
+        return false;
+      }
+      return true;
+    });
+  }, [storybooks, filterTitle, filterCreator, selectedTags]);
 
   const handleCreate = () => {
     fetch(apiUrl('/storybooks'), {
@@ -75,15 +120,49 @@ export default function StoryBooks() {
       <div className={styles.filterTitle}>{t('storybooks.filterBy')}</div>
       <label className={styles.filterField}>
         {t('storybooks.filterTitle')}
-        <input className="text-input" placeholder={t('common.comingSoon')} disabled />
+        <input
+          className="text-input"
+          placeholder={t('storybooks.filterTitlePlaceholder')}
+          value={filterTitle}
+          onChange={(e) => setFilterTitle(e.target.value)}
+        />
       </label>
       <label className={styles.filterField}>
         {t('storybooks.filterCreator')}
-        <input className="text-input" placeholder={t('common.comingSoon')} disabled />
+        <input
+          className="text-input"
+          placeholder={t('storybooks.filterCreatorPlaceholder')}
+          value={filterCreator}
+          onChange={(e) => setFilterCreator(e.target.value)}
+        />
       </label>
       <div className={styles.filterField}>
-        {t('storybooks.tags')} <span className={styles.muted}>—</span>
+        {t('storybooks.tags')}
+        {poolTags.length === 0 ? (
+          <span className={styles.muted}>{t('storybooks.noTags')}</span>
+        ) : (
+          <div className={styles.tagFilter}>
+            {poolTags.map((tag) => (
+              <button
+                key={tag}
+                type="button"
+                className={`${styles.tagChip} ${
+                  selectedTags.includes(tag) ? styles.tagChipSelected : ''
+                }`}
+                onClick={() => toggleTag(tag)}
+              >
+                {tag}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
+
+      {hasFilters && (
+        <button type="button" className={styles.clearFilters} onClick={clearFilters}>
+          {t('storybooks.clearFilters')}
+        </button>
+      )}
     </div>
   );
 
@@ -107,9 +186,11 @@ export default function StoryBooks() {
         <h2 className={styles.sectionTitle}>{t('storybooks.worldsFromUsers')}</h2>
         {storybooks.length === 0 ? (
           <p className={styles.muted}>{t('storybooks.empty')}</p>
+        ) : filtered.length === 0 ? (
+          <p className={styles.muted}>{t('storybooks.noMatches')}</p>
         ) : (
           <div className={styles.grid}>
-            {storybooks.map((sb) => (
+            {filtered.map((sb) => (
               <PlotCard
                 key={sb.id}
                 plot={sb}
