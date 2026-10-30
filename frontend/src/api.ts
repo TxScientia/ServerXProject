@@ -26,6 +26,9 @@ export const AUTH_EVENT = 'serverx:auth';
 /** Fired (same-tab) when the acting character's favourites change, so the nav refreshes. */
 export const FAVORITES_EVENT = 'serverx:favorites';
 
+/** Fired (same-tab) when global news is marked read, so the nav unread badge clears. */
+export const NEWS_READ_EVENT = 'serverx:news-read';
+
 /** Store the login token and notify listeners (used on login). */
 export function setAuthToken(token: string): void {
   localStorage.setItem('token', token);

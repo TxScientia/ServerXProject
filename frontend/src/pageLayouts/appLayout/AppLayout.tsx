@@ -4,25 +4,32 @@ import { useTranslation } from 'react-i18next';
 import Badge from '../../components/Badge/Badge';
 import { Modal, ModalActions, ModalSpacer } from '../../components/Modal';
 import LanguageSwitcher from '../../components/LanguageSwitcher';
-import { apiUrl, authHeaders, characterHeaders, clearAuthToken, FAVORITES_EVENT } from '../../api';
+import {
+  apiUrl,
+  authHeaders,
+  characterHeaders,
+  clearAuthToken,
+  FAVORITES_EVENT,
+  NEWS_READ_EVENT,
+} from '../../api';
 import { getShowUnreadBadge, PREFS_EVENT } from '../../preferences';
 import { useWebSocket } from '../../realtime/WebSocketProvider';
 import styles from './AppLayout.module.css';
 
 // Global top-nav. Items without a path are placeholders for not-yet-built features.
+// News lives inside the GuideBook area now (not its own top-nav item).
 const GLOBAL_NAV: { key: string; path: string | null }[] = [
   { key: 'nav.gesuche', path: '/gesuche' },
   { key: 'nav.oocChat', path: null },
   { key: 'nav.pm', path: '/pm' },
-  { key: 'nav.news', path: '/news' },
   { key: 'nav.residents', path: '/residents' },
   { key: 'nav.storybooks', path: '/storybooks' },
 ];
 
 const RIGHT_NAV: { key: string; path: string | null }[] = [
   { key: 'nav.myCharacters', path: '/lobby' },
+  { key: 'nav.guidebook', path: '/guidebook' },
   { key: 'nav.settings', path: '/settings' },
-  { key: 'nav.faq', path: null },
 ];
 
 function TopNavbar() {
@@ -46,15 +53,18 @@ function TopNavbar() {
 
   useEffect(() => {
     if (!localStorage.getItem('token')) return;
-    if (location.pathname === '/news') {
-      setNewsUnread(0);
-      return;
-    }
     fetch(apiUrl('/news/unread-count'), { headers: authHeaders() })
       .then((res) => (res.ok ? res.json() : null))
       .then((data) => setNewsUnread(data?.count ?? 0))
       .catch(() => undefined);
   }, [location.pathname]);
+
+  // Clear the badge immediately when news is read (from the GuideBook News section).
+  useEffect(() => {
+    const clear = () => setNewsUnread(0);
+    window.addEventListener(NEWS_READ_EVENT, clear);
+    return () => window.removeEventListener(NEWS_READ_EVENT, clear);
+  }, []);
 
   const go = (item: { key: string; path: string | null }) => {
     if (item.key === 'nav.oocChat') {
@@ -89,7 +99,6 @@ function TopNavbar() {
                 {t(item.key)}
               </button>
               {showBadge && item.key === 'nav.pm' && <Badge count={pmUnread} variant="nav" />}
-              {showBadge && item.key === 'nav.news' && <Badge count={newsUnread} variant="nav" />}
             </div>
           ))}
         </nav>
@@ -98,16 +107,20 @@ function TopNavbar() {
 
         <nav className={styles.topRight} aria-label="Account navigation">
           {RIGHT_NAV.map((item) => (
-            <button
-              key={item.key}
-              type="button"
-              className={styles.navLink}
-              onClick={() => go(item)}
-              disabled={!item.path}
-              title={item.path ? undefined : t('common.comingSoon')}
-            >
-              {t(item.key)}
-            </button>
+            <div key={item.key} className={styles.navItemWrapper}>
+              <button
+                type="button"
+                className={styles.navLink}
+                onClick={() => go(item)}
+                disabled={!item.path}
+                title={item.path ? undefined : t('common.comingSoon')}
+              >
+                {t(item.key)}
+              </button>
+              {showBadge && item.key === 'nav.guidebook' && (
+                <Badge count={newsUnread} variant="nav" />
+              )}
+            </div>
           ))}
           <button type="button" className={styles.navLink} onClick={logout}>
             {t('common.logout')}
