@@ -18,5 +18,6 @@ class OOCMessageRead(BaseModel):
     author_character_id: uuid.UUID
     author_name: Optional[str] = None
     body: Any
+    kind: Optional[str] = None
     created_at: datetime.datetime
     edited_at: Optional[datetime.datetime] = None

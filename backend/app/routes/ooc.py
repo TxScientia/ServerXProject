@@ -2,10 +2,11 @@ import re
 from typing import List
 import uuid
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Response
 from sqlalchemy.orm import Session
 
 from ..auth import get_current_character, get_current_user
+from ..commands import MALFORMED, OK, interpret, plain_text
 from ..crud import (
     create_global_ooc_message,
     create_space_ooc_message,
@@ -64,6 +65,7 @@ def _serialize(item):
         author_character_id=item.author_character_id,
         author_name=item.author_character.name if item.author_character else None,
         body=item.body,
+        kind=item.kind,
         created_at=item.created_at,
         edited_at=item.edited_at,
     )
@@ -90,6 +92,13 @@ def create_global_ooc_endpoint(
     character: Character = Depends(get_current_character),
     db: Session = Depends(get_db),
 ):
+    status, roll = interpret(plain_text(data.body), character.name)
+    if status == MALFORMED:
+        return Response(status_code=204)  # recognised command but invalid → silently drop
+    if status == OK:
+        return _serialize(
+            create_global_ooc_message(db, author_character_id=character.id, body=roll, kind="roll")
+        )
     _validate_body(data.body)
     return _serialize(create_global_ooc_message(db, author_character_id=character.id, body=data.body))
 
@@ -116,5 +125,14 @@ def create_storybook_ooc_endpoint(
     space = _require_storybook(db, storybook_id)
     if not is_member(db, space.id, character.id):
         raise HTTPException(status_code=403, detail="Nur Plot-Mitglieder können im OOC schreiben")
+    status, roll = interpret(plain_text(data.body), character.name)
+    if status == MALFORMED:
+        return Response(status_code=204)  # recognised command but invalid → silently drop
+    if status == OK:
+        return _serialize(
+            create_space_ooc_message(
+                db, space_id=space.id, author_character_id=character.id, body=roll, kind="roll"
+            )
+        )
     _validate_body(data.body)
     return _serialize(create_space_ooc_message(db, space_id=space.id, author_character_id=character.id, body=data.body))

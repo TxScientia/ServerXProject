@@ -19,6 +19,7 @@ class OOCMessage(Base):
     space_id = Column(GUID(), ForeignKey("spaces.id"), nullable=True)
     author_character_id = Column(GUID(), ForeignKey("characters.id"), nullable=False)
     body = Column(JSON().with_variant(JSONB, "postgresql"), nullable=False)
+    kind = Column(String, nullable=True)  # None = normal text; 'roll' = server-computed command result
     created_at = Column(DateTime(timezone=True), nullable=False, server_default=func.now())
     edited_at = Column(DateTime(timezone=True), nullable=True)
 
