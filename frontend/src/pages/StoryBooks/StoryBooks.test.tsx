@@ -74,7 +74,7 @@ test('shows an empty state when there are no storybooks', async () => {
   expect(await screen.findByText(/Noch keine StoryBooks/)).toBeInTheDocument();
 });
 
-test('filters the list by title', async () => {
+test('search matches both title and creator', async () => {
   mockFetch([
     plot('1', 'Neverwhere', 'Richard', ['Urban Fantasy']),
     plot('2', 'Dune', 'Paul', ['Sci-Fi']),
@@ -84,12 +84,17 @@ test('filters the list by title', async () => {
   expect(await screen.findByText('Neverwhere')).toBeInTheDocument();
   expect(screen.getByText('Dune')).toBeInTheDocument();
 
-  fireEvent.change(screen.getByPlaceholderText('Nach Titel suchen'), {
-    target: { value: 'dune' },
-  });
+  const box = screen.getByPlaceholderText('Titel oder Ersteller');
 
+  // Matches by title.
+  fireEvent.change(box, { target: { value: 'dune' } });
   expect(screen.queryByText('Neverwhere')).not.toBeInTheDocument();
   expect(screen.getByText('Dune')).toBeInTheDocument();
+
+  // Matches by creator.
+  fireEvent.change(box, { target: { value: 'richard' } });
+  expect(screen.getByText('Neverwhere')).toBeInTheDocument();
+  expect(screen.queryByText('Dune')).not.toBeInTheDocument();
 });
 
 test('filters the list by selecting a tag chip', async () => {

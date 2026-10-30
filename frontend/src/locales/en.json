@@ -97,10 +97,8 @@
   "storybooks": {
     "sideTitle": "StoryBooks",
     "filterBy": "Filter by",
-    "filterTitle": "Title",
-    "filterTitlePlaceholder": "Search by title",
-    "filterCreator": "Creator",
-    "filterCreatorPlaceholder": "Search by creator",
+    "search": "Search",
+    "searchPlaceholder": "Title or creator",
     "tags": "Tags",
     "noTags": "No tags available",
     "clearFilters": "Clear filters",

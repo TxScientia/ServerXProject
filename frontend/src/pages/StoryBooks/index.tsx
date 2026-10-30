@@ -17,8 +17,7 @@ export default function StoryBooks() {
   const [error, setError] = useState<string | null>(null);
 
   // Filters (client-side; the list is already fully loaded).
-  const [filterTitle, setFilterTitle] = useState('');
-  const [filterCreator, setFilterCreator] = useState('');
+  const [search, setSearch] = useState('');
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [poolTags, setPoolTags] = useState<string[]>([]);
 
@@ -58,22 +57,20 @@ export default function StoryBooks() {
     );
   };
 
-  const hasFilters =
-    filterTitle.trim() !== '' || filterCreator.trim() !== '' || selectedTags.length > 0;
+  const hasFilters = search.trim() !== '' || selectedTags.length > 0;
 
   const clearFilters = () => {
-    setFilterTitle('');
-    setFilterCreator('');
+    setSearch('');
     setSelectedTags([]);
   };
 
   const filtered = useMemo(() => {
-    const title = filterTitle.trim().toLowerCase();
-    const creator = filterCreator.trim().toLowerCase();
+    const query = search.trim().toLowerCase();
     return storybooks.filter((sb) => {
-      if (title && !sb.title.toLowerCase().includes(title)) return false;
-      if (creator && !(sb.owner_character_name ?? '').toLowerCase().includes(creator)) {
-        return false;
+      // One search box matches either the title or the creator.
+      if (query) {
+        const haystack = `${sb.title} ${sb.owner_character_name ?? ''}`.toLowerCase();
+        if (!haystack.includes(query)) return false;
       }
       // Tag match: a plot passes if it carries at least one of the selected tags.
       if (selectedTags.length > 0 && !selectedTags.some((tag) => sb.tags.includes(tag))) {
@@ -81,7 +78,7 @@ export default function StoryBooks() {
       }
       return true;
     });
-  }, [storybooks, filterTitle, filterCreator, selectedTags]);
+  }, [storybooks, search, selectedTags]);
 
   const handleCreate = () => {
     fetch(apiUrl('/storybooks'), {
@@ -111,21 +108,12 @@ export default function StoryBooks() {
 
       <div className={styles.filterTitle}>{t('storybooks.filterBy')}</div>
       <label className={styles.filterField}>
-        {t('storybooks.filterTitle')}
+        {t('storybooks.search')}
         <input
           className="text-input"
-          placeholder={t('storybooks.filterTitlePlaceholder')}
-          value={filterTitle}
-          onChange={(e) => setFilterTitle(e.target.value)}
-        />
-      </label>
-      <label className={styles.filterField}>
-        {t('storybooks.filterCreator')}
-        <input
-          className="text-input"
-          placeholder={t('storybooks.filterCreatorPlaceholder')}
-          value={filterCreator}
-          onChange={(e) => setFilterCreator(e.target.value)}
+          placeholder={t('storybooks.searchPlaceholder')}
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
         />
       </label>
       <div className={styles.filterField}>
